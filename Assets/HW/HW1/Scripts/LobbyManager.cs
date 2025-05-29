@@ -2,43 +2,52 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
 public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 {
-    [SerializeField] private NetworkRunner networkRunner;
+    [SerializeField] private NetworkRunner networkRunnerPrefab;
     [SerializeField] private GameObject lobbiesPanel;
     [SerializeField] private GameObject lobbyPanel;
     [SerializeField] private TMP_Text lobbyTitle;
     [SerializeField] private TMP_Text lobbySessionsCount;
-    private List<SessionInfo> _currentLobbySessions;    
 
+    private List<SessionInfo> _currentLobbySessions; 
+    
+    public NetworkRunner CurrentRunner { get; private set; }
+    
     private void Awake()
     {
         ShowLobbiesList();
+        GenerateNetworkRunner();
     }
     public async void JoinLobby(string lobbyID)
     {
-        StartGameResult result = await networkRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);
+        StartGameResult result = await CurrentRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);
         if (result.Ok) 
         {
             //Happens before the OnSessionListUpdated callback!
             ShowLobbySessionsList();
             Debug.Log($"Joined {lobbyID} Lobby");
         }
-
-        
     }
 
     public void JoinSession()
     {
-        networkRunner.StartGame(new StartGameArgs()
+        CurrentRunner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Shared,
             SessionName = "Session #" + _currentLobbySessions.Count,
             OnGameStarted = OnSessionStarted
         });
+    }
+
+    public async void LeaveLobby()
+    {
+        await CurrentRunner.Shutdown();
+        ShowLobbiesList();
     }
 
     private void OnSessionStarted(NetworkRunner obj)
@@ -58,9 +67,17 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     }
     private void UpdateLobbySessionsList()
     {
-        lobbyTitle.text = networkRunner.LobbyInfo.Name + " Lobby";
+        lobbyTitle.text = CurrentRunner.LobbyInfo.Name + " Lobby";
         lobbySessionsCount.text = _currentLobbySessions.Count.ToString();
     }
+
+    private void GenerateNetworkRunner()
+    {
+        CurrentRunner = Instantiate(networkRunnerPrefab);
+        CurrentRunner.AddCallbacks(this);
+    }
+    //Callbacks:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
     //Is only called when not in session!
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
@@ -68,6 +85,11 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         _currentLobbySessions = sessionList;
         UpdateLobbySessionsList();
         Debug.Log(sessionList.Count);
+    }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+    {
+        Destroy(CurrentRunner.gameObject);
+        GenerateNetworkRunner();
     }
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
@@ -88,11 +110,6 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         throw new NotImplementedException();
-    }
-
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
-    {
-        
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)

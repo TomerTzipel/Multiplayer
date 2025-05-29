@@ -5,14 +5,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 {
+    
     [SerializeField] private NetworkRunner networkRunnerPrefab;
     [SerializeField] private GameObject lobbiesPanel;
     [SerializeField] private GameObject lobbyPanel;
     [SerializeField] private TMP_Text lobbyTitle;
     [SerializeField] private TMP_Text lobbySessionsCount;
+
+    [SerializeField] private SessionDetailsHandler sessionDetailsPrefab;
+    [SerializeField] private Transform sessoionsScrollViewContent;
 
     private List<SessionInfo> _currentLobbySessions; 
     
@@ -41,9 +46,17 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
             GameMode = GameMode.Shared,
             SessionName = "Session #" + _currentLobbySessions.Count,
             OnGameStarted = OnSessionStarted
+        });   
+    }
+    public void JoinSession(string sessionName)
+    {
+        CurrentRunner.StartGame(new StartGameArgs()
+        {
+            GameMode = GameMode.Shared,
+            SessionName = sessionName,
+            OnGameStarted = OnSessionStarted
         });
     }
-
     public async void LeaveLobby()
     {
         await CurrentRunner.Shutdown();
@@ -69,6 +82,13 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     {
         lobbyTitle.text = CurrentRunner.LobbyInfo.Name + " Lobby";
         lobbySessionsCount.text = _currentLobbySessions.Count.ToString();
+
+        if (_currentLobbySessions.Count > 0)
+        {
+            SessionDetailsHandler handler = Instantiate(sessionDetailsPrefab);
+            handler.InitialzieData(_currentLobbySessions[_currentLobbySessions.Count - 1]);
+            handler.gameObject.transform.SetParent(sessoionsScrollViewContent);
+        }    
     }
 
     private void GenerateNetworkRunner()

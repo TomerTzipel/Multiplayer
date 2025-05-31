@@ -11,13 +11,11 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 {
     
     [SerializeField] private NetworkRunner networkRunnerPrefab;
-    [SerializeField] private GameObject lobbiesPanel;
-    [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private TMP_Text lobbyTitle;
-    [SerializeField] private TMP_Text lobbySessionsCount;
 
-    [SerializeField] private SessionDetailsHandler sessionDetailsPrefab;
-    [SerializeField] private Transform sessoionsScrollViewContent;
+    [SerializeField] private LobbyUiManager uiManager;
+    
+
+    
 
     private List<SessionInfo> _currentLobbySessions; 
     
@@ -25,7 +23,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     
     private void Awake()
     {
-        ShowLobbiesList();
+        
         GenerateNetworkRunner();
     }
     public async void JoinLobby(string lobbyID)
@@ -34,7 +32,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         if (result.Ok) 
         {
             //Happens before the OnSessionListUpdated callback!
-            ShowLobbySessionsList();
+            uiManager.ShowLobbySessionsList();
             Debug.Log($"Joined {lobbyID} Lobby");
         }
     }
@@ -60,35 +58,12 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     public async void LeaveLobby()
     {
         await CurrentRunner.Shutdown();
-        ShowLobbiesList();
+        uiManager.ShowLobbiesList();
     }
 
     private void OnSessionStarted(NetworkRunner obj)
     {
         Debug.Log("Joined Session:" + obj.SessionInfo.Name);
-    }
-
-    private void ShowLobbiesList()
-    {
-        lobbyPanel.SetActive(false);
-        lobbiesPanel.SetActive(true);
-    }
-    private void ShowLobbySessionsList()
-    {
-        lobbyPanel.SetActive(true);
-        lobbiesPanel.SetActive(false);
-    }
-    private void UpdateLobbySessionsList()
-    {
-        lobbyTitle.text = CurrentRunner.LobbyInfo.Name + " Lobby";
-        lobbySessionsCount.text = _currentLobbySessions.Count.ToString();
-
-        if (_currentLobbySessions.Count > 0)
-        {
-            SessionDetailsHandler handler = Instantiate(sessionDetailsPrefab);
-            handler.InitialzieData(_currentLobbySessions[_currentLobbySessions.Count - 1]);
-            handler.gameObject.transform.SetParent(sessoionsScrollViewContent);
-        }    
     }
 
     private void GenerateNetworkRunner()
@@ -103,7 +78,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         _currentLobbySessions = sessionList;
-        UpdateLobbySessionsList();
+        uiManager.UpdateLobbySessionsList(this,_currentLobbySessions,CurrentRunner);
         Debug.Log(sessionList.Count);
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)

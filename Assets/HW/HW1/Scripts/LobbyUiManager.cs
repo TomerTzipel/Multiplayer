@@ -2,17 +2,24 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using WebSocketSharp;
 
 public class LobbyUiManager : MonoBehaviour
 {
+    [SerializeField] private LobbyManager lobbyManager;
+
     [SerializeField] private GameObject lobbiesPanel;
-    [SerializeField] private GameObject lobbyPanel; 
-    
+    [SerializeField] private GameObject lobbyPanel;
+    [SerializeField] private GameObject sessionCreationPanel;
+
     [SerializeField] private TMP_Text lobbyTitle;
     [SerializeField] private TMP_Text lobbySessionsCount;
 
     [SerializeField] private SessionHandler sessionDetailsPrefab;
     [SerializeField] private Transform sessoionsScrollViewContent;
+
+    [SerializeField] private TMP_InputField sessionNameField;
+    [SerializeField] private TMP_InputField playersCountField;
 
     private List<SessionHandler> _sessionHandlers = new List<SessionHandler>(4);
 
@@ -20,6 +27,21 @@ public class LobbyUiManager : MonoBehaviour
     {
         ShowLobbiesList();
     }
+
+    public void CreateNewSession()
+    {
+        if (sessionNameField.text.IsNullOrEmpty() || playersCountField.text.IsNullOrEmpty()) return;
+
+        string sessionName = sessionNameField.text;
+
+        //No need to TryParse3 as the InputField is set to integer only
+        int playerCount = int.Parse(playersCountField.text);
+        
+        Debug.Log(sessionNameField.text);
+        Debug.Log(playersCountField.text);
+        lobbyManager.JoinSession(sessionName, playerCount);
+    }
+
     public void ShowLobbiesList()
     {
         lobbyPanel.SetActive(false);
@@ -34,6 +56,7 @@ public class LobbyUiManager : MonoBehaviour
     {
         lobbyPanel.SetActive(false);
         lobbiesPanel.SetActive(false);
+        sessionCreationPanel.SetActive(false);
     }
     public void UpdateLobbySessionsList(LobbyManager lobbyManager, List<SessionInfo> lobbySessions, NetworkRunner runner)
     {
@@ -69,11 +92,14 @@ public class LobbyUiManager : MonoBehaviour
 
         //Delete Leftover Sessions (as in any sessions that would be over the new list count)
         SessionHandler curretnHandler;
+        int originalCount = _sessionHandlers.Count;
         for (int i = 0; i < sessionsDiff; i++)
         {
-            curretnHandler = _sessionHandlers[_sessionHandlers.Count - 1 - i];
+            curretnHandler = _sessionHandlers[originalCount - 1 - i];
             _sessionHandlers.Remove(curretnHandler);
             Destroy(curretnHandler.gameObject);
         }
     }
+
+
 }

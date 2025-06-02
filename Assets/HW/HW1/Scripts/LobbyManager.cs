@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
@@ -12,7 +13,8 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     
     [SerializeField] private NetworkRunner networkRunnerPrefab;
 
-    [SerializeField] private LobbyUiManager uiManager;
+    [SerializeField] private LobbyUiManager lobbyUiManager;
+    [SerializeField] private SessionUiManager sessionUiManager;
    
     private List<SessionInfo> _currentLobbySessions; 
     private string _currentLobbyName;
@@ -21,7 +23,6 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     
     private void Awake()
     {
-        
         GenerateNetworkRunner();
     }
     public async void JoinLobby(string lobbyID)
@@ -30,7 +31,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         if (result.Ok) 
         {
             //Happens before the OnSessionListUpdated callback!
-            uiManager.ShowLobbySessionsList();
+            lobbyUiManager.ShowLobbySessionsList();
             Debug.Log($"Joined {CurrentRunner.LobbyInfo.Name} Lobby");
             _currentLobbyName = CurrentRunner.LobbyInfo.Name;
         }
@@ -44,7 +45,8 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
             GameMode = GameMode.Shared,
             SessionName = name,
             PlayerCount = playerCount,
-            OnGameStarted = OnSessionStarted
+            OnGameStarted = OnSessionStarted,
+            CustomLobbyName = _currentLobbyName
         });   
     }
     public void JoinSession(string sessionName)
@@ -53,19 +55,21 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         {
             GameMode = GameMode.Shared,
             SessionName = sessionName,
-            OnGameStarted = OnSessionStarted
+            OnGameStarted = OnSessionStarted,
+            CustomLobbyName = _currentLobbyName
         });
     }
     public async void LeaveLobby()
     {
         await CurrentRunner.Shutdown(); 
-        uiManager.ShowLobbiesList();
+        lobbyUiManager.ShowLobbiesList();
     }
 
     private void OnSessionStarted(NetworkRunner obj)
     {
-        uiManager.HideLobbyPanels();
+        lobbyUiManager.HideLobbyPanels();
         Debug.Log("Joined Session:" + obj.SessionInfo.Name);
+        sessionUiManager.ShowSessionPanel(CurrentRunner);
     }
 
     private void GenerateNetworkRunner()
@@ -80,7 +84,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         _currentLobbySessions = sessionList;
-        uiManager.UpdateLobbySessionsList(this,_currentLobbySessions,CurrentRunner);
+        lobbyUiManager.UpdateLobbySessionsList(this,_currentLobbySessions,CurrentRunner);
         Debug.Log(sessionList.Count);
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
@@ -113,12 +117,16 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+        bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
+        
+        Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
+        
+        sessionUiManager.UpdateSessionUserCount(CurrentRunner);
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+        sessionUiManager.UpdateSessionUserCount(CurrentRunner);
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)

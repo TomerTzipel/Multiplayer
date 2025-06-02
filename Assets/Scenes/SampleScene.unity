@@ -5118,7 +5118,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: 5054853809722124213, guid: ade1be7106652fd44bc4d2970f044b3a, type: 3}
-  uiManager: {fileID: 1294546396}
+  lobbyUiManager: {fileID: 1294546396}
+  sessionUiManager: {fileID: 1294546397}
 --- !u!114 &1294546396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5153,6 +5154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6834590b63525504385ed319bbb17adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lobyManager: {fileID: 1294546395}
   sessionPanel: {fileID: 798216490}
   sessionName: {fileID: 2094315569}
   userCount: {fileID: 765469620}

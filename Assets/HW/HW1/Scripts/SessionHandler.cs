@@ -1,7 +1,6 @@
 using Fusion;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class SessionHandler : MonoBehaviour
 {

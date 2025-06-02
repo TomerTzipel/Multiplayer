@@ -36,9 +36,6 @@ public class LobbyUiManager : MonoBehaviour
 
         //No need to TryParse3 as the InputField is set to integer only
         int playerCount = int.Parse(playersCountField.text);
-        
-        Debug.Log(sessionNameField.text);
-        Debug.Log(playersCountField.text);
         lobbyManager.JoinSession(sessionName, playerCount);
     }
 

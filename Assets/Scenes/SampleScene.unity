@@ -5154,7 +5154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6834590b63525504385ed319bbb17adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lobyManager: {fileID: 1294546395}
+  lobbyManager: {fileID: 0}
   sessionPanel: {fileID: 798216490}
   sessionName: {fileID: 2094315569}
   userCount: {fileID: 765469620}
@@ -6484,7 +6484,7 @@ GameObject:
   - component: {fileID: 1882783664}
   - component: {fileID: 1882783663}
   m_Layer: 5
-  m_Name: Leave Lobby Button
+  m_Name: Leave Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6556,7 +6556,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1294546395}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
-        m_MethodName: LeaveLobby
+        m_MethodName: ReturnToLobbySelection
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

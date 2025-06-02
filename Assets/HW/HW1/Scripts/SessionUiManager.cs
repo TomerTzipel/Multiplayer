@@ -1,25 +1,32 @@
 using Fusion;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using WebSocketSharp;
+
 
 public class SessionUiManager : MonoBehaviour
 {
-    [SerializeField] private LobbyManager lobyManager;
+    [SerializeField] private LobbyManager lobbyManager;
     
     [SerializeField] private GameObject sessionPanel;
     [SerializeField] private TMP_Text sessionName;
     [SerializeField] private TMP_Text userCount;
     
     [SerializeField] private Transform usersScrollViewContent;
-
+    private void Awake()
+    {
+        sessionPanel.SetActive(false);
+    }
     public void ShowSessionPanel(NetworkRunner runner)
     {
         sessionPanel.SetActive(true);
         
         sessionName.text = runner.SessionInfo.Name;
         UpdateSessionUserCount(runner);
+    }
+
+    public void HideSessionPanel()
+    {
+        sessionPanel.SetActive(false);
     }
 
     public void UpdateSessionUserCount(NetworkRunner runner)

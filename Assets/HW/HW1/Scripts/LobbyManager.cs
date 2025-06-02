@@ -2,11 +2,8 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
+
 
 public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 {
@@ -39,7 +36,6 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void JoinSession(string name, int playerCount)
     {
-        Debug.Log("In Lobby:" + CurrentRunner.LobbyInfo.Name);
         CurrentRunner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Shared,
@@ -59,16 +55,16 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
             CustomLobbyName = _currentLobbyName
         });
     }
-    public async void LeaveLobby()
+    public async void ReturnToLobbySelection()
     {
         await CurrentRunner.Shutdown(); 
         lobbyUiManager.ShowLobbiesList();
+        sessionUiManager.HideSessionPanel();
     }
 
     private void OnSessionStarted(NetworkRunner obj)
     {
         lobbyUiManager.HideLobbyPanels();
-        Debug.Log("Joined Session:" + obj.SessionInfo.Name);
         sessionUiManager.ShowSessionPanel(CurrentRunner);
     }
 
@@ -85,7 +81,6 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     {
         _currentLobbySessions = sessionList;
         lobbyUiManager.UpdateLobbySessionsList(this,_currentLobbySessions,CurrentRunner);
-        Debug.Log(sessionList.Count);
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
@@ -104,15 +99,15 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         }
     }
 
-    //Left the throws so I could tell which callbacks I have to handle for the exercise
+
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -131,32 +126,32 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -166,31 +161,31 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        
+        Debug.Log("Connected to server");
     }
 
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 }

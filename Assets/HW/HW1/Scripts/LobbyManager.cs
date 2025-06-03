@@ -15,6 +15,8 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
    
     private List<SessionInfo> _currentLobbySessions; 
     private string _currentLobbyName;
+
+    private List<PlayerRef> _currentSessionPlayers;
     
     public NetworkRunner CurrentRunner { get; private set; }
     
@@ -65,6 +67,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     private void OnSessionStarted(NetworkRunner obj)
     {
         lobbyUiManager.HideLobbyPanels();
+        _currentSessionPlayers = new List<PlayerRef>();
         sessionUiManager.ShowSessionPanel(CurrentRunner);
     }
 
@@ -116,12 +119,18 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         
         Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
         
-        sessionUiManager.UpdateSessionUserCount(CurrentRunner);
+        _currentSessionPlayers.Add(player);
+        sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        sessionUiManager.UpdateSessionUserCount(CurrentRunner);
+        bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
+        
+        Debug.Log($"Player {player.PlayerId} left, localPlayer: {isLocalPlayer}");
+        
+        _currentSessionPlayers.Remove(player);
+        sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)

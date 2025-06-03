@@ -5154,11 +5154,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6834590b63525504385ed319bbb17adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lobbyManager: {fileID: 0}
+  lobbyManager: {fileID: 1294546395}
   sessionPanel: {fileID: 798216490}
   sessionName: {fileID: 2094315569}
   userCount: {fileID: 765469620}
   usersScrollViewContent: {fileID: 61354423}
+  playerSessionDetailsPrefab: {fileID: 4771085504318227431, guid: 3c878cb4791417d4d9a10d443a1d270b, type: 3}
 --- !u!1 &1306913921
 GameObject:
   m_ObjectHideFlags: 0

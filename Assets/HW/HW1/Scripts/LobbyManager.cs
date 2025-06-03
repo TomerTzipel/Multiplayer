@@ -76,7 +76,8 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         CurrentRunner = Instantiate(networkRunnerPrefab);
         CurrentRunner.AddCallbacks(this);
     }
-    //Callbacks:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region CALLBACKS
 
 
     //Is only called when not in session!
@@ -93,6 +94,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         //This is done so when the player tries to join a session that is full within the lobby, he will stay in that lobby
         if(shutdownReason == ShutdownReason.GameIsFull)
         {
+            Debug.Log("Trying to join a full game!");
             JoinLobby(_currentLobbyName);
         }
         else
@@ -101,7 +103,25 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 
         }
     }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
 
+        Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
+
+        _currentSessionPlayers.Add(player);
+        sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
+    }
+
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
+
+        Debug.Log($"Player {player.PlayerId} left, localPlayer: {isLocalPlayer}");
+
+        _currentSessionPlayers.Remove(player);
+        sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
+    }
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
@@ -113,25 +133,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
         
     }
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
-        
-        Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
-        
-        _currentSessionPlayers.Add(player);
-        sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
-    }
-
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-        bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
-        
-        Debug.Log($"Player {player.PlayerId} left, localPlayer: {isLocalPlayer}");
-        
-        _currentSessionPlayers.Remove(player);
-        sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
-    }
+   
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
@@ -175,7 +177,7 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
 
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        Debug.Log("Connected to server");
+
     }
 
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
@@ -197,4 +199,6 @@ public class LobbyManager : MonoBehaviour,INetworkRunnerCallbacks
     {
         
     }
+
+    #endregion
 }

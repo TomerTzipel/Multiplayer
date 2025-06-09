@@ -1,13 +1,16 @@
 using Fusion;
 using TMPro;
 using UnityEngine;
-
-public class PlayerSessionDetails : MonoBehaviour
+namespace HW1
 {
-    [SerializeField] private TMP_Text playerName;
-
-    public void InitializeData(PlayerRef player)
+    public class PlayerSessionDetails : MonoBehaviour
     {
-        playerName.text = player.PlayerId.ToString();
+        [SerializeField] private TMP_Text playerName;
+
+        public void InitializeData(PlayerRef player)
+        {
+            playerName.text = player.PlayerId.ToString();
+        }
     }
 }
+

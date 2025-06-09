@@ -1,18 +1,19 @@
 using Fusion;
 using Fusion.Sockets;
-using System;
+using HW1;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
-namespace HW1
+namespace HW2
 {
-    public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
+    public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
+        public static NetworkManager Instance { get; private set; }
+        private const int MAX_PLAYERS = 10;
 
         [SerializeField] private NetworkRunner networkRunnerPrefab;
-
-        [SerializeField] private LobbyUiManager lobbyUiManager;
-        [SerializeField] private SessionUiManager sessionUiManager;
 
         private List<SessionInfo> _currentLobbySessions;
         private string _currentLobbyName;
@@ -21,9 +22,21 @@ namespace HW1
 
         public NetworkRunner CurrentRunner { get; private set; }
 
+        public event UnityAction OnJoinLobby;
+        public event UnityAction<List<SessionInfo>> OnSessionListUpdate;
+
         private void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
             GenerateNetworkRunner();
+            _currentSessionPlayers = new List<PlayerRef>();
         }
         public async void JoinLobby(string lobbyID)
         {
@@ -31,52 +44,34 @@ namespace HW1
             if (result.Ok)
             {
                 //Happens before the OnSessionListUpdated callback!
-                lobbyUiManager.ShowLobbySessionsList();
-                Debug.Log($"Joined {CurrentRunner.LobbyInfo.Name} Lobby");
+                OnJoinLobby.Invoke();
                 _currentLobbyName = CurrentRunner.LobbyInfo.Name;
             }
         }
 
-        public void JoinSession(string name, int playerCount)
+        public void JoinSession(string name)
         {
             CurrentRunner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Shared,
                 SessionName = name,
-                PlayerCount = playerCount,
+                PlayerCount = MAX_PLAYERS,
                 OnGameStarted = OnSessionStarted,
                 CustomLobbyName = _currentLobbyName
             });
         }
-        public void JoinSession(string sessionName)
-        {
-            CurrentRunner.StartGame(new StartGameArgs()
-            {
-                GameMode = GameMode.Shared,
-                SessionName = sessionName,
-                OnGameStarted = OnSessionStarted,
-                CustomLobbyName = _currentLobbyName
-            });
-        }
-        public async void ReturnToLobbySelection()
-        {
-            await CurrentRunner.Shutdown();
-            lobbyUiManager.ShowLobbiesList();
-            sessionUiManager.HideSessionPanel();
-        }
-
         private void OnSessionStarted(NetworkRunner obj)
         {
-            lobbyUiManager.HideLobbyPanels();
-            _currentSessionPlayers = new List<PlayerRef>();
-            sessionUiManager.ShowSessionPanel(CurrentRunner);
+            Debug.Log("JOINED THE SESSION");
+            //Move to game scene?
+            
         }
-
         private void GenerateNetworkRunner()
         {
             CurrentRunner = Instantiate(networkRunnerPrefab);
             CurrentRunner.AddCallbacks(this);
         }
+
 
         #region CALLBACKS
 
@@ -85,7 +80,7 @@ namespace HW1
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
         {
             _currentLobbySessions = sessionList;
-            lobbyUiManager.UpdateLobbySessionsList(this, _currentLobbySessions, CurrentRunner);
+            OnSessionListUpdate.Invoke(sessionList);
         }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
@@ -111,7 +106,6 @@ namespace HW1
             Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
 
             _currentSessionPlayers.Add(player);
-            sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -121,7 +115,6 @@ namespace HW1
             Debug.Log($"Player {player.PlayerId} left, localPlayer: {isLocalPlayer}");
 
             _currentSessionPlayers.Remove(player);
-            sessionUiManager.UpdateSessionUserCount(_currentSessionPlayers, CurrentRunner);
         }
 
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
@@ -204,5 +197,6 @@ namespace HW1
         #endregion
     }
 }
+
 
 

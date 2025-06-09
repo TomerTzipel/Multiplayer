@@ -1,26 +1,25 @@
 using Fusion;
 using TMPro;
 using UnityEngine;
-namespace HW1
+
+namespace HW2
 {
     public class SessionHandler : MonoBehaviour
     {
         [SerializeField] private TMP_Text sessionName;
         [SerializeField] private TMP_Text playersCount;
 
-        private SessionInfo _sessionInfo;
-        private LobbyManager _lobbyManager;
-        public void InitialzieData(SessionInfo sessionInfo, LobbyManager lobbyManger)
+        private string _sessionName;
+        public void InitialzieData(SessionInfo sessionInfo)
         {
-            _lobbyManager = lobbyManger;
-            _sessionInfo = sessionInfo;
+            _sessionName = sessionInfo.Name;
             sessionName.text = sessionInfo.Name;
             playersCount.text = $"{sessionInfo.PlayerCount}/{sessionInfo.MaxPlayers}";
         }
 
         public void JoinSession()
         {
-            _lobbyManager.JoinSession(_sessionInfo.Name);
+            NetworkManager.Instance.JoinSession(_sessionName);
         }
     }
 

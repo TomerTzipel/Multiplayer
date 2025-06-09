@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using WebSocketSharp;
-namespace HW1
+namespace HW2
 {
     public class LobbyUiManager : MonoBehaviour
     {
-        [SerializeField] private LobbyManager lobbyManager;
-
         [SerializeField] private GameObject lobbiesPanel;
         [SerializeField] private GameObject lobbyPanel;
         [SerializeField] private GameObject sessionCreationPanel;
@@ -20,45 +18,50 @@ namespace HW1
         [SerializeField] private Transform sessoionsScrollViewContent;
 
         [SerializeField] private TMP_InputField sessionNameField;
-        [SerializeField] private TMP_InputField playersCountField;
 
         private List<SessionHandler> _sessionHandlers = new List<SessionHandler>(4);
+        private NetworkManager _networkManager;
 
         void Awake()
         {
             ShowLobbiesList();
+            _networkManager = NetworkManager.Instance;
+        }
+        private void OnEnable()
+        {
+            _networkManager.OnJoinLobby += HandleJoinLobby;
+            _networkManager.OnSessionListUpdate += UpdateLobbySessionsList;
         }
 
+        private void OnDisable()
+        {
+            _networkManager.OnJoinLobby -= HandleJoinLobby;
+            _networkManager.OnSessionListUpdate -= UpdateLobbySessionsList;
+        }
+
+        #region USED BY BUTTONS
         public void CreateNewSession()
         {
-            if (sessionNameField.text.IsNullOrEmpty() || playersCountField.text.IsNullOrEmpty()) return;
+            if (sessionNameField.text.IsNullOrEmpty()) return;
 
             string sessionName = sessionNameField.text;
 
-            //No need to TryParse3 as the InputField is set to integer only
-            int playerCount = int.Parse(playersCountField.text);
-            lobbyManager.JoinSession(sessionName, playerCount);
+            NetworkManager.Instance.JoinSession(sessionName);
         }
-
         public void ShowLobbiesList()
         {
             lobbyPanel.SetActive(false);
             lobbiesPanel.SetActive(true);
         }
-        public void ShowLobbySessionsList()
+        public void JoinLobbyClicked(string name)
         {
-            lobbyPanel.SetActive(true);
-            lobbiesPanel.SetActive(false);
+            _networkManager.JoinLobby(name);
         }
-        public void HideLobbyPanels()
+        #endregion
+
+        public void UpdateLobbySessionsList(List<SessionInfo> lobbySessions)
         {
-            lobbyPanel.SetActive(false);
-            lobbiesPanel.SetActive(false);
-            sessionCreationPanel.SetActive(false);
-        }
-        public void UpdateLobbySessionsList(LobbyManager lobbyManager, List<SessionInfo> lobbySessions, NetworkRunner runner)
-        {
-            lobbyTitle.text = runner.LobbyInfo.Name + " Lobby";
+           
             lobbySessionsCount.text = lobbySessions.Count.ToString();
 
             RemovePriorSessionsList(lobbySessions);
@@ -79,11 +82,17 @@ namespace HW1
                     {
                         curretnHandler = _sessionHandlers[i];
                     }
-                    curretnHandler.InitialzieData(lobbySessions[i], lobbyManager);
+                    curretnHandler.InitialzieData(lobbySessions[i]);
                 }
             }
         }
-
+       
+        private void HandleJoinLobby()
+        {
+            lobbyTitle.text = _networkManager.CurrentRunner.LobbyInfo.Name + " Lobby";
+            lobbyPanel.SetActive(true);
+            lobbiesPanel.SetActive(false);
+        }
         private void RemovePriorSessionsList(List<SessionInfo> newLobbySessions)
         {
             int sessionsDiff = _sessionHandlers.Count - newLobbySessions.Count;

@@ -15,7 +15,7 @@ namespace HW2
         private const string GAME_SCENE_NAME = "GameScene";
 
         [SerializeField] private NetworkRunner networkRunnerPrefab;
-
+        [SerializeField] private CharacterSelectionManager characterSelectionManagerPrefab;
         private List<SessionInfo> _currentLobbySessions;
         private string _currentLobbyName;
 
@@ -63,9 +63,10 @@ namespace HW2
         }
         private async void OnSessionStarted(NetworkRunner obj)
         {
-            Debug.Log("JOINED THE SESSION");
-            if (CurrentNetworkRunner.IsSceneAuthority)  await CurrentNetworkRunner.LoadScene(GAME_SCENE_NAME);
+            if (!CurrentNetworkRunner.IsSceneAuthority) return;
+            await CurrentNetworkRunner.LoadScene(GAME_SCENE_NAME);
 
+            CurrentNetworkRunner.Spawn(characterSelectionManagerPrefab);
 
         }
         private void GenerateNetworkRunner()
@@ -105,16 +106,12 @@ namespace HW2
         {
             bool isLocalPlayer = CurrentNetworkRunner.LocalPlayer == player;
 
-            Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
-
             _currentSessionPlayers.Add(player);
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
             bool isLocalPlayer = CurrentNetworkRunner.LocalPlayer == player;
-
-            Debug.Log($"Player {player.PlayerId} left, localPlayer: {isLocalPlayer}");
 
             _currentSessionPlayers.Remove(player);
         }

@@ -89,7 +89,7 @@ namespace HW2
        
         private void HandleJoinLobby()
         {
-            lobbyTitle.text = _networkManager.CurrentRunner.LobbyInfo.Name + " Lobby";
+            lobbyTitle.text = _networkManager.CurrentNetworkRunner.LobbyInfo.Name + " Lobby";
             lobbyPanel.SetActive(true);
             lobbiesPanel.SetActive(false);
         }

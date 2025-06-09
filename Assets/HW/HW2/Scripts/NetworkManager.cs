@@ -12,6 +12,7 @@ namespace HW2
     {
         public static NetworkManager Instance { get; private set; }
         private const int MAX_PLAYERS = 10;
+        private const string GAME_SCENE_NAME = "GameScene";
 
         [SerializeField] private NetworkRunner networkRunnerPrefab;
 
@@ -20,7 +21,7 @@ namespace HW2
 
         private List<PlayerRef> _currentSessionPlayers;
 
-        public NetworkRunner CurrentRunner { get; private set; }
+        public NetworkRunner CurrentNetworkRunner { get; private set; }
 
         public event UnityAction OnJoinLobby;
         public event UnityAction<List<SessionInfo>> OnSessionListUpdate;
@@ -40,18 +41,18 @@ namespace HW2
         }
         public async void JoinLobby(string lobbyID)
         {
-            StartGameResult result = await CurrentRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);
+            StartGameResult result = await CurrentNetworkRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);
             if (result.Ok)
             {
                 //Happens before the OnSessionListUpdated callback!
                 OnJoinLobby.Invoke();
-                _currentLobbyName = CurrentRunner.LobbyInfo.Name;
+                _currentLobbyName = CurrentNetworkRunner.LobbyInfo.Name;
             }
         }
 
         public void JoinSession(string name)
         {
-            CurrentRunner.StartGame(new StartGameArgs()
+            CurrentNetworkRunner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Shared,
                 SessionName = name,
@@ -60,16 +61,17 @@ namespace HW2
                 CustomLobbyName = _currentLobbyName
             });
         }
-        private void OnSessionStarted(NetworkRunner obj)
+        private async void OnSessionStarted(NetworkRunner obj)
         {
             Debug.Log("JOINED THE SESSION");
-            //Move to game scene?
-            
+            if (CurrentNetworkRunner.IsSceneAuthority)  await CurrentNetworkRunner.LoadScene(GAME_SCENE_NAME);
+
+
         }
         private void GenerateNetworkRunner()
         {
-            CurrentRunner = Instantiate(networkRunnerPrefab);
-            CurrentRunner.AddCallbacks(this);
+            CurrentNetworkRunner = Instantiate(networkRunnerPrefab);
+            CurrentNetworkRunner.AddCallbacks(this);
         }
 
 
@@ -84,7 +86,7 @@ namespace HW2
         }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
-            Destroy(CurrentRunner.gameObject);
+            Destroy(CurrentNetworkRunner.gameObject);
             GenerateNetworkRunner();
 
             //This is done so when the player tries to join a session that is full within the lobby, he will stay in that lobby
@@ -95,13 +97,13 @@ namespace HW2
             }
             else
             {
-                _currentLobbyName = CurrentRunner.LobbyInfo.Name;
+                _currentLobbyName = CurrentNetworkRunner.LobbyInfo.Name;
 
             }
         }
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
+            bool isLocalPlayer = CurrentNetworkRunner.LocalPlayer == player;
 
             Debug.Log($"Player {player.PlayerId} joined, localPlayer: {isLocalPlayer}");
 
@@ -110,13 +112,21 @@ namespace HW2
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            bool isLocalPlayer = CurrentRunner.LocalPlayer == player;
+            bool isLocalPlayer = CurrentNetworkRunner.LocalPlayer == player;
 
             Debug.Log($"Player {player.PlayerId} left, localPlayer: {isLocalPlayer}");
 
             _currentSessionPlayers.Remove(player);
         }
+        public void OnSceneLoadDone(NetworkRunner runner)
+        {
 
+        }
+
+        public void OnSceneLoadStart(NetworkRunner runner)
+        {
+
+        }
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
         {
 
@@ -183,17 +193,6 @@ namespace HW2
         {
 
         }
-
-        public void OnSceneLoadDone(NetworkRunner runner)
-        {
-
-        }
-
-        public void OnSceneLoadStart(NetworkRunner runner)
-        {
-
-        }
-
         #endregion
     }
 }

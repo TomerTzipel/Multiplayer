@@ -5,10 +5,10 @@ namespace HW2
 {
     public class CharacterSelectionManager : NetworkBehaviour
     {
-        [SerializeField] private CharacterController[] characterPrefabs;
+        [SerializeField] private PlayableCharacterController[] characterPrefabs;
         [SerializeField] private Transform[] characterSpawnPositions;
         [SerializeField] private CharacterButtonHandler[] buttonHandlers;
-
+        [SerializeField] private GameObject selectionPanel;
         private bool[] charactersPickStatus;
 
         public override void Spawned()
@@ -23,6 +23,7 @@ namespace HW2
             }
 
             charactersPickStatus = new bool[characterPrefabs.Length];
+            selectionPanel.SetActive(true);
         }
 
         [Rpc (RpcSources.All,RpcTargets.StateAuthority)]
@@ -53,10 +54,11 @@ namespace HW2
             }
 
             //Spawn the correct prefab at the correct position
-            CharacterController characterPrefab = characterPrefabs[characterIndex];
+            PlayableCharacterController characterPrefab = characterPrefabs[characterIndex];
             Vector3 position = characterSpawnPositions[characterIndex].position;
             NetworkManager.Instance.NetworkRunner.Spawn(characterPrefab, position);
             Debug.Log($"Spawned character {characterIndex} at {position}");
+            selectionPanel.SetActive(false);
         }
     }
 }

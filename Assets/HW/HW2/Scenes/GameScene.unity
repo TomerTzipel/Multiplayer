@@ -1418,7 +1418,15 @@ PrefabInstance:
       value: CharacterSelectionManager
       objectReference: {fileID: 0}
     - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: selectionPanel
+      value: 
+      objectReference: {fileID: 1937755164}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
       propertyPath: buttonHandlers.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: characterPrefabs.Array.size
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
@@ -1461,6 +1469,46 @@ PrefabInstance:
       propertyPath: 'buttonHandlers.Array.data[9]'
       value: 
       objectReference: {fileID: 1326903226}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7768457906896908998, guid: b98b4a9c20f341249ac5776e3311c707, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 3622270357394663918, guid: bb9d256fa753783498a60a5555a95a86, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 3960023487057418133, guid: e1c103f47ae0fcc40a0d87e1527bb3f7, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1757518670823746557, guid: 486e5e78d0b20194ab20e42e28192217, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[4]'
+      value: 
+      objectReference: {fileID: 9185109269300190736, guid: 029a0ee34732fdf4a9b6caf3f9d5642a, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[5]'
+      value: 
+      objectReference: {fileID: 9178518048749758579, guid: 3a3c1094740d4724dbdf3734e961e098, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[6]'
+      value: 
+      objectReference: {fileID: 7388025434015773142, guid: a9981c6fb97d60443b344fe9cc237069, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[7]'
+      value: 
+      objectReference: {fileID: 2472237687289644965, guid: ae90f987c8ae62941b65916a5debe10b, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[8]'
+      value: 
+      objectReference: {fileID: 6239429462785493151, guid: f4138a1c8ba047d41ac503893e3364df, type: 3}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: 'characterPrefabs.Array.data[9]'
+      value: 
+      objectReference: {fileID: 879748936214506205, guid: 67a59263e0128f34f9e4cc8b2325c4b1, type: 3}
     - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
       propertyPath: characterSpawnPositions.Array.size
       value: 10
@@ -1834,7 +1882,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1176442849
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,13 +15,11 @@ namespace HW2
         private const string GAME_SCENE_NAME = "GameScene";
 
         [SerializeField] private NetworkRunner networkRunnerPrefab;
-        [SerializeField] private CharacterSelectionManager characterSelectionManagerPrefab;
-        private List<SessionInfo> _currentLobbySessions;
-        private string _currentLobbyName;
+        private string _lobbyName;
 
-        private List<PlayerRef> _currentSessionPlayers;
+        private List<PlayerRef> _sessionPlayers;
 
-        public NetworkRunner CurrentNetworkRunner { get; private set; }
+        public NetworkRunner NetworkRunner { get; private set; }
 
         public event UnityAction OnJoinLobby;
         public event UnityAction<List<SessionInfo>> OnSessionListUpdate;
@@ -37,42 +35,39 @@ namespace HW2
             Instance = this;
             DontDestroyOnLoad(gameObject);
             GenerateNetworkRunner();
-            _currentSessionPlayers = new List<PlayerRef>();
+            _sessionPlayers = new List<PlayerRef>();
         }
         public async void JoinLobby(string lobbyID)
         {
-            StartGameResult result = await CurrentNetworkRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);
+            StartGameResult result = await NetworkRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);
             if (result.Ok)
             {
                 //Happens before the OnSessionListUpdated callback!
                 OnJoinLobby.Invoke();
-                _currentLobbyName = CurrentNetworkRunner.LobbyInfo.Name;
+                _lobbyName = NetworkRunner.LobbyInfo.Name;
             }
         }
 
         public void JoinSession(string name)
         {
-            CurrentNetworkRunner.StartGame(new StartGameArgs()
+            NetworkRunner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Shared,
                 SessionName = name,
                 PlayerCount = MAX_PLAYERS,
                 OnGameStarted = OnSessionStarted,
-                CustomLobbyName = _currentLobbyName
+                CustomLobbyName = _lobbyName
             });
         }
-        private async void OnSessionStarted(NetworkRunner obj)
+        private void OnSessionStarted(NetworkRunner obj)
         {
-            if (!CurrentNetworkRunner.IsSceneAuthority) return;
-            await CurrentNetworkRunner.LoadScene(GAME_SCENE_NAME);
-
-            CurrentNetworkRunner.Spawn(characterSelectionManagerPrefab);
-
+            if (!NetworkRunner.IsSceneAuthority) return;
+            NetworkRunner.LoadScene(GAME_SCENE_NAME);
         }
         private void GenerateNetworkRunner()
         {
-            CurrentNetworkRunner = Instantiate(networkRunnerPrefab);
-            CurrentNetworkRunner.AddCallbacks(this);
+            NetworkRunner = Instantiate(networkRunnerPrefab);
+            NetworkRunner.AddCallbacks(this);
         }
 
 
@@ -82,38 +77,37 @@ namespace HW2
         //Is only called when not in session!
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
         {
-            _currentLobbySessions = sessionList;
             OnSessionListUpdate.Invoke(sessionList);
         }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
-            Destroy(CurrentNetworkRunner.gameObject);
+            Destroy(NetworkRunner.gameObject);
             GenerateNetworkRunner();
 
             //This is done so when the player tries to join a session that is full within the lobby, he will stay in that lobby
             if (shutdownReason == ShutdownReason.GameIsFull)
             {
                 Debug.Log("Trying to join a full game!");
-                JoinLobby(_currentLobbyName);
+                JoinLobby(_lobbyName);
             }
             else
             {
-                _currentLobbyName = CurrentNetworkRunner.LobbyInfo.Name;
+                _lobbyName = NetworkRunner.LobbyInfo.Name;
 
             }
         }
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            bool isLocalPlayer = CurrentNetworkRunner.LocalPlayer == player;
+            bool isLocalPlayer = NetworkRunner.LocalPlayer == player;
 
-            _currentSessionPlayers.Add(player);
+            _sessionPlayers.Add(player);
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            bool isLocalPlayer = CurrentNetworkRunner.LocalPlayer == player;
+            bool isLocalPlayer = NetworkRunner.LocalPlayer == player;
 
-            _currentSessionPlayers.Remove(player);
+            _sessionPlayers.Remove(player);
         }
         public void OnSceneLoadDone(NetworkRunner runner)
         {

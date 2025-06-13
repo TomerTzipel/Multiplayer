@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Bombardilo
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Bombardilo
+  <Splash>k__BackingField: {fileID: 21300000, guid: 820f8d537122f4747b100888885d6038, type: 3}

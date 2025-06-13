@@ -189,6 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 5065943177155230543}
   nameText: {fileID: 4402516017484649506}
+  splashImage: {fileID: 1284509134601449105}
 --- !u!1 &6213347932380949104
 GameObject:
   m_ObjectHideFlags: 0

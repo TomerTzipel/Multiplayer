@@ -19,7 +19,7 @@ namespace HW2
 
             for (int i = 0; i < characterPrefabs.Length; i++)
             {
-                buttonHandlers[i].Initialize(this,characterPrefabs[i].Settings.Name,i);
+                buttonHandlers[i].Initialize(this,i, characterPrefabs[i].Settings);
             }
 
             charactersPickStatus = new bool[characterPrefabs.Length];

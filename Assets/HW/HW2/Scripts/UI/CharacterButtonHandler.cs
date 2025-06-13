@@ -7,14 +7,21 @@ public class CharacterButtonHandler : MonoBehaviour
 {
     [SerializeField] private Button button;
     [SerializeField] private TMP_Text nameText;
+    [SerializeField] private Image splashImage;
 
     private CharacterSelectionManager _manager;
     private int _characterIndex;
-    public void Initialize(CharacterSelectionManager manager, string name, int index)
+    public void Initialize(CharacterSelectionManager manager, int index, CharacterSettings settings)
     {
+        Debug.Log(settings == null);
         _manager = manager;
         _characterIndex = index;
-        nameText.text = name;
+        nameText.text = settings.Name;
+
+        if(settings.Splash != null)
+        {
+            splashImage.sprite = settings.Splash;
+        }       
     }
 
     public void OnButtonClicked()

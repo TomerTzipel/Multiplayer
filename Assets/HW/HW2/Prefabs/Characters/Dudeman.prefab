@@ -12,6 +12,14 @@ PrefabInstance:
       propertyPath: SortKey
       value: 3636933774
       objectReference: {fileID: 0}
+    - target: {fileID: 4063932949162124412, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4063932949162124412, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
+      propertyPath: 'NetworkedBehaviours.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1981706881159243665}
     - target: {fileID: 5380903091979452777, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
       propertyPath: m_Name
       value: Dudeman
@@ -65,3 +73,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
+--- !u!114 &1981706881159243665 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8193270854145731456, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
+  m_PrefabInstance: {fileID: 7652802716373830673}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

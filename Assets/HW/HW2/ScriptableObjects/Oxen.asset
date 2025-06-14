@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Oxen
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Oxen
+  <Splash>k__BackingField: {fileID: 21300000, guid: 29feb88cafb0ac64c974f3988514b3ed, type: 3}

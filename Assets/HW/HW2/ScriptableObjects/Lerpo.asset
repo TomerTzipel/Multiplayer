@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Lerpo
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Lerpo
+  <Splash>k__BackingField: {fileID: 21300000, guid: bc19f5ba5f1b57048800d50512221663, type: 3}

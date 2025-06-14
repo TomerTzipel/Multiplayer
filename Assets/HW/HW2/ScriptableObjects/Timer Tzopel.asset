@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Timer Tzopel
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Timer Tzopel
+  <Splash>k__BackingField: {fileID: 21300000, guid: d19e33a08f7e1484fb94b0421d61dd50, type: 3}

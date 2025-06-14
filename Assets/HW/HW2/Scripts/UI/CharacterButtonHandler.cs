@@ -26,15 +26,12 @@ public class CharacterButtonHandler : MonoBehaviour
 
     public void OnButtonClicked()
     {
+        _manager.EnableAllButtons(false);
         _manager.RequestCharacter_RPC(_characterIndex);
     }
 
-    public void EnableButton()
+    public void EnableButton(bool value)
     {
-        button.interactable = true;
-    }
-    public void DisableButton()
-    {
-        button.interactable = false;
+        button.interactable = value;
     }
 }

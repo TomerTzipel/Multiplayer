@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Dudeman
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Dudeman
+  <Splash>k__BackingField: {fileID: 21300000, guid: fef496d931973b542bfa0489256de8fc, type: 3}

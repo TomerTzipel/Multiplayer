@@ -26,8 +26,15 @@ namespace HW2
             selectionPanel.SetActive(true);
         }
 
-        [Rpc (RpcSources.All,RpcTargets.StateAuthority)]
+        public void EnableAllButtons(bool value)
+        {
+            foreach (var button in buttonHandlers)
+            {
+                button.EnableButton(value);
+            }
+        }
 
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RequestCharacter_RPC(int characterIndex,RpcInfo info = default)
         {
             Debug.Log($"Character request from {info.Source.PlayerId}");
@@ -48,7 +55,8 @@ namespace HW2
         {
             if (!isAvailable)
             {
-                //Inform the player the character isn't available
+                //TODO: Inform the player the character isn't available (in the chat)
+                EnableAllButtons(true);
                 Debug.Log("ALREADY TAKEN BE FASTER");
                 return;
             }
@@ -60,6 +68,8 @@ namespace HW2
             Debug.Log($"Spawned character {characterIndex} at {position}");
             selectionPanel.SetActive(false);
         }
+
+       
     }
 }
 

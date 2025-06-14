@@ -81,7 +81,6 @@ namespace HW2
         }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
-            Debug.Log("SHUTDOWN");
             Destroy(NetworkRunner.gameObject);
             GenerateNetworkRunner();
 

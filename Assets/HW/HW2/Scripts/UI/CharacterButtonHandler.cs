@@ -15,7 +15,6 @@ namespace HW2
         private int _characterIndex;
         public void Initialize(CharacterSelectionManager manager, int index, CharacterSettings settings)
         {
-            Debug.Log(settings == null);
             _manager = manager;
             _characterIndex = index;
             nameText.text = settings.Name;

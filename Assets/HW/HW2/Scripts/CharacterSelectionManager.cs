@@ -18,8 +18,6 @@ namespace HW2
 
         public override void Spawned()
         { 
-            Debug.Log("Spawned");
-            
             if (characterPrefabs.Length != characterSpawnPositions.Length || characterPrefabs.Length != buttonHandlers.Length) Debug.LogError("Characters Arrays Size Mismatch!");
 
             for (int i = 0; i < characterPrefabs.Length; i++)
@@ -45,7 +43,6 @@ namespace HW2
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RequestCharacter_RPC(int characterIndex,RpcInfo info = default)
         {
-            Debug.Log($"Character request from {info.Source.PlayerId}");
             bool isAvailable = false;
             if (!charactersPickStatus[characterIndex])
             {
@@ -72,7 +69,6 @@ namespace HW2
             PlayableCharacterController characterPrefab = characterPrefabs[characterIndex];
             Vector3 position = characterSpawnPositions[characterIndex].position;
             NetworkManager.Instance.NetworkRunner.Spawn(characterPrefab, position);
-            Debug.Log($"Spawned character {characterIndex} at {position}");
 
             selectionPanel.SetActive(false);
             if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) finishGameButton.SetActive(true);
@@ -81,14 +77,12 @@ namespace HW2
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         public void EndGame_RPC()
         {
-            Debug.Log("Game Over");
             gameOverPanel.SetActive(true);
         }
 
         public async void LeaveGame()
         {
             await NetworkManager.Instance.NetworkRunner.Shutdown();
-            Debug.Log("Returning to Lobby");
             SceneManager.LoadScene(LOBBY_SCENE_NAME);
         }
 

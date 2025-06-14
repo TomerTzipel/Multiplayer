@@ -192,6 +192,10 @@ PrefabInstance:
       propertyPath: 'NetworkedBehaviours.Array.data[1]'
       value: 
       objectReference: {fileID: 1981706881159243665}
+    - target: {fileID: 4131821914088485888, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3.7
+      objectReference: {fileID: 0}
     - target: {fileID: 5380903091979452777, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
       propertyPath: m_Name
       value: Dudeman

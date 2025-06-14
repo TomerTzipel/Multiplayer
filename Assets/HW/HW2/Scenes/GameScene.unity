@@ -1418,6 +1418,10 @@ PrefabInstance:
       value: CharacterSelectionManager
       objectReference: {fileID: 0}
     - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 455188927}
+    - target: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
       propertyPath: gameOverPanel
       value: 
       objectReference: {fileID: 1918440366}
@@ -2041,7 +2045,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1117763230
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3013,7 +3017,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1937755165
 RectTransform:
   m_ObjectHideFlags: 0

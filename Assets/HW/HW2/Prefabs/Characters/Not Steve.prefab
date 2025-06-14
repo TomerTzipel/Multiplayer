@@ -974,6 +974,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 3774254764
       objectReference: {fileID: 0}
+    - target: {fileID: 4131821914088485888, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3.48
+      objectReference: {fileID: 0}
     - target: {fileID: 5380903091979452777, guid: 2d38804738fe82b42b43b8e033cda942, type: 3}
       propertyPath: m_Name
       value: Not Steve

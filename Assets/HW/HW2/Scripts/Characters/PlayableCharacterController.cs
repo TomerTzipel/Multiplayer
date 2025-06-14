@@ -1,7 +1,11 @@
 using Fusion;
 using UnityEngine;
 
-public class PlayableCharacterController : NetworkBehaviour
+namespace HW2
 {
-    [field:SerializeField] public CharacterSettings Settings {  get; private set; }
+    public class PlayableCharacterController : NetworkBehaviour
+    {
+        [field: SerializeField] public CharacterSettings Settings { get; private set; }
+    }
 }
+

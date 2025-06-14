@@ -1,6 +1,5 @@
 using Fusion;
 using Fusion.Sockets;
-using HW1;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -67,6 +66,7 @@ namespace HW2
         private void GenerateNetworkRunner()
         {
             NetworkRunner = Instantiate(networkRunnerPrefab);
+            DontDestroyOnLoad(NetworkRunner);
             NetworkRunner.AddCallbacks(this);
         }
 
@@ -81,6 +81,7 @@ namespace HW2
         }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
+            Debug.Log("SHUTDOWN");
             Destroy(NetworkRunner.gameObject);
             GenerateNetworkRunner();
 

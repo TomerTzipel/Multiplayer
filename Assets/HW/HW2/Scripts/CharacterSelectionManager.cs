@@ -1,20 +1,25 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace HW2
 {
     public class CharacterSelectionManager : NetworkBehaviour
     {
+        private const string LOBBY_SCENE_NAME = "LobbyScene2";
+
         [SerializeField] private PlayableCharacterController[] characterPrefabs;
         [SerializeField] private Transform[] characterSpawnPositions;
         [SerializeField] private CharacterButtonHandler[] buttonHandlers;
         [SerializeField] private GameObject selectionPanel;
+        [SerializeField] private GameObject gameOverPanel;
+        [SerializeField] private GameObject finishGameButton;
         private bool[] charactersPickStatus;
 
         public override void Spawned()
         { 
             Debug.Log("Spawned");
-
+            
             if (characterPrefabs.Length != characterSpawnPositions.Length || characterPrefabs.Length != buttonHandlers.Length) Debug.LogError("Characters Arrays Size Mismatch!");
 
             for (int i = 0; i < characterPrefabs.Length; i++)
@@ -23,7 +28,10 @@ namespace HW2
             }
 
             charactersPickStatus = new bool[characterPrefabs.Length];
+
             selectionPanel.SetActive(true);
+            finishGameButton.SetActive(false);
+            gameOverPanel.SetActive(false);
         }
 
         public void EnableAllButtons(bool value)
@@ -50,7 +58,6 @@ namespace HW2
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-
         public void CharacterRequestResult_RPC([RpcTarget] PlayerRef targetPlayer,bool isAvailable,int characterIndex)
         {
             if (!isAvailable)
@@ -66,10 +73,25 @@ namespace HW2
             Vector3 position = characterSpawnPositions[characterIndex].position;
             NetworkManager.Instance.NetworkRunner.Spawn(characterPrefab, position);
             Debug.Log($"Spawned character {characterIndex} at {position}");
+
             selectionPanel.SetActive(false);
+            if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) finishGameButton.SetActive(true);
         }
 
-       
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void EndGame_RPC()
+        {
+            Debug.Log("Game Over");
+            gameOverPanel.SetActive(true);
+        }
+
+        public async void LeaveGame()
+        {
+            await NetworkManager.Instance.NetworkRunner.Shutdown();
+            Debug.Log("Returning to Lobby");
+            SceneManager.LoadScene(LOBBY_SCENE_NAME);
+        }
+
     }
 }
 

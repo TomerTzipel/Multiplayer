@@ -1,9 +1,14 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CharacterSettings", menuName = "Scriptable Objects/Character/CharacterSettings")]
-public class CharacterSettings : ScriptableObject
+namespace HW2
 {
-    [field: SerializeField] public string Name { get; private set; }
-    [field: SerializeField] public Sprite Splash { get; private set; }
-    //More in the future
+    [CreateAssetMenu(fileName = "CharacterSettings", menuName = "Scriptable Objects/Character/CharacterSettings")]
+    public class CharacterSettings : ScriptableObject
+    {
+        [field: SerializeField] public string Name { get; private set; }
+        [field: SerializeField] public Sprite Splash { get; private set; }
+        //More in the future
+    }
 }
+
+

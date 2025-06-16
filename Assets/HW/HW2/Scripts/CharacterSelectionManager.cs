@@ -81,7 +81,7 @@ namespace HW2
             //Spawn the correct prefab at the correct position
             PlayableCharacterController characterPrefab = characterPrefabs[characterIndex];
             Vector3 position = characterSpawnPositions[characterIndex].position;
-            var character = NetworkManager.Instance.NetworkRunner.Spawn(characterPrefab, position,Quaternion.identity, targetPlayer, InitializeCharacter);
+            var character = NetworkManager.Instance.NetworkRunner.Spawn(characterPrefab, position,onBeforeSpawned: InitializeCharacter);
 
             selectionPanel.SetActive(false);
             if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) finishGameButton.SetActive(true);

@@ -24,12 +24,6 @@ namespace HW2
             playerNameText.text = PlayerName;
         }
 
-        [Rpc]
-        public void SetPlayerName_RPC(string playerName)
-        {
-            playerNameText.text = playerName;
-            
-        }
     }
 }
 

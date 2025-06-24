@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace HW2
 {
@@ -16,13 +17,14 @@ namespace HW2
         [SerializeField] private GameObject selectionPanel;
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private GameObject finishGameButton;
-        [SerializeField] private GameObject namePanel;
-        [SerializeField] private TMP_InputField nameInputField;
-        [SerializeField] private ChatManager chatManager;
+        [SerializeField] private ChatNetworkManager chatNetworkManager;
+        [SerializeField] private ChatUIManager chatUIManager;
         [SerializeField] private GameObject chatPanel;
+        [SerializeField] private UserDataManager userDataManager;
+        [SerializeField] private GameObject namePanel;
 
         private bool[] charactersPickStatus;
-        private string playerName;
+        private UserData userData;
 
         public override void Spawned()
         { 
@@ -42,6 +44,11 @@ namespace HW2
             chatPanel.SetActive(false);
         }
 
+        public void InitializeUserData(UserData userData)
+        {
+            this.userData = userData;
+        }
+
         public void EnableAllButtons(bool value)
         {
             foreach (var button in buttonHandlers)
@@ -50,9 +57,27 @@ namespace HW2
             }
         }
 
-        public void ConfirmPlayerName()
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void ConfirmPlayerData_RPC(string playerName, Color playerColor, RpcInfo info = default)
         {
-            playerName = nameInputField.text;
+            bool result = userDataManager.TryAddUserData(info.Source, new UserData(playerName, playerColor));
+            foreach (var player in userDataManager.UserDataDict)
+            {
+                Debug.Log(userDataManager.UserDataDict[player.Key].nickname);
+            }
+               
+            ConfirmPlayerSelectionResult_RPC(info.Source, result);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void ConfirmPlayerSelectionResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
+        {
+            if (!result)
+            {
+                chatUIManager.ShowMessage("Game: Nickname already taken!");
+                return;
+            }
+            
             namePanel.SetActive(false);
             selectionPanel.SetActive(true);
         }
@@ -88,7 +113,7 @@ namespace HW2
         {
             if (!isAvailable)
             {
-                chatManager.ShowMessage("Game: Character already taken");
+                chatUIManager.ShowMessage("Game: Character already taken");
                 EnableAllButtons(true);
                 Debug.Log("ALREADY TAKEN BE FASTER");
                 return;
@@ -106,7 +131,7 @@ namespace HW2
         private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
         {
             //Sadly there is no other way but GetComponent :( (That I found atleast)
-            obj.GetComponent<PlayableCharacterController>().Initialize(playerName);
+            obj.GetComponent<PlayableCharacterController>().Initialize(userData.nickname);
         }
 
     }

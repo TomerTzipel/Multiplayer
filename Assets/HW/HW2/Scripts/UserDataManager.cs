@@ -7,24 +7,34 @@ namespace HW2
 {
     public class UserDataManager : MonoBehaviour
     {
-        private Dictionary<PlayerRef, UserData> userDataDict;
-        private UserData localUserData;
+        public Dictionary<PlayerRef, UserData> UserDataDict { get; private set; }
+        
+        private List<string> playerNames;
+        private List<Color> playerColors;
 
         public void Awake()
         {
-            userDataDict = new Dictionary<PlayerRef, UserData>();
+            UserDataDict = new Dictionary<PlayerRef, UserData>();
+            playerNames = new List<string>();
         }
 
-        void addUserData(PlayerRef player, UserData userData)
+        public bool TryAddUserData(PlayerRef player, UserData userData)
         {
-            userDataDict.Add(player, userData);
+            if (!playerNames.Contains(userData.nickname) && 
+                !playerColors.Contains(userData.color) && 
+                UserDataDict.TryAdd(player, userData))
+            {
+                playerNames.Add(userData.nickname);
+                playerColors.Add(userData.color);
+                return true;
+            }
+            
+            return false;
         }
 
-        void removeUserData(PlayerRef player)
+        public void removeUserData(PlayerRef player)
         {
-            userDataDict.Remove(player);
+            if (UserDataDict.ContainsKey(player)) {UserDataDict.Remove(player);}
         }
-        
-        
     }
 }

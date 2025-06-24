@@ -1,5 +1,7 @@
 using Fusion;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace HW2
@@ -14,8 +16,13 @@ namespace HW2
         [SerializeField] private GameObject selectionPanel;
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private GameObject finishGameButton;
+        [SerializeField] private GameObject namePanel;
+        [SerializeField] private TMP_InputField nameInputField;
+        [SerializeField] private ChatManager chatManager;
+        [SerializeField] private GameObject chatPanel;
 
         private bool[] charactersPickStatus;
+        private string playerName;
 
         public override void Spawned()
         { 
@@ -28,9 +35,11 @@ namespace HW2
 
             charactersPickStatus = new bool[characterPrefabs.Length];
 
-            selectionPanel.SetActive(true);
+            namePanel.SetActive(true);
+            selectionPanel.SetActive(false);
             finishGameButton.SetActive(false);
             gameOverPanel.SetActive(false);
+            chatPanel.SetActive(false);
         }
 
         public void EnableAllButtons(bool value)
@@ -39,6 +48,13 @@ namespace HW2
             {
                 button.EnableButton(value);
             }
+        }
+
+        public void ConfirmPlayerName()
+        {
+            playerName = nameInputField.text;
+            namePanel.SetActive(false);
+            selectionPanel.SetActive(true);
         }
 
         public async void LeaveGame()
@@ -72,7 +88,7 @@ namespace HW2
         {
             if (!isAvailable)
             {
-                //TODO: Inform the player the character isn't available (in the chat) ORI
+                chatManager.ShowMessage("Game: Character already taken");
                 EnableAllButtons(true);
                 Debug.Log("ALREADY TAKEN BE FASTER");
                 return;
@@ -90,7 +106,7 @@ namespace HW2
         private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
         {
             //Sadly there is no other way but GetComponent :( (That I found atleast)
-            obj.GetComponent<PlayableCharacterController>().Initialize("PLAYER NAME");//ORI
+            obj.GetComponent<PlayableCharacterController>().Initialize(playerName);
         }
 
     }

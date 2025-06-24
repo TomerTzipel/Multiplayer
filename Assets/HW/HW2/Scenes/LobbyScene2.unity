@@ -3339,7 +3339,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkRunnerPrefab: {fileID: 5054853809722124213, guid: ade1be7106652fd44bc4d2970f044b3a, type: 3}
-  characterSelectionManagerPrefab: {fileID: 3306626233385145071, guid: ce5a60a0cec0bd047868ae3770cf5ae7, type: 3}
 --- !u!4 &887194781
 Transform:
   m_ObjectHideFlags: 0

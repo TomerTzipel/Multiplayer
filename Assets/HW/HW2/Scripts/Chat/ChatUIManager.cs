@@ -25,31 +25,29 @@ namespace HW2
         [SerializeField] private Button sendMessageButton;
         
         [SerializeField] private InputActionAsset inputActions;
-        private InputAction _openChatAction;
+        private InputSystem_Actions inputSystemActions;
         
         private bool _areChatInteractablesEnabled;
         private int _messageCount = 0;
 
         private void OnEnable()
         {
-            inputActions.FindActionMap("UI").Enable();
+            inputSystemActions = new InputSystem_Actions();
+            inputSystemActions.UI.Enable();
+
+            inputSystemActions.UI.OpenChat.started += EnableChat;
         }
 
         private void OnDisable()
         {
-            inputActions.FindActionMap("UI").Disable();
+            inputSystemActions.UI.OpenChat.started -= EnableChat;
+            inputSystemActions.UI.Disable();
         }
 
         public void Awake()
         {
             EnableChatInteractables(false);
             chatPanel.SetActive(false);
-            _openChatAction = inputActions.FindAction("OpenChat");
-        }
-
-        private void Update()
-        {
-            EnableChat();
         }
         
         public void ShowMessage(string messageText)
@@ -116,9 +114,9 @@ namespace HW2
             sendMessageButton.interactable = value;
         }
 
-        private void EnableChat()
+        private void EnableChat(InputAction.CallbackContext context)
         {
-            if (!chatPanel.activeSelf && _openChatAction.WasPressedThisFrame())
+            if (!chatPanel.activeSelf)
             {
                 chatPanel.SetActive(true);
                 if (!_areChatInteractablesEnabled) StartCoroutine(DisableChat());

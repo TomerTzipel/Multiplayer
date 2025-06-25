@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Linq;
+using WebSocketSharp;
 
 namespace HW2
 {
@@ -21,10 +23,13 @@ namespace HW2
         [SerializeField] private Button userDataConfirmationButton;
         [SerializeField] private Button sendMessageButton;
 
+        [SerializeField] private int messageDuration;
+
         private InputSystem_Actions inputSystemActions;
-        
-        private bool _areChatInteractablesEnabled;
+
         private int _messageCount = 0;
+        private string _selfName;
+        private bool _chatOpenedByUser = false;
 
         public void Awake()
         {
@@ -55,7 +60,6 @@ namespace HW2
             Message chatMessage = Instantiate(messagePrefab, Vector3.one, Quaternion.identity, chatScrollViewContent);
             chatMessage.message.text = messageText;
             
-            _messageCount++;
             StartCoroutine(DisableChat());
         }
         
@@ -67,8 +71,7 @@ namespace HW2
             Message chatMessage = Instantiate(messagePrefab, Vector3.one, Quaternion.identity, chatScrollViewContent);
             chatMessage.message.text = $"{userData.nickname}: {messageText}";
             chatMessage.message.color = userData.color;
-            
-            _messageCount++;
+   
             StartCoroutine(DisableChat());
         }
 
@@ -78,9 +81,12 @@ namespace HW2
             if (messageText.StartsWith("/w"))
             {
                 string targetName = messageInputField.text.Split(' ')[1];
+
+                if (targetName == _selfName) return;
+
                 string noArgumentsMessage = messageInputField.text.Split($"/w {targetName} ")[1];
-                Debug.Log($"{targetName}(whisper): {noArgumentsMessage}");
-                chatNetworkManager.SendWhisper_RPC(noArgumentsMessage, targetName);
+                string message = $"({targetName}) {noArgumentsMessage}";
+                chatNetworkManager.SendWhisper_RPC(message, targetName);
             }
             else
             {
@@ -93,7 +99,18 @@ namespace HW2
         {
             string playerName = nameInputField.text;
             Color playerColor = colorPicker.CurrentColor;
+            if(playerName.IsNullOrEmpty())
+            {
+                ShowMessage("Name can't be empty");
+                return;
+            }
+            if (!playerName.All(char.IsLetterOrDigit))
+            {
+                ShowMessage("Name must be letters and letters");
+                return;
+            }
 
+            _selfName = playerName;
             EnableUserDataConfirmationButton(false);
             characterSelectionManager.InitializeUserData(new UserData{nickname=playerName, color=playerColor});
             characterSelectionManager.ConfirmPlayerData_RPC(playerName, playerColor);
@@ -106,7 +123,6 @@ namespace HW2
 
         public void EnableChatInteractables(bool value)
         {
-            _areChatInteractablesEnabled = value;
             messageInputField.interactable = value;
             sendMessageButton.interactable = value;
         }
@@ -116,16 +132,24 @@ namespace HW2
             if (!chatPanel.activeSelf)
             {
                 chatPanel.SetActive(true);
-                if (!_areChatInteractablesEnabled) StartCoroutine(DisableChat());
+                _chatOpenedByUser = true;
+            }
+            else
+            {
+                chatPanel.SetActive(false);
+                _chatOpenedByUser = false;
             }
         }
 
         private IEnumerator DisableChat()
         {
+            _messageCount++;
             int currentMessageCount = _messageCount;
-            yield return new WaitForSeconds(5);
-            if (currentMessageCount == _messageCount)
+            yield return new WaitForSeconds(messageDuration);
+            if (currentMessageCount == _messageCount && !_chatOpenedByUser)
+            {
                 chatPanel.SetActive(false);
+            }       
         }
     }
 }

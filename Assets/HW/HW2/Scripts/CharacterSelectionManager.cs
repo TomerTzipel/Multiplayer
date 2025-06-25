@@ -65,7 +65,7 @@ namespace HW2
         {
             if (!result)
             {
-                chatUIManager.ShowMessage("Game: there was a problem confirming your selection.");
+                chatUIManager.ShowMessage("Name or color already in use.");
                 chatUIManager.EnableUserDataConfirmationButton(true);
                 return;
             }

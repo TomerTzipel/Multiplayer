@@ -1,4 +1,4 @@
-using System;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,6 @@ namespace HW2
         public bool TryAddUserData(PlayerRef player, UserData userData)
         {
             if (!playerNames.Contains(userData.nickname) &&
-                userData.nickname.All(char.IsLetterOrDigit) &&
                 !playerColors.Contains(userData.color) && 
                 UserDataDict.TryAdd(player, userData))
             {

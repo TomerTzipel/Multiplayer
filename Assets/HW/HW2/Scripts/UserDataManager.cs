@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 
 namespace HW2
@@ -16,11 +17,13 @@ namespace HW2
         {
             UserDataDict = new Dictionary<PlayerRef, UserData>();
             playerNames = new List<string>();
+            playerColors = new List<Color>();
         }
 
         public bool TryAddUserData(PlayerRef player, UserData userData)
         {
-            if (!playerNames.Contains(userData.nickname) && 
+            if (!playerNames.Contains(userData.nickname) &&
+                userData.nickname.All(char.IsLetterOrDigit) &&
                 !playerColors.Contains(userData.color) && 
                 UserDataDict.TryAdd(player, userData))
             {

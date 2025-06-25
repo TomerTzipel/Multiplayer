@@ -1,9 +1,6 @@
-using System.Collections;
+
 using Fusion;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 namespace HW2
 {

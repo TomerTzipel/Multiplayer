@@ -1,4 +1,3 @@
-using Fusion;
 using UnityEngine;
 
 namespace HW2

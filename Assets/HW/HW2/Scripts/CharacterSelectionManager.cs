@@ -1,9 +1,6 @@
 using Fusion;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace HW2
 {
@@ -59,12 +56,7 @@ namespace HW2
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void ConfirmPlayerData_RPC(string playerName, Color playerColor, RpcInfo info = default)
         {
-            bool result = userDataManager.TryAddUserData(info.Source, new UserData{nickname=playerName, color=playerColor});
-            foreach (var player in userDataManager.UserDataDict)
-            {
-                Debug.Log(userDataManager.UserDataDict[player.Key].nickname);
-            }
-               
+            bool result = userDataManager.TryAddUserData(info.Source, new UserData{nickname=playerName, color=playerColor});        
             ConfirmPlayerSelectionResult_RPC(info.Source, result);
         }
 
@@ -132,7 +124,7 @@ namespace HW2
         private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
         {
             //Sadly there is no other way but GetComponent :( (That I found atleast)
-            obj.GetComponent<PlayableCharacterController>().Initialize(userData.nickname);
+            obj.GetComponent<PlayableCharacterController>().Initialize(userData.nickname,userData.color);
         }
 
     }

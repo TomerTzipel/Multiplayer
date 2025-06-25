@@ -10,11 +10,13 @@ namespace HW2
 
         [SerializeField] private TMP_Text playerNameText;
 
-        [Networked] public string PlayerName { get; private set; }
+        [Networked] private string PlayerName { get; set; }
+        [Networked] private Color PlayerColor { get; set; }
 
-        public void Initialize(string playerName)
+        public void Initialize(string playerName,Color playerColor)
         {
             PlayerName = playerName;
+            PlayerColor = playerColor;
         }
 
         public override void Spawned()
@@ -22,6 +24,7 @@ namespace HW2
             //Not really sure how to inject the camera before spawned, except for a singleton in the scene holding it as aA serializedField
             playerNameText.transform.parent.forward = Camera.main.transform.forward;
             playerNameText.text = PlayerName;
+            playerNameText.color = PlayerColor;
         }
 
     }

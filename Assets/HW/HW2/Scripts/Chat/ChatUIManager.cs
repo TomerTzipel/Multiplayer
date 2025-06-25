@@ -1,12 +1,9 @@
-using System;
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using TMPro;
-using UnityEditor;
-using UnityEngine.InputSystem;
 
 namespace HW2
 {
@@ -23,16 +20,22 @@ namespace HW2
         [SerializeField] private ChatNetworkManager chatNetworkManager;
         [SerializeField] private Button userDataConfirmationButton;
         [SerializeField] private Button sendMessageButton;
-        
-        [SerializeField] private InputActionAsset inputActions;
+
         private InputSystem_Actions inputSystemActions;
         
         private bool _areChatInteractablesEnabled;
         private int _messageCount = 0;
 
-        private void OnEnable()
+        public void Awake()
         {
             inputSystemActions = new InputSystem_Actions();
+            EnableChatInteractables(false);
+            chatPanel.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+           
             inputSystemActions.UI.Enable();
 
             inputSystemActions.UI.OpenChat.started += EnableChat;
@@ -43,13 +46,7 @@ namespace HW2
             inputSystemActions.UI.OpenChat.started -= EnableChat;
             inputSystemActions.UI.Disable();
         }
-
-        public void Awake()
-        {
-            EnableChatInteractables(false);
-            chatPanel.SetActive(false);
-        }
-        
+  
         public void ShowMessage(string messageText)
         {
             if (!chatPanel.activeSelf)

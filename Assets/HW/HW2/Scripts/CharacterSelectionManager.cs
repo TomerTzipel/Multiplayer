@@ -41,7 +41,6 @@ namespace HW2
             selectionPanel.SetActive(false);
             finishGameButton.SetActive(false);
             gameOverPanel.SetActive(false);
-            chatPanel.SetActive(false);
         }
 
         public void InitializeUserData(UserData userData)
@@ -60,7 +59,7 @@ namespace HW2
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void ConfirmPlayerData_RPC(string playerName, Color playerColor, RpcInfo info = default)
         {
-            bool result = userDataManager.TryAddUserData(info.Source, new UserData(playerName, playerColor));
+            bool result = userDataManager.TryAddUserData(info.Source, new UserData{nickname=playerName, color=playerColor});
             foreach (var player in userDataManager.UserDataDict)
             {
                 Debug.Log(userDataManager.UserDataDict[player.Key].nickname);
@@ -74,7 +73,8 @@ namespace HW2
         {
             if (!result)
             {
-                chatUIManager.ShowMessage("Game: Nickname already taken!");
+                chatUIManager.ShowMessage("Game: there was a problem confirming your selection.");
+                chatUIManager.EnableUserDataConfirmationButton(true);
                 return;
             }
             

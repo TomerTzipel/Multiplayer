@@ -16,15 +16,16 @@ namespace HW2
         [SerializeField] private CharacterSelectionManager characterSelectionManager;
         [SerializeField] private GameObject namePanel;
         [SerializeField] private TMP_InputField nameInputField;
-        [SerializeField] private TMP_Dropdown colorSelector;
+        [SerializeField] private ColorPickerHandler colorPicker;
         [SerializeField] private TMP_InputField messageInputField;
         [SerializeField] private ChatNetworkManager chatNetworkManager;
+        [SerializeField] private Button userDataConfirmationButton;
 
     private int messageCount = 0;
         
         public void Awake()
         {
-            chatPanel.SetActive(false);
+            //chatPanel.SetActive(false);
         }
         
         public void ShowMessage(string messageText)
@@ -49,7 +50,7 @@ namespace HW2
             chatMessage.message.color = userData.color;
             
             messageCount++;
-            StartCoroutine(DisableChat());
+            //StartCoroutine(DisableChat());
         }
 
         public void OnSendButtonClicked()
@@ -57,20 +58,31 @@ namespace HW2
             string messageText = messageInputField.text;
             if (messageText.StartsWith("/w"))
             {
-                //TODO
+                string targetName = messageInputField.text.Split(' ')[1];
+                string noArgumentsMessage = messageInputField.text.Split($"/w {targetName} ")[1];
+                Debug.Log($"{targetName}(whisper): {noArgumentsMessage}");
+                chatNetworkManager.SendWhisper_RPC(noArgumentsMessage, targetName);
             }
             else
             {
                 chatNetworkManager.SendMessage_RPC(messageText);
             }
+            messageInputField.text = string.Empty;
         }
 
         public void OnNicknameButtonClicked()
         {
             string playerName = nameInputField.text;
-            Color playerColor = Color.blue;
-            characterSelectionManager.InitializeUserData(new UserData(playerName, playerColor));
+            Color playerColor = colorPicker.CurrentColor;
+
+            EnableUserDataConfirmationButton(false);
+            characterSelectionManager.InitializeUserData(new UserData{nickname=playerName, color=playerColor});
             characterSelectionManager.ConfirmPlayerData_RPC(playerName, playerColor);
+        }
+
+        public void EnableUserDataConfirmationButton(bool value)
+        {
+            userDataConfirmationButton.interactable = value;
         }
 
         private IEnumerator DisableChat()

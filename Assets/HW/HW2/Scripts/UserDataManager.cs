@@ -16,6 +16,7 @@ namespace HW2
         {
             UserDataDict = new Dictionary<PlayerRef, UserData>();
             playerNames = new List<string>();
+            playerColors = new List<Color>();
         }
 
         public bool TryAddUserData(PlayerRef player, UserData userData)

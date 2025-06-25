@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEditor;
+using UnityEngine.InputSystem;
 
 namespace HW2
 {
@@ -20,12 +22,34 @@ namespace HW2
         [SerializeField] private TMP_InputField messageInputField;
         [SerializeField] private ChatNetworkManager chatNetworkManager;
         [SerializeField] private Button userDataConfirmationButton;
-
-    private int messageCount = 0;
+        [SerializeField] private Button sendMessageButton;
         
+        [SerializeField] private InputActionAsset inputActions;
+        private InputAction _openChatAction;
+        
+        private bool _areChatInteractablesEnabled;
+        private int _messageCount = 0;
+
+        private void OnEnable()
+        {
+            inputActions.FindActionMap("UI").Enable();
+        }
+
+        private void OnDisable()
+        {
+            inputActions.FindActionMap("UI").Disable();
+        }
+
         public void Awake()
         {
-            //chatPanel.SetActive(false);
+            EnableChatInteractables(false);
+            chatPanel.SetActive(false);
+            _openChatAction = inputActions.FindAction("OpenChat");
+        }
+
+        private void Update()
+        {
+            EnableChat();
         }
         
         public void ShowMessage(string messageText)
@@ -36,7 +60,7 @@ namespace HW2
             Message chatMessage = Instantiate(messagePrefab, Vector3.one, Quaternion.identity, chatScrollViewContent);
             chatMessage.message.text = messageText;
             
-            messageCount++;
+            _messageCount++;
             StartCoroutine(DisableChat());
         }
         
@@ -49,8 +73,8 @@ namespace HW2
             chatMessage.message.text = $"{userData.nickname}: {messageText}";
             chatMessage.message.color = userData.color;
             
-            messageCount++;
-            //StartCoroutine(DisableChat());
+            _messageCount++;
+            StartCoroutine(DisableChat());
         }
 
         public void OnSendButtonClicked()
@@ -85,11 +109,27 @@ namespace HW2
             userDataConfirmationButton.interactable = value;
         }
 
+        public void EnableChatInteractables(bool value)
+        {
+            _areChatInteractablesEnabled = value;
+            messageInputField.interactable = value;
+            sendMessageButton.interactable = value;
+        }
+
+        private void EnableChat()
+        {
+            if (!chatPanel.activeSelf && _openChatAction.WasPressedThisFrame())
+            {
+                chatPanel.SetActive(true);
+                if (!_areChatInteractablesEnabled) StartCoroutine(DisableChat());
+            }
+        }
+
         private IEnumerator DisableChat()
         {
-            int currentMessageCount = messageCount;
+            int currentMessageCount = _messageCount;
             yield return new WaitForSeconds(5);
-            if (currentMessageCount == messageCount)
+            if (currentMessageCount == _messageCount)
                 chatPanel.SetActive(false);
         }
     }

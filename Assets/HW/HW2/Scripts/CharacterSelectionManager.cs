@@ -78,6 +78,7 @@ namespace HW2
                 return;
             }
             
+            chatUIManager.EnableChatInteractables(true);
             namePanel.SetActive(false);
             selectionPanel.SetActive(true);
         }

@@ -2904,7 +2904,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &819495573
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4980,6 +4980,8 @@ MonoBehaviour:
   messageInputField: {fileID: 91929080}
   chatNetworkManager: {fileID: 780707755}
   userDataConfirmationButton: {fileID: 1080930365}
+  sendMessageButton: {fileID: 596174356}
+  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!4 &1493961154
 Transform:
   m_ObjectHideFlags: 0

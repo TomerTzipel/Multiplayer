@@ -5,14 +5,14 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace HW2
+namespace HW3
 {
     public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         public static NetworkManager Instance { get; private set; }
         private const int MAX_PLAYERS = 10;
-
         [SerializeField] private string gameSceneName;
+
         [SerializeField] private NetworkRunner networkRunnerPrefab;
         private string _lobbyName;
 

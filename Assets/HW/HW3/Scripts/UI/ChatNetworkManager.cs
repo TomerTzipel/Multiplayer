@@ -1,7 +1,8 @@
 using Fusion;
 using UnityEngine;
+using HW2;
 
-namespace HW2
+namespace HW3
 {
     public class ChatNetworkManager : NetworkBehaviour
     {

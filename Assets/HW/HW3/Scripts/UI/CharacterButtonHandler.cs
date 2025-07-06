@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace HW2
+namespace HW3
 {
     public class CharacterButtonHandler : MonoBehaviour
     {

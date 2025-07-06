@@ -1,15 +1,21 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using HW2;
+using Unity.Cinemachine;
 
-namespace HW2
+namespace HW3
 {
     public class CharacterSelectionManager : NetworkBehaviour
     {
         private const string LOBBY_SCENE_NAME = "LobbyScene2";
 
-        [SerializeField] private PlayableCharacterController[] characterPrefabs;
+        [SerializeField] private CinemachineCamera cineCam;
+        [SerializeField] private Camera mainCamera;
+
+        [SerializeField] private PlayerController[] characterPrefabs;
         [SerializeField] private Transform[] characterSpawnPositions;
+
         [SerializeField] private CharacterButtonHandler[] buttonHandlers;
         [SerializeField] private GameObject selectionPanel;
         [SerializeField] private GameObject gameOverPanel;
@@ -114,7 +120,7 @@ namespace HW2
             }
 
             //Spawn the correct prefab at the correct position
-            PlayableCharacterController characterPrefab = characterPrefabs[characterIndex];
+            PlayerController characterPrefab = characterPrefabs[characterIndex];
             Vector3 position = characterSpawnPositions[characterIndex].position;
             var character = NetworkManager.Instance.NetworkRunner.Spawn(characterPrefab, position,onBeforeSpawned: InitializeCharacter);
 
@@ -124,8 +130,9 @@ namespace HW2
 
         private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
         {
-            //Sadly there is no other way but GetComponent :( (That I found atleast)
-            obj.GetComponent<PlayableCharacterController>().Initialize(userData.nickname,userData.color);
+            cineCam.LookAt = obj.transform;
+            cineCam.Follow = obj.transform;
+            obj.GetComponent<PlayerController>().Initialize(userData.nickname,userData.color, mainCamera);
         }
 
     }

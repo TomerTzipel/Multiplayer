@@ -1213,8 +1213,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
-        m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
+      - m_Target: {fileID: 1294546395}
+        m_TargetAssemblyTypeName: HW3.LobbyUiManager, Assembly-CSharp
         m_MethodName: JoinLobbyClicked
         m_Mode: 5
         m_Arguments:
@@ -1424,8 +1424,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
-        m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
+      - m_Target: {fileID: 1294546395}
+        m_TargetAssemblyTypeName: HW3.LobbyUiManager, Assembly-CSharp
         m_MethodName: JoinLobbyClicked
         m_Mode: 5
         m_Arguments:
@@ -2083,8 +2083,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
-        m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
+      - m_Target: {fileID: 1294546395}
+        m_TargetAssemblyTypeName: HW3.LobbyUiManager, Assembly-CSharp
         m_MethodName: JoinLobbyClicked
         m_Mode: 5
         m_Arguments:
@@ -2216,8 +2216,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
-        m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
+      - m_Target: {fileID: 1294546395}
+        m_TargetAssemblyTypeName: HW3.LobbyUiManager, Assembly-CSharp
         m_MethodName: JoinLobbyClicked
         m_Mode: 5
         m_Arguments:
@@ -2639,8 +2639,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
-        m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
+      - m_Target: {fileID: 1294546395}
+        m_TargetAssemblyTypeName: HW3.LobbyUiManager, Assembly-CSharp
         m_MethodName: CreateNewSession
         m_Mode: 1
         m_Arguments:
@@ -3318,7 +3318,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 887194781}
-  - component: {fileID: 887194780}
+  - component: {fileID: 887194782}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -3326,20 +3326,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &887194780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 887194779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb9f6a8c7007aea43a6d65ee7020d09c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameSceneName: GameScene
-  networkRunnerPrefab: {fileID: 5054853809722124213, guid: ade1be7106652fd44bc4d2970f044b3a, type: 3}
 --- !u!4 &887194781
 Transform:
   m_ObjectHideFlags: 0
@@ -3349,12 +3335,26 @@ Transform:
   m_GameObject: {fileID: 887194779}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1009.062, y: 585.4389, z: 11.026086}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &887194782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887194779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf11b7506668834e82d120e4e28cf6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameSceneName: GameScene3
+  networkRunnerPrefab: {fileID: 5054853809722124213, guid: ade1be7106652fd44bc4d2970f044b3a, type: 3}
 --- !u!1 &905764562
 GameObject:
   m_ObjectHideFlags: 0
@@ -3992,7 +3992,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1294546394}
-  - component: {fileID: 1294546398}
+  - component: {fileID: 1294546395}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -4015,7 +4015,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1294546398
+--- !u!114 &1294546395
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4024,7 +4024,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1294546393}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c57f3ebfcc1edea46bf36a262ed981f5, type: 3}
+  m_Script: {fileID: 11500000, guid: a93a863764135ed468cd2db2933c5d40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   lobbiesPanel: {fileID: 905764562}
@@ -5141,8 +5141,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
-        m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
+      - m_Target: {fileID: 1294546395}
+        m_TargetAssemblyTypeName: HW3.LobbyUiManager, Assembly-CSharp
         m_MethodName: ShowLobbiesList
         m_Mode: 1
         m_Arguments:
@@ -5494,7 +5494,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1294546398}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: HW2.LobbyUiManager, Assembly-CSharp
         m_MethodName: JoinLobbyClicked
         m_Mode: 5

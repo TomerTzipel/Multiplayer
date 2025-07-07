@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Tester
   <Splash>k__BackingField: {fileID: 0}
+  <BaseSpeed>k__BackingField: 20

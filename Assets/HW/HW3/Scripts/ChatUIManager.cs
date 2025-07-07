@@ -43,7 +43,6 @@ namespace HW3
         {
            
             inputSystemActions.UI.Enable();
-
             inputSystemActions.UI.OpenChat.started += EnableChat;
         }
 

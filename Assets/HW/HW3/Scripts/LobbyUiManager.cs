@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using WebSocketSharp;
-using HW2;
 
 namespace HW3
 {

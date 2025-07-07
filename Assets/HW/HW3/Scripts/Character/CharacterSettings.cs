@@ -7,7 +7,9 @@ namespace HW3
     {
         [field: SerializeField] public string Name { get; private set; }
         [field: SerializeField] public Sprite Splash { get; private set; }
-        //More in the future
+
+        [field: SerializeField] public float BaseSpeed { get; private set; }
+
     }
 }
 

@@ -4032,7 +4032,7 @@ MonoBehaviour:
   sessionCreationPanel: {fileID: 366943176}
   lobbyTitle: {fileID: 1057096939}
   lobbySessionsCount: {fileID: 1306913923}
-  sessionDetailsPrefab: {fileID: 2897888595193355001, guid: f957f8cbf5edae74e833ef26035b5194, type: 3}
+  sessionDetailsPrefab: {fileID: 5292146128572515584, guid: 0e8b74f6e6dca9040a1fea3d55a8df9d, type: 3}
   sessoionsScrollViewContent: {fileID: 623027436}
   sessionNameField: {fileID: 239791152}
 --- !u!1 &1306913921

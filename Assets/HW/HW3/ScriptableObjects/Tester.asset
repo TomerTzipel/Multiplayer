@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Tester
   <Splash>k__BackingField: {fileID: 0}
+  <MaxHealth>k__BackingField: 50
   <BaseSpeed>k__BackingField: 20
+  <Damage>k__BackingField: 20
+  <ProjectilePrefab>k__BackingField: {fileID: 6980884460550101868, guid: ba146f9e47daba4408de32608269fb96, type: 3}

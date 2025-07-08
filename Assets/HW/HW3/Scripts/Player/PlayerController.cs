@@ -80,7 +80,7 @@ namespace HW3
             movementHandler.Stop();
             movementHandler.Turn(direction);
 
-            abilityHandler.RangedAttack(direction);
+            abilityHandler.RangedAttack();
         }
 
     }

@@ -23,6 +23,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     private bool _stopQueued = false;
     public override void Spawned()
     {
+        agent.enabled = true;
         agent.speed = controller.Settings.BaseSpeed;
         agent.updatePosition = false;
         agent.updateRotation = false;
@@ -51,8 +52,8 @@ public class PlayerMovementHandler : NetworkBehaviour
     }
     public override void FixedUpdateNetwork()
     {
-        HandleMoving();
         HandleTurning();
+        HandleMoving();     
     }
 
     private void HandleTurning()
@@ -66,8 +67,8 @@ public class PlayerMovementHandler : NetworkBehaviour
 
         if (!_hasPath) { return; }
 
-        Vector2 direction = new Vector2(agent.nextPosition.x, agent.nextPosition.z);
-        TurnTowards(direction);
+        Vector2 lookDirection = new Vector2(agent.nextPosition.x - transform.position.x, agent.nextPosition.z - transform.position.z);
+        TurnTowards(lookDirection);
     }
 
     private void HandleMoving()
@@ -97,8 +98,8 @@ public class PlayerMovementHandler : NetworkBehaviour
     }
 
     private void TurnTowards(Vector2 direction)
-    {
-        visualsParent.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, transform.position.y, direction.y) - transform.position);
+    {   
+        visualsParent.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x,0,direction.y), Vector3.up);
     }
 
     private bool WasDestinationReached()

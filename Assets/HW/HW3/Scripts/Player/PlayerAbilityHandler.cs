@@ -7,9 +7,9 @@ using UnityEngine.UIElements;
 public class PlayerAbilityHandler : NetworkBehaviour
 {
     [SerializeField] private PlayerController controller;
+    [SerializeField] private Transform spawnPoint;
 
     private bool _rangedAttackQueued = false;
-    private Vector2 _directionCache;
 
     public override void FixedUpdateNetwork()
     {
@@ -17,21 +17,19 @@ public class PlayerAbilityHandler : NetworkBehaviour
 
     }
 
-    public void RangedAttack(Vector2 direction)
+    public void RangedAttack()
     {
         _rangedAttackQueued = true;
-        _directionCache = direction;
     }
 
     private void HandleRangedAttack()
     {
-        Runner.Spawn(controller.Settings.ProjectilePrefab,transform.position, onBeforeSpawned: InitializeProjectile);
+        Runner.Spawn(controller.Settings.ProjectilePrefab, spawnPoint.position, spawnPoint.rotation, onBeforeSpawned: InitializeProjectile);
         _rangedAttackQueued = false;
     }
 
     private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
     {
-        Vector3 direction = new Vector3(_directionCache.x, transform.position.y, _directionCache.y);
-        obj.GetComponent<ProjectileHandler>().NetworkInitialize(controller.Settings.Damage, direction);
+        obj.GetComponent<ProjectileHandler>().NetworkInitialize(controller.Settings.Damage);
     }
 }

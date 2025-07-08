@@ -8,19 +8,17 @@ namespace HW3
         [SerializeField] private ProjectileSettings settings;
 
         [Networked] private int Damage { get; set; }
-        [Networked] private Vector3 Direction { get; set; }
 
         private float _lifetime;
-        public void NetworkInitialize(int damage,Vector3 direction)
+        public void NetworkInitialize(int damage)
         {
             Damage = damage;
-            Direction = direction;
         }
 
         public override void Spawned()
         {
             _lifetime = settings.Lifetime;
-            transform.rotation = Quaternion.LookRotation(Direction);
+            Debug.Log("Proj" + Damage);
         }
 
         public override void FixedUpdateNetwork()

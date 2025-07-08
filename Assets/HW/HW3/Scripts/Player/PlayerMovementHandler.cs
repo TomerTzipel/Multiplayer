@@ -15,8 +15,12 @@ public class PlayerMovementHandler : NetworkBehaviour
     [SerializeField] private GameObject visualsParent;
 
     private Vector3 _destiantion;
+
     private bool _hasPath = false;
 
+    private bool _turnQueued = false;
+    private Vector2 _turnDirectionCache;
+    private bool _stopQueued = false;
     public override void Spawned()
     {
         agent.speed = controller.Settings.BaseSpeed;
@@ -24,24 +28,6 @@ public class PlayerMovementHandler : NetworkBehaviour
         agent.updateRotation = false;
     }
 
-    public override void FixedUpdateNetwork()
-    {
-        if (!_hasPath) { return; }
-
-        if (WasDestinationReached())
-        {
-            StopMoving();
-            return;
-        }
-
-        Move();
-    }
-
-    private void Move()
-    {
-        visualsParent.transform.rotation = Quaternion.LookRotation(agent.nextPosition - transform.position);
-        transform.position = agent.nextPosition;    
-    }
     public void StartMoving()
     {  
         int groundLayerMask = LayerMask.GetMask(WALKABLE_LAYER_MASK);
@@ -54,11 +40,65 @@ public class PlayerMovementHandler : NetworkBehaviour
             _hasPath = true;
         }
     }
+    public void Turn(Vector2 direction)
+    {
+        _turnQueued = true;
+        _turnDirectionCache = direction;
+    }
+    public void Stop()
+    {
+        _stopQueued = true;
+    }
+    public override void FixedUpdateNetwork()
+    {
+        HandleMoving();
+        HandleTurning();
+    }
 
-    public void StopMoving()
+    private void HandleTurning()
+    {
+        if (_turnQueued)
+        {
+            TurnTowards(_turnDirectionCache);
+            _turnQueued = false;
+            return;
+        }
+
+        if (!_hasPath) { return; }
+
+        Vector2 direction = new Vector2(agent.nextPosition.x, agent.nextPosition.z);
+        TurnTowards(direction);
+    }
+
+    private void HandleMoving()
+    {
+        if (_stopQueued)
+        {
+            StopMoving();
+            _stopQueued = false;
+            return;
+        }
+
+        if (!_hasPath) { return; }
+
+        if (WasDestinationReached())
+        {
+            StopMoving();
+            return;
+        }
+
+        transform.position = agent.nextPosition;
+    }
+    private void StopMoving()
     {
         _hasPath = false;
         agent.ResetPath();
+        agent.velocity = Vector3.zero;
+    }
+
+    private void TurnTowards(Vector2 direction)
+    {
+        visualsParent.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, transform.position.y, direction.y) - transform.position);
     }
 
     private bool WasDestinationReached()

@@ -115,7 +115,6 @@ namespace HW3
             {
                 chatUIManager.ShowMessage("Game: Character already taken");
                 EnableAllButtons(true);
-                Debug.Log("ALREADY TAKEN BE FASTER");
                 return;
             }
 
@@ -132,7 +131,7 @@ namespace HW3
         {
             cineCam.LookAt = obj.transform;
             cineCam.Follow = obj.transform;
-            obj.GetComponent<PlayerController>().Initialize(userData.nickname,userData.color, mainCamera);
+            obj.GetComponent<PlayerController>().NetworkInitialize(userData.nickname,userData.color, mainCamera);
         }
 
     }

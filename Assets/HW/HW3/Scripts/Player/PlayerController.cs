@@ -11,13 +11,19 @@ namespace HW3
         [field: SerializeField] public CharacterSettings Settings { get; private set; }
         [SerializeField] private TMP_Text playerNameText;
         [SerializeField] private PlayerMovementHandler movementHandler;
+        [SerializeField] private PlayerHealthHandler healthHandler;
+        [SerializeField] private PlayerAbilityHandler abilityHandler;
 
         [Networked] private string PlayerName { get; set; }
         [Networked] private Color PlayerColor { get; set; }
 
         private InputSystem_Actions inputSystemActions;
 
-        public void Initialize(string playerName,Color playerColor, Camera camera)
+        //Can't serialize, can't pass on spawn :(
+        //If I will have a singleton scene manager I will pass it there
+        private Camera _mainCamera; 
+
+        public void NetworkInitialize(string playerName,Color playerColor, Camera camera)
         {
             PlayerName = playerName;
             PlayerColor = playerColor;
@@ -25,7 +31,8 @@ namespace HW3
 
         public override void Spawned()
         {
-            playerNameText.transform.parent.forward = Camera.main.transform.forward;
+            _mainCamera = Camera.main;
+            playerNameText.transform.parent.forward = _mainCamera.transform.forward;
             playerNameText.text = PlayerName;
             playerNameText.color = PlayerColor;
 
@@ -43,9 +50,9 @@ namespace HW3
             if (Object.HasStateAuthority)
             {
                 inputSystemActions.Player.Enable();
-                inputSystemActions.Player.MouseMove.started += OnMoveCommand;
-            }
-            
+                inputSystemActions.Player.MouseMove.performed += OnMoveCommand;
+                inputSystemActions.Player.RangedAttack.performed += OnRangedAttackCommand;
+            }  
         }
 
         private void OnDisable()
@@ -54,7 +61,8 @@ namespace HW3
 
             if (Object.HasStateAuthority)
             {
-                inputSystemActions.Player.MouseMove.started -= OnMoveCommand;
+                inputSystemActions.Player.MouseMove.performed -= OnMoveCommand;
+                inputSystemActions.Player.RangedAttack.performed -= OnRangedAttackCommand;
                 inputSystemActions.Player.Disable();
             }        
         }
@@ -62,6 +70,17 @@ namespace HW3
         private void OnMoveCommand(InputAction.CallbackContext context)
         {
             movementHandler.StartMoving();
+        }
+
+        private void OnRangedAttackCommand(InputAction.CallbackContext context)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 playerScreenPosition = _mainCamera.WorldToScreenPoint(transform.position);
+            Vector2 direction = mousePosition - playerScreenPosition;
+            movementHandler.Stop();
+            movementHandler.Turn(direction);
+
+            abilityHandler.RangedAttack(direction);
         }
 
     }

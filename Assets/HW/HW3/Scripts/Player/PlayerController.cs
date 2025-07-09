@@ -26,7 +26,8 @@ namespace HW3
         public void NetworkInitialize(string playerName,Color playerColor, Camera camera)
         {
             PlayerName = playerName;
-            PlayerColor = playerColor;
+            PlayerColor = playerColor; 
+            healthHandler.Health = Settings.MaxHealth;
         }
 
         public override void Spawned()

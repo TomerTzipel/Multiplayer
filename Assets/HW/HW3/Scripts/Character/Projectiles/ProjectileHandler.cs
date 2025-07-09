@@ -18,7 +18,6 @@ namespace HW3
         public override void Spawned()
         {
             _lifetime = settings.Lifetime;
-            Debug.Log("Proj" + Damage);
         }
 
         public override void FixedUpdateNetwork()
@@ -36,6 +35,21 @@ namespace HW3
         private void Move()
         {
             transform.Translate(Runner.DeltaTime * settings.Speed * Vector3.forward);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!other.CompareTag("Player")) return;
+
+            if (!HasStateAuthority) return;
+
+            PlayerHealthHandler healthHandler = other.GetComponent<PlayerHealthHandler>();
+
+            //Self Hit Check
+            if (healthHandler.HasStateAuthority) return;
+
+            healthHandler.TakeDamage_RPC(Damage);
+            Runner.Despawn(Object);
         }
     }
 }

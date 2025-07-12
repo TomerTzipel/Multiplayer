@@ -36,6 +36,7 @@ namespace HW2
             GenerateNetworkRunner();
             _sessionPlayers = new List<PlayerRef>();
         }
+        
         public async void JoinLobby(string lobbyID)
         {
             StartGameResult result = await NetworkRunner.JoinSessionLobby(SessionLobby.Custom, lobbyID);

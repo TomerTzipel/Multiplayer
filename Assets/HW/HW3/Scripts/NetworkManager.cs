@@ -47,7 +47,7 @@ namespace HW3
             }
         }
 
-        public void JoinSession(string name)
+        public void JoinSession(string name, bool isSessionInvisible=false)
         {
             NetworkRunner.StartGame(new StartGameArgs()
             {
@@ -55,6 +55,7 @@ namespace HW3
                 SessionName = name,
                 PlayerCount = MAX_PLAYERS,
                 OnGameStarted = OnSessionStarted,
+                IsVisible = isSessionInvisible,
                 CustomLobbyName = _lobbyName
             });
         }

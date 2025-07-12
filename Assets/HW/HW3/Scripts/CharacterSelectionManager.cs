@@ -8,7 +8,7 @@ namespace HW3
 {
     public class CharacterSelectionManager : NetworkBehaviour
     {
-        private const string LOBBY_SCENE_NAME = "LobbyScene2";
+        private const string LOBBY_SCENE_NAME = "LobbyScene3";
 
         [SerializeField] private CinemachineCamera cineCam;
         [SerializeField] private Camera mainCamera;
@@ -134,6 +134,15 @@ namespace HW3
             obj.GetComponent<PlayerController>().NetworkInitialize(userData.nickname,userData.color, mainCamera);
         }
 
+        public void LockSession()
+        {
+            NetworkManager.Instance.NetworkRunner.SessionInfo.IsOpen = false;
+        }
+
+        public void UnlockSession()
+        {
+            NetworkManager.Instance.NetworkRunner.SessionInfo.IsOpen = true;
+        }
     }
 }
 

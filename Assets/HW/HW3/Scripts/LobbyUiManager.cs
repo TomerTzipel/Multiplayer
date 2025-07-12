@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using WebSocketSharp;
 
 namespace HW3
@@ -19,6 +20,7 @@ namespace HW3
         [SerializeField] private Transform sessoionsScrollViewContent;
 
         [SerializeField] private TMP_InputField sessionNameField;
+        [SerializeField] private Toggle sessionInvisibleToggle;
 
         private List<SessionHandler> _sessionHandlers = new List<SessionHandler>(4);
         private NetworkManager _networkManager;
@@ -47,7 +49,7 @@ namespace HW3
 
             string sessionName = sessionNameField.text;
 
-            NetworkManager.Instance.JoinSession(sessionName);
+            NetworkManager.Instance.JoinSession(sessionName, sessionInvisibleToggle.isOn);
         }
         public void ShowLobbiesList()
         {

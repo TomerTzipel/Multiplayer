@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using WebSocketSharp;
 
 namespace HW2
@@ -19,6 +20,7 @@ namespace HW2
         [SerializeField] private Transform sessoionsScrollViewContent;
 
         [SerializeField] private TMP_InputField sessionNameField;
+        
 
         private List<SessionHandler> _sessionHandlers = new List<SessionHandler>(4);
         private NetworkManager _networkManager;
@@ -41,6 +43,7 @@ namespace HW2
         }
 
         #region USED BY BUTTONS
+        
         public void CreateNewSession()
         {
             if (sessionNameField.text.IsNullOrEmpty()) return;

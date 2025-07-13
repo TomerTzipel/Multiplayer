@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0370f92df2f81dc47935469adc51d8f9, type: 3}
+  m_Name: ChooChoo
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: ChooChoo
+  <Splash>k__BackingField: {fileID: 21300000, guid: e98051b79151b9f43ac5a2074bbcc3d4, type: 3}
+  <MaxHealth>k__BackingField: 50
+  <BaseSpeed>k__BackingField: 20
+  <Damage>k__BackingField: 20
+  <ProjectilePrefab>k__BackingField: {fileID: 6980884460550101868, guid: ba146f9e47daba4408de32608269fb96, type: 3}

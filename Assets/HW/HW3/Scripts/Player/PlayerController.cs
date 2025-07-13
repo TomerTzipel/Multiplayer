@@ -44,6 +44,11 @@ namespace HW3
             }   
         }
 
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            OnDisable();
+        }
+
         private void OnEnable()
         {
             if (Object == null) return;

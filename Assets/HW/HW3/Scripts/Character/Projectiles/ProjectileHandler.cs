@@ -1,15 +1,20 @@
 using Fusion;
+using System.Collections;
 using UnityEngine;
 
 namespace HW3
 {
     public class ProjectileHandler : NetworkBehaviour
     {
+        private const string PLAYER_TAG = "Player";
+
         [SerializeField] private ProjectileSettings settings;
 
         [Networked] private int Damage { get; set; }
 
         private float _lifetime;
+        private bool _destroyFlag = false;
+
         public void NetworkInitialize(int damage)
         {
             Damage = damage;
@@ -28,8 +33,7 @@ namespace HW3
             if (HasStateAuthority)
             {
                 Move();      
-            }
-            
+            }   
         }
 
         private void Move()
@@ -39,7 +43,9 @@ namespace HW3
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag("Player")) return;
+            if (_destroyFlag) return;
+
+            if (!other.CompareTag(PLAYER_TAG)) return;
 
             if (!HasStateAuthority) return;
 
@@ -52,6 +58,14 @@ namespace HW3
             healthHandler.UpdateHealthBarByValue(-Damage);
 
             healthHandler.TakeDamage_RPC(Damage,transform.position);
+            _destroyFlag = true;
+            StartCoroutine(DespawnOnDelay(0.1f));
+            
+        }
+
+        private IEnumerator DespawnOnDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
             Runner.Despawn(Object);
         }
     }

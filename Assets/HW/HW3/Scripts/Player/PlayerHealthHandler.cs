@@ -1,15 +1,16 @@
 using Fusion;
 using HW3;
 using UnityEngine;
-using static Fusion.Sockets.NetBitBuffer;
 
 
 public class PlayerHealthHandler : NetworkBehaviour
 {
+    private const string PROJECTILE_TAG = "Projectile";
     private const float VALIDATION_DIST = 1f;
 
     [SerializeField] private PlayerController controller;
     [SerializeField] private BarHandler HealthBar;
+    [SerializeField] private ParticleSystem BloodEffect;
 
     private int _maxHealth;
 
@@ -67,6 +68,35 @@ public class PlayerHealthHandler : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //Add effect
+        if (!other.CompareTag(PROJECTILE_TAG)) return;
+
+        ProjectileHandler projectileHandler = other.GetComponent<ProjectileHandler>();
+
+        //Self hit 
+        if (projectileHandler.HasStateAuthority && Object.HasStateAuthority) return;
+
+        //I hit someone else
+        if (projectileHandler.HasStateAuthority && !Object.HasStateAuthority)
+        {
+            BloodEffect.Play();
+            return;
+        }
+
+        //Someone else hit me
+        if (!projectileHandler.HasStateAuthority && Object.HasStateAuthority)
+        {
+            BloodEffect.Play();
+            return;
+        }
+
+        //Someone else hit someone else
+        if (!projectileHandler.HasStateAuthority && !Object.HasStateAuthority)
+        {
+            //Someone else hit themselves
+            if (projectileHandler.Object.StateAuthority == Object.StateAuthority) return;
+
+            BloodEffect.Play();
+        }
+
     }
 }

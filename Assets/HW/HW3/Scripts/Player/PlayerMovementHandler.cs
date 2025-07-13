@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovementHandler : NetworkBehaviour
 {
-    private const float OFFSET = 0.1f;
+    private const float OFFSET = 0.25f;
     private const string WALKABLE_LAYER_MASK = "Walkable";
 
     [SerializeField] private PlayerController controller;
@@ -26,6 +26,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     {
         agent.enabled = true;
         agent.speed = controller.Settings.BaseSpeed;
+        agent.Warp(transform.position);
         agent.updatePosition = false;
         agent.updateRotation = false;
     }

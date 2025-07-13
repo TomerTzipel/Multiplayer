@@ -52,7 +52,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ronit
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: 519fd16bdb543cd4c885db6ceb2905bc, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -189,18 +190,6 @@ PrefabInstance:
     - target: {fileID: 8423661946255615608, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8438329965007789200, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.263
-      objectReference: {fileID: 0}
-    - target: {fileID: 8438329965007789200, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.432
-      objectReference: {fileID: 0}
-    - target: {fileID: 8438329965007789200, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0444
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

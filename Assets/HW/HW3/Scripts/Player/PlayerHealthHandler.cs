@@ -1,10 +1,13 @@
 using Fusion;
 using HW3;
 using UnityEngine;
-using static UnityEngine.Rendering.GPUSort;
+using static Fusion.Sockets.NetBitBuffer;
+
 
 public class PlayerHealthHandler : NetworkBehaviour
 {
+    private const float VALIDATION_DIST = 1f;
+
     [SerializeField] private PlayerController controller;
     [SerializeField] private BarHandler HealthBar;
 
@@ -19,15 +22,41 @@ public class PlayerHealthHandler : NetworkBehaviour
     }
 
 
-    //Make RPC
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void TakeDamage_RPC(int damage)
+    public void TakeDamage_RPC(int damage,Vector3 projectilePosition, RpcInfo info = default)
     {
-        //Add Validation
-       
+
+        if(VALIDATION_DIST >= (transform.position - projectilePosition).sqrMagnitude)
+        {
+            Debug.Log("Hit failed validation");
+            FailedHitValidation_RPC(info.Source);
+            return;
+        }
+
+        TakeDamage(damage);     
+    }
+
+    public void TakeDamage(int damage)
+    {
         Health -= damage;
-       
-        //TODO: Add death management
+
+        //We will handle death for the real game, as for now the point is to see the multiplayer works properly
+    }
+
+    //Used for the local Health bar change
+    public void UpdateHealthBarByValue(int value)
+    {
+        int hp = Health + value;
+        float hpPercentage = (((float)hp) / _maxHealth);
+        HealthBar.UpdateSlider(hpPercentage, hp, _maxHealth);
+    }
+
+    //Used to reverse the local health bar changeto keep the UI synced
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void FailedHitValidation_RPC([RpcTarget] PlayerRef target)
+    {
+        Debug.Log("Hit failed validation");
+        UpdateHealthBarByValue(0);
     }
 
     private void HealthChanged()

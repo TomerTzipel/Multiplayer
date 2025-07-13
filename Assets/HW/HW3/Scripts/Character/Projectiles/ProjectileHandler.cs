@@ -48,7 +48,10 @@ namespace HW3
             //Self Hit Check
             if (healthHandler.HasStateAuthority) return;
 
-            healthHandler.TakeDamage_RPC(Damage);
+            //Feel good damage reduction, will be overriden by RTC if validation failed
+            healthHandler.UpdateHealthBarByValue(-Damage);
+
+            healthHandler.TakeDamage_RPC(Damage,transform.position);
             Runner.Despawn(Object);
         }
     }

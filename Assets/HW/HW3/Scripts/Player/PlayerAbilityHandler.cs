@@ -8,6 +8,7 @@ public class PlayerAbilityHandler : NetworkBehaviour
 {
     [SerializeField] private PlayerController controller;
     [SerializeField] private Transform spawnPoint;
+    [SerializeField] private AnimationStateHandler animationStateHandler;
 
     private bool _rangedAttackQueued = false;
 
@@ -24,6 +25,7 @@ public class PlayerAbilityHandler : NetworkBehaviour
 
     private void HandleRangedAttack()
     {
+        animationStateHandler.StartThrowAnimation();
         Runner.Spawn(controller.Settings.ProjectilePrefab, spawnPoint.position, spawnPoint.rotation, onBeforeSpawned: InitializeProjectile);
         _rangedAttackQueued = false;
     }

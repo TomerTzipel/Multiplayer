@@ -10,6 +10,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     private const string WALKABLE_LAYER_MASK = "Walkable";
 
     [SerializeField] private PlayerController controller;
+    [SerializeField] private AnimationStateHandler animationStateHandler;
 
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private GameObject visualsParent;
@@ -39,6 +40,7 @@ public class PlayerMovementHandler : NetworkBehaviour
             Debug.DrawLine(ray.origin, _destiantion, Color.green, 5f);
             agent.SetDestination(_destiantion);
             _hasPath = true;
+            animationStateHandler.StartMoveAnimation();
         }
     }
     public void Turn(Vector2 direction)
@@ -95,6 +97,7 @@ public class PlayerMovementHandler : NetworkBehaviour
         _hasPath = false;
         agent.ResetPath();
         agent.velocity = Vector3.zero;
+        animationStateHandler.StopMoveAnimation();
     }
 
     private void TurnTowards(Vector2 direction)

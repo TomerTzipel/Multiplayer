@@ -80,7 +80,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5380903091979452777, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
       propertyPath: m_Name
-      value: Mr Bobo
+      value: Atariel
       objectReference: {fileID: 0}
     - target: {fileID: 6078553665638084986, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
       propertyPath: m_Size.y
@@ -130,6 +130,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7561631725001515185, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 2281a5275f11d1f4eb8fb3ddcf4c8e10, type: 3}
     - target: {fileID: 8423661946255615608, guid: 475556c827ed9d2468a49e6cd0e43a9a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

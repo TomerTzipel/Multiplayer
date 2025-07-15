@@ -1,3 +1,16 @@
+HW3: Submitted By Tomer Tzipel & Ori Shaham Bar
+
+Start in the LobbyScene3 to join a lobby and create a session just like in HW1/2.
+You can now set a lobby to not be visiable when creating it. (Obviously still joinable by creating a session with the same name).
+
+The master client can now lock the lobby so other players won't be able to join the session.
+
+Players now move using RMB by clicking on the platform (RTS/MOBA like movement)
+and they can fire a projectile using Q which will fire it in the direction of the mouse.
+
+Players who are hit by another's projectile will lose health and destroy it.
+
+
 HW2: Submitted By Tomer Tzipel & Ori Shaham Bar
 
 Start in the LobbyScene2 to join a lobby and create a session just like in HW1.
@@ -5,8 +18,6 @@ Creating/joining a session will move you to the game scene where you will choose
 The chat can be opened and closed using ENTER, the chat will close after 5 seconds upon recieveing a message (if you didn't open the chat prior to it).
 After confirming you will have to choose your character from the AMAZING selection of heroes.
 After the selection you will spawn in that hero spawn point, where you can chat atleast until HW3.
-
-
 
 
 

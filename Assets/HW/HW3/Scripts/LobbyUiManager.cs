@@ -15,6 +15,7 @@ namespace HW3
 
         [SerializeField] private TMP_Text lobbyTitle;
         [SerializeField] private TMP_Text lobbySessionsCount;
+        [SerializeField] private List<Button> lobbyButtons;
 
         [SerializeField] private SessionHandler sessionDetailsPrefab;
         [SerializeField] private Transform sessoionsScrollViewContent;
@@ -24,9 +25,19 @@ namespace HW3
 
         private List<SessionHandler> _sessionHandlers = new List<SessionHandler>(4);
         private NetworkManager _networkManager;
+        
+        public static LobbyUiManager Instance { get; private set; }
 
         void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            
             ShowLobbiesList();
             _networkManager = NetworkManager.Instance;
         }
@@ -49,6 +60,7 @@ namespace HW3
 
             string sessionName = sessionNameField.text;
 
+            DisableLobbyButtons();
             NetworkManager.Instance.JoinSession(sessionName, sessionInvisibleToggle.isOn);
         }
         public void ShowLobbiesList()
@@ -58,6 +70,7 @@ namespace HW3
         }
         public void JoinLobbyClicked(string name)
         {
+            DisableLobbyButtons();
             _networkManager.JoinLobby(name);
         }
         #endregion
@@ -97,6 +110,7 @@ namespace HW3
             lobbyTitle.text = _networkManager.NetworkRunner.LobbyInfo.Name + " Lobby";
             lobbyPanel.SetActive(true);
             lobbiesPanel.SetActive(false);
+            EnableLobbyButtons();
         }
         private void RemovePriorSessionsList(List<SessionInfo> newLobbySessions)
         {
@@ -113,7 +127,16 @@ namespace HW3
             }
         }
 
+        public void DisableLobbyButtons()
+        {
+            foreach(Button button in lobbyButtons) button.interactable = false;
+            foreach(SessionHandler session in _sessionHandlers) session.DisableButton();
+        }
 
+        public void EnableLobbyButtons()
+        {
+            foreach(Button button in lobbyButtons) button.interactable = true;
+            foreach(SessionHandler session in _sessionHandlers) session.EnableButton();
+        }
     }
-
 }

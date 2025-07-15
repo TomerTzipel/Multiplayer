@@ -4263,6 +4263,16 @@ MonoBehaviour:
   sessionCreationPanel: {fileID: 366943176}
   lobbyTitle: {fileID: 1057096939}
   lobbySessionsCount: {fileID: 1306913923}
+  lobbyButtons:
+  - {fileID: 1882783663}
+  - {fileID: 2117870767}
+  - {fileID: 648631274}
+  - {fileID: 540912891}
+  - {fileID: 544716293}
+  - {fileID: 556995386}
+  - {fileID: 346837551}
+  - {fileID: 406929583}
+  - {fileID: 1973029172}
   sessionDetailsPrefab: {fileID: 5292146128572515584, guid: 0e8b74f6e6dca9040a1fea3d55a8df9d, type: 3}
   sessoionsScrollViewContent: {fileID: 623027436}
   sessionNameField: {fileID: 239791152}

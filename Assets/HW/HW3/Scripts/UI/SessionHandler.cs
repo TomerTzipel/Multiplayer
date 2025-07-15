@@ -18,7 +18,7 @@ namespace HW3
             sessionName.text = sessionInfo.Name;
             playersCount.text = $"{sessionInfo.PlayerCount}/{sessionInfo.MaxPlayers}";
             
-            joinButton.interactable = true;
+            EnableButton();
         }
 
         public void JoinSession()
@@ -28,8 +28,18 @@ namespace HW3
 
         public void LockSession()
         {
-                joinButton.interactable = false;
-                sessionName.text += " (Locked)";
+            DisableButton(); 
+            sessionName.text += " (Locked)";
+        }
+
+        public void DisableButton()
+        {
+            joinButton.interactable = false; 
+        }
+        
+        public void EnableButton()
+        {
+            joinButton.interactable = true; 
         }
     }
 

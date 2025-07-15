@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace HW3
 {
@@ -49,6 +50,7 @@ namespace HW3
 
         public void JoinSession(string name, bool isSessionInvisible=false)
         {
+            LobbyUiManager.Instance.DisableLobbyButtons();
             NetworkRunner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Shared,
@@ -72,7 +74,6 @@ namespace HW3
             NetworkRunner.AddCallbacks(this);
         }
 
-
         #region CALLBACKS
 
 
@@ -95,8 +96,9 @@ namespace HW3
             else
             {
                 _lobbyName = NetworkRunner.LobbyInfo.Name;
-
             }
+            
+            if(SceneManager.GetActiveScene().name == "LobbyScene3") LobbyUiManager.Instance.EnableLobbyButtons();
         }
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {

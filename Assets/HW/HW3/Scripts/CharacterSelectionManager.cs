@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HW2;
 using Unity.Cinemachine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace HW3
 {
@@ -25,6 +27,7 @@ namespace HW3
         [SerializeField] private GameObject chatPanel;
         [SerializeField] private UserDataManager userDataManager;
         [SerializeField] private GameObject namePanel;
+        [SerializeField] private Toggle sessionLockToggle;
 
         private bool[] charactersPickStatus;
         private UserData userData;
@@ -45,6 +48,18 @@ namespace HW3
             selectionPanel.SetActive(false);
             finishGameButton.SetActive(false);
             gameOverPanel.SetActive(false);
+
+            if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) sessionLockToggle.gameObject.SetActive(true);
+        }
+
+        private void OnEnable()
+        {
+            sessionLockToggle.onValueChanged.AddListener(OnLockSessionStateChanged);
+        }
+        
+        private void OnDisable()
+        {
+            sessionLockToggle.onValueChanged.RemoveListener(OnLockSessionStateChanged);
         }
 
         public void InitializeUserData(UserData userData)
@@ -134,14 +149,9 @@ namespace HW3
             obj.GetComponent<PlayerController>().NetworkInitialize(userData.nickname,userData.color, mainCamera);
         }
 
-        public void LockSession()
+        private void OnLockSessionStateChanged(bool value)
         {
-            NetworkManager.Instance.NetworkRunner.SessionInfo.IsOpen = false;
-        }
-
-        public void UnlockSession()
-        {
-            NetworkManager.Instance.NetworkRunner.SessionInfo.IsOpen = true;
+            NetworkManager.Instance.NetworkRunner.SessionInfo.IsOpen = !value;
         }
     }
 }

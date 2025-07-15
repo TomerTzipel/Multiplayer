@@ -621,3 +621,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sessionName: {fileID: 4854215477637617028}
   playersCount: {fileID: 5371487427513117785}
+  joinButton: {fileID: 8712499481962079910}

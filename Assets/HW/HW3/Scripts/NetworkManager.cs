@@ -56,6 +56,7 @@ namespace HW3
                 PlayerCount = MAX_PLAYERS,
                 OnGameStarted = OnSessionStarted,
                 IsVisible = isSessionInvisible,
+                IsOpen = true,
                 CustomLobbyName = _lobbyName
             });
         }

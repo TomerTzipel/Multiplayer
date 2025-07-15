@@ -70,22 +70,24 @@ namespace HW3
             RemovePriorSessionsList(lobbySessions);
             if (lobbySessions.Count > 0)
             {
-                SessionHandler curretnHandler;
+                SessionHandler currentHandler;
                 for (int i = 0; i < lobbySessions.Count; i++)
                 {
                     // A new sessions Handler needs to be created
                     if (_sessionHandlers.Count <= i)
                     {
-                        curretnHandler = Instantiate(sessionDetailsPrefab, sessoionsScrollViewContent);
-                        curretnHandler.transform.localScale = Vector3.one;
-                        _sessionHandlers.Add(curretnHandler);
+                        currentHandler = Instantiate(sessionDetailsPrefab, sessoionsScrollViewContent);
+                        currentHandler.transform.localScale = Vector3.one;
+                        _sessionHandlers.Add(currentHandler);
                     }
                     // A sessions handler is already made and just need to update the data
                     else
                     {
-                        curretnHandler = _sessionHandlers[i];
+                        currentHandler = _sessionHandlers[i];
                     }
-                    curretnHandler.InitialzieData(lobbySessions[i]);
+                    currentHandler.InitialzieData(lobbySessions[i]);
+                    
+                    if(!lobbySessions[i].IsOpen) currentHandler.LockSession();
                 }
             }
         }

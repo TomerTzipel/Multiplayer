@@ -1681,7 +1681,7 @@ MonoBehaviour:
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
   ChannelMask: -1
-  UpdateMethod: 3
+  UpdateMethod: 2
   BlendUpdateMethod: 1
   LensModeOverride:
     Enabled: 0
@@ -5235,9 +5235,9 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2740901621259787202}
-        m_TargetAssemblyTypeName: HW3.CharacterSelectionManager, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 6699758835125998553}
+        m_TargetAssemblyTypeName: HW3.GameSessionManager, Assembly-CSharp
+        m_MethodName: OnLockSessionStateChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

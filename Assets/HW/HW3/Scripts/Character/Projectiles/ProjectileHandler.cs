@@ -41,7 +41,6 @@ namespace HW3
         {
             visuals.SetActive(false);
             hitbox.enabled = false;
-            _destroyFlag = true;
         }
 
         private void Move()

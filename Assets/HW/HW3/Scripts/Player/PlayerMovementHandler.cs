@@ -102,7 +102,8 @@ public class PlayerMovementHandler : NetworkBehaviour
     }
 
     private void TurnTowards(Vector2 direction)
-    {   
+    {
+        if (direction == Vector2.zero) return;
         visualsParent.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x,0,direction.y), Vector3.up);
     }
 

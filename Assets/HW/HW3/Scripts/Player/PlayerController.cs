@@ -1,9 +1,7 @@
 using Fusion;
 using TMPro;
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace HW3
 {
@@ -21,10 +19,7 @@ namespace HW3
 
         private InputSystem_Actions inputSystemActions;
 
-        //Can't serialize, can't pass on spawn :(
-        //If I will have a singleton scene manager I will pass it there
         private Camera _mainCamera;
-        private CinemachineBrain _cameraBrain;
 
         public void NetworkInitialize(string playerName,Color playerColor, Camera camera)
         {
@@ -35,8 +30,7 @@ namespace HW3
 
         public override void Spawned()
         {
-            _mainCamera = Camera.main;
-            _cameraBrain = _mainCamera.GetComponent<CinemachineBrain>();
+            _mainCamera = Camera.main;//no other choice... :(
             playerNameText.transform.parent.forward = _mainCamera.transform.forward;
             playerNameText.text = PlayerName;
             playerNameText.color = PlayerColor;
@@ -52,14 +46,13 @@ namespace HW3
         {
             OnDisable();
         }
+
         public override void FixedUpdateNetwork()
         {
             if (!HasStateAuthority) return;
 
             movementHandler.FixedUpdateNetworkCall();
             abilityHandler.FixedUpdateNetworkCall();
-
-            if(_cameraBrain.UpdateMethod == CinemachineBrain.UpdateMethods.ManualUpdate) _cameraBrain.ManualUpdate();
         }
 
         private void OnEnable()

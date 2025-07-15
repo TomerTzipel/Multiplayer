@@ -15,7 +15,7 @@ namespace HW3
         [SerializeField] private GameObject chatPanel;
         [SerializeField] private Transform chatScrollViewContent;
         [SerializeField] private Message messagePrefab;
-        [SerializeField] private CharacterSelectionManager characterSelectionManager;
+        [SerializeField] private GameSessionManager characterSelectionManager;
         [SerializeField] private GameObject namePanel;
         [SerializeField] private TMP_InputField nameInputField;
         [SerializeField] private ColorPickerHandler colorPicker;
@@ -31,6 +31,8 @@ namespace HW3
         private int _messageCount = 0;
         private string _selfName;
         private bool _chatOpenedByUser = false;
+
+        public UserData UserData { get; private set; }
 
         public void Awake()
         {
@@ -112,7 +114,7 @@ namespace HW3
 
             _selfName = playerName;
             EnableUserDataConfirmationButton(false);
-            characterSelectionManager.InitializeUserData(new UserData{nickname=playerName, color=playerColor});
+            UserData = new UserData { nickname = playerName, color = playerColor };
             characterSelectionManager.ConfirmPlayerData_RPC(playerName, playerColor);
         }
 

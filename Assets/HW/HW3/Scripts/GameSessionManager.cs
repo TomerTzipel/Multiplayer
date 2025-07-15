@@ -3,12 +3,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HW2;
 using Unity.Cinemachine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace HW3
 {
-    public class CharacterSelectionManager : NetworkBehaviour
+    public class GameSessionManager : NetworkBehaviour
     {
         private const string LOBBY_SCENE_NAME = "LobbyScene3";
 
@@ -17,20 +16,22 @@ namespace HW3
 
         [SerializeField] private PlayerController[] characterPrefabs;
         [SerializeField] private Transform[] characterSpawnPositions;
-
         [SerializeField] private CharacterButtonHandler[] buttonHandlers;
-        [SerializeField] private GameObject selectionPanel;
-        [SerializeField] private GameObject gameOverPanel;
-        [SerializeField] private GameObject finishGameButton;
+
+        [SerializeField] private UserDataManager userDataManager;
         [SerializeField] private ChatNetworkManager chatNetworkManager;
         [SerializeField] private ChatUIManager chatUIManager;
-        [SerializeField] private GameObject chatPanel;
-        [SerializeField] private UserDataManager userDataManager;
+
+        [SerializeField] private GameObject selectionPanel;
+        [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private GameObject namePanel;
+        [SerializeField] private GameObject chatPanel;
+
+       
+        [SerializeField] private GameObject finishGameButton;
         [SerializeField] private Toggle sessionLockToggle;
 
-        private bool[] charactersPickStatus;
-        private UserData userData;
+        private bool[] _charactersPickStatus;
 
         public override void Spawned()
         { 
@@ -42,29 +43,14 @@ namespace HW3
                 buttonHandlers[i].Initialize(this,i, settings.Name, settings.Splash);
             }
 
-            charactersPickStatus = new bool[characterPrefabs.Length];
+            _charactersPickStatus = new bool[characterPrefabs.Length];
 
             namePanel.SetActive(true);
             selectionPanel.SetActive(false);
             finishGameButton.SetActive(false);
             gameOverPanel.SetActive(false);
-
-            if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) sessionLockToggle.gameObject.SetActive(true);
-        }
-
-        private void OnEnable()
-        {
-            sessionLockToggle.onValueChanged.AddListener(OnLockSessionStateChanged);
-        }
-        
-        private void OnDisable()
-        {
-            sessionLockToggle.onValueChanged.RemoveListener(OnLockSessionStateChanged);
-        }
-
-        public void InitializeUserData(UserData userData)
-        {
-            this.userData = userData;
+            finishGameButton.SetActive(false);
+            sessionLockToggle.gameObject.SetActive(false);
         }
 
         public void EnableAllButtons(bool value)
@@ -113,10 +99,10 @@ namespace HW3
         public void RequestCharacter_RPC(int characterIndex,RpcInfo info = default)
         {
             bool isAvailable = false;
-            if (!charactersPickStatus[characterIndex])
+            if (!_charactersPickStatus[characterIndex])
             {
                 //The character is available
-                charactersPickStatus[characterIndex] = true;
+                _charactersPickStatus[characterIndex] = true;
                 isAvailable = true;
             }
 
@@ -140,16 +126,18 @@ namespace HW3
 
             selectionPanel.SetActive(false);
             if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) finishGameButton.SetActive(true);
+            if (NetworkManager.Instance.NetworkRunner.IsSharedModeMasterClient) sessionLockToggle.gameObject.SetActive(true);
         }
 
         private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
         {
             cineCam.LookAt = obj.transform;
             cineCam.Follow = obj.transform;
-            obj.GetComponent<PlayerController>().NetworkInitialize(userData.nickname,userData.color, mainCamera);
+            UserData userData = chatUIManager.UserData;
+            obj.GetComponent<PlayerController>().NetworkInitialize(userData.nickname, userData.color, mainCamera);
         }
 
-        private void OnLockSessionStateChanged(bool value)
+        public void OnLockSessionStateChanged(bool value)
         {
             NetworkManager.Instance.NetworkRunner.SessionInfo.IsOpen = !value;
         }

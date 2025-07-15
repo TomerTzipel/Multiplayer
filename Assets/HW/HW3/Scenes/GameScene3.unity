@@ -2810,18 +2810,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5766679799106438212, guid: 2f184a234414fa447ab25fbef38f2fe5, type: 3}
   m_PrefabInstance: {fileID: 741710912}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &780707756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2740901621259787202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea28d2a914e77954a892da9e691be78f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &817953740
 GameObject:
   m_ObjectHideFlags: 0
@@ -5178,7 +5166,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1401412317
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5246,7 +5234,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2740901621259787202}
+        m_TargetAssemblyTypeName: HW3.CharacterSelectionManager, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &1493961152
 GameObject:
@@ -5258,6 +5258,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1493961154}
   - component: {fileID: 1493961155}
+  - component: {fileID: 1493961156}
   m_Layer: 0
   m_Name: Scene Managers
   m_TagString: Untagged
@@ -5304,6 +5305,18 @@ MonoBehaviour:
   userDataConfirmationButton: {fileID: 1080930365}
   sendMessageButton: {fileID: 596174356}
   messageDuration: 5
+--- !u!114 &1493961156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493961152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea28d2a914e77954a892da9e691be78f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1541088859 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5481046860675109742, guid: 2f184a234414fa447ab25fbef38f2fe5, type: 3}
@@ -6190,7 +6203,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6585973285283710018}
   - component: {fileID: 6699758835125998552}
-  - component: {fileID: 780707756}
   - component: {fileID: 6699758835125998553}
   - component: {fileID: 6699758835125998554}
   m_Layer: 0
@@ -6352,22 +6364,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 2740901621259787202}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d00df96e6b8df449af41ae59bf25491, type: 3}
+  m_Script: {fileID: 11500000, guid: c72a238495018e84a9ee7933ff2b7b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cineCam: {fileID: 98674206}
   mainCamera: {fileID: 455188927}
   characterPrefabs:
-  - {fileID: 3983894514278792933, guid: a5822a5e476934b4e9bfc3898ac2be45, type: 3}
   - {fileID: 3983894514278792933, guid: 81f72550921822d4f8388e798db19b5a, type: 3}
-  - {fileID: 3983894514278792933, guid: 8ca3f1f5ab0cdee44a6e194357a45bc5, type: 3}
+  - {fileID: 3983894514278792933, guid: ff0e28b97e2d1874dac5e2575a624134, type: 3}
+  - {fileID: 3983894514278792933, guid: 3026886085841f948a048a51731ce4bf, type: 3}
   - {fileID: 3983894514278792933, guid: 72d4c46677ae2fd49b9247e88eda5f9f, type: 3}
   - {fileID: 3983894514278792933, guid: 21ab9798bb31e6441a962b4d6da0ea98, type: 3}
-  - {fileID: 3983894514278792933, guid: 0a0a38b86f856c440a69771ca4ea23c1, type: 3}
-  - {fileID: 3983894514278792933, guid: 3026886085841f948a048a51731ce4bf, type: 3}
-  - {fileID: 3983894514278792933, guid: ff0e28b97e2d1874dac5e2575a624134, type: 3}
   - {fileID: 3983894514278792933, guid: 316c2081ac3bc3a4e896896c0886e2f1, type: 3}
+  - {fileID: 3983894514278792933, guid: a5822a5e476934b4e9bfc3898ac2be45, type: 3}
+  - {fileID: 3983894514278792933, guid: 8ca3f1f5ab0cdee44a6e194357a45bc5, type: 3}
   - {fileID: 3983894514278792933, guid: 40e6c653569153246912ad84eba272cf, type: 3}
+  - {fileID: 3983894514278792933, guid: 0a0a38b86f856c440a69771ca4ea23c1, type: 3}
   characterSpawnPositions:
   - {fileID: 373678911}
   - {fileID: 420018052}
@@ -6390,14 +6402,14 @@ MonoBehaviour:
   - {fileID: 305663735}
   - {fileID: 1543563718}
   - {fileID: 1326903226}
-  selectionPanel: {fileID: 1937755164}
-  gameOverPanel: {fileID: 1918440366}
-  finishGameButton: {fileID: 1117763229}
+  userDataManager: {fileID: 1493961156}
   chatNetworkManager: {fileID: 6699758835125998554}
   chatUIManager: {fileID: 1493961155}
-  chatPanel: {fileID: 819495572}
-  userDataManager: {fileID: 780707756}
+  selectionPanel: {fileID: 1937755164}
+  gameOverPanel: {fileID: 1918440366}
   namePanel: {fileID: 1111044353}
+  chatPanel: {fileID: 819495572}
+  finishGameButton: {fileID: 1117763229}
   sessionLockToggle: {fileID: 1401412318}
 --- !u!114 &6699758835125998554
 MonoBehaviour:
@@ -6411,7 +6423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec9bf6c632a9ab14895f419bd4a6fc6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userDataManager: {fileID: 780707756}
+  userDataManager: {fileID: 1493961156}
   chatUIManager: {fileID: 1493961155}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

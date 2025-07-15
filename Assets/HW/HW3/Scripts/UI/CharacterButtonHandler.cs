@@ -10,9 +10,9 @@ namespace HW3
         [SerializeField] private TMP_Text nameText;
         [SerializeField] private Image splashImage;
 
-        private CharacterSelectionManager _manager;
+        private GameSessionManager _manager;
         private int _characterIndex;
-        public void Initialize(CharacterSelectionManager manager, int index, string name, Sprite splash)
+        public void Initialize(GameSessionManager manager, int index, string name, Sprite splash)
         {
             _manager = manager;
             _characterIndex = index;

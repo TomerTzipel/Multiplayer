@@ -68,35 +68,41 @@ public class PlayerHealthHandler : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
         if (!other.CompareTag(PROJECTILE_TAG)) return;
 
-        ProjectileHandler projectileHandler = other.GetComponent<ProjectileHandler>();
+         ProjectileHandler projectile = other.GetComponent<ProjectileHandler>();
 
-        //Self hit 
-        if (projectileHandler.HasStateAuthority && Object.HasStateAuthority) return;
+         //Self hit 
+         if (projectile.HasStateAuthority && Object.HasStateAuthority) return;
 
-        //I hit someone else
-        if (projectileHandler.HasStateAuthority && !Object.HasStateAuthority)
-        {
-            BloodEffect.Play();
-            return;
-        }
+         //I hit someone else
+         if (projectile.HasStateAuthority && !Object.HasStateAuthority)
+         {
+             PlayHitEffect(projectile);
+             return;
+         }
 
-        //Someone else hit me
-        if (!projectileHandler.HasStateAuthority && Object.HasStateAuthority)
-        {
-            BloodEffect.Play();
-            return;
-        }
+         //Someone else hit me
+         if (!projectile.HasStateAuthority && Object.HasStateAuthority)
+         {
+             PlayHitEffect(projectile);
+             return;
+         }
 
-        //Someone else hit someone else
-        if (!projectileHandler.HasStateAuthority && !Object.HasStateAuthority)
-        {
-            //Someone else hit themselves
-            if (projectileHandler.Object.StateAuthority == Object.StateAuthority) return;
+         //Someone else hit someone else
+         if (!projectile.HasStateAuthority && !Object.HasStateAuthority)
+         {
+             //Someone else hit themselves
+             if (projectile.Object.StateAuthority == Object.StateAuthority) return;
+             PlayHitEffect(projectile);
+             
+         }
+    }
 
-            BloodEffect.Play();
-        }
-
+    private void PlayHitEffect(ProjectileHandler projectile) 
+    {
+        projectile.TurnOff();
+        BloodEffect.Play();
     }
 }

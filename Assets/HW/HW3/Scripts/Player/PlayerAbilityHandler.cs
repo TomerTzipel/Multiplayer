@@ -12,7 +12,7 @@ public class PlayerAbilityHandler : NetworkBehaviour
 
     private bool _rangedAttackQueued = false;
 
-    public override void FixedUpdateNetwork()
+    public void FixedUpdateNetworkCall()
     {
         if (_rangedAttackQueued) HandleRangedAttack();
 

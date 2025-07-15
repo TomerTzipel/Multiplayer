@@ -53,10 +53,10 @@ public class PlayerMovementHandler : NetworkBehaviour
     {
         _stopQueued = true;
     }
-    public override void FixedUpdateNetwork()
+    public void FixedUpdateNetworkCall()
     {
         HandleTurning();
-        HandleMoving();     
+        HandleMoving();  
     }
 
     private void HandleTurning()

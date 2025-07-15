@@ -9,7 +9,8 @@ namespace HW3
         private const string PLAYER_TAG = "Player";
 
         [SerializeField] private ProjectileSettings settings;
-
+        [SerializeField] private GameObject visuals; 
+        [SerializeField] private Collider hitbox;
         [Networked] private int Damage { get; set; }
 
         private float _lifetime;
@@ -34,6 +35,13 @@ namespace HW3
             {
                 Move();      
             }   
+        }
+
+        public void TurnOff()
+        {
+            visuals.SetActive(false);
+            hitbox.enabled = false;
+            _destroyFlag = true;
         }
 
         private void Move()

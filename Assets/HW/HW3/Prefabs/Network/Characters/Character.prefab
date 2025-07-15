@@ -723,7 +723,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6529563146340007879}
-  - component: {fileID: 4280866102371064107}
+  - component: {fileID: 7566450377121271552}
+  - component: {fileID: 4987442865526066981}
   - component: {fileID: 4063932949162124412}
   - component: {fileID: -3244880821496298746}
   - component: {fileID: 6183951815972282462}
@@ -731,7 +732,6 @@ GameObject:
   - component: {fileID: -3234218497383731343}
   - component: {fileID: 7561631725001515185}
   - component: {fileID: 4852881815910957575}
-  - component: {fileID: 4987442865526066981}
   - component: {fileID: 4800117092764887757}
   m_Layer: 0
   m_Name: Character
@@ -757,7 +757,7 @@ Transform:
   - {fileID: 4131821914088485888}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4280866102371064107
+--- !u!114 &7566450377121271552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -766,20 +766,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 5380903091979452777}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _stateAuthorityChangeErrorCorrectionDelta: 0
   SyncScale: 0
-  SyncParent: 1
-  _interpolationTarget: {fileID: 0}
-  UsePreciseRotation: 0
-  UseRenderSleepThresholds: 1
-  RenderThresholds:
-    UseEnergy: 1
-    Position: 0.01
-    Rotation: 0.01
-    Scale: 0.01
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!54 &4987442865526066981
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5380903091979452777}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &4063932949162124412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -797,7 +818,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 4280866102371064107}
+  - {fileID: 7566450377121271552}
   - {fileID: -3244880821496298746}
   - {fileID: 9198017691766471334}
   - {fileID: -3234218497383731343}
@@ -914,33 +935,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 7561631725001515185}
---- !u!54 &4987442865526066981
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5380903091979452777}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &4800117092764887757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1069,6 +1063,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 193635343011600549}
     m_Modifications:
+    - target: {fileID: 3879502794705323522, guid: 278d36e994be5f943bb00760ce82d353, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4314409687390962880, guid: 278d36e994be5f943bb00760ce82d353, type: 3}
       propertyPath: m_Name
       value: Blood

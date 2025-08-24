@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-    private const int MIN_PLAYERS = 4;
-    private const int MAX_PLAYERS = 10;
+    public const int MIN_PLAYERS = 4;
+    public const int MAX_PLAYERS = 10;
 
 
     [SerializeField] private NetworkRunnerRef networkRunnerRef;

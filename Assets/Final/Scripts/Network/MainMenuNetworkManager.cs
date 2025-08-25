@@ -6,13 +6,12 @@ using UnityEngine;
 
 public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-    public const int MIN_PLAYERS = 4;
-    public const int MAX_PLAYERS = 10;
+    
 
 
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
-
-    private List<SessionInfo> _sessions;
+    [SerializeField] private MainMenuUIManager uiManager;
+    private List<SessionInfo> _sessions = new List<SessionInfo>(4);
 
     private NetworkRunner Runner { get { return networkRunnerRef.CurrentNetworkRunner; } }
 
@@ -30,7 +29,10 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             if (session.Name == name) return false;
         }
 
-        //TODO: Disable buttons
+        uiManager.EnableAllButtons(false);
+
+        Debug.Log("Creating Game");
+
         Runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Host,
@@ -68,6 +70,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (!Runner.IsSceneAuthority) return;
         Runner.LoadScene("SelectionScene");
+        Runner.RemoveCallbacks(this);
     }
 
     #region Network Runner Callbacks
@@ -83,12 +86,12 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         _sessions = sessionList;
-        //TODO: Update UI
+        uiManager.UpdateSessions(_sessions);
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        throw new NotImplementedException();
+        Debug.Log("WTF");
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {

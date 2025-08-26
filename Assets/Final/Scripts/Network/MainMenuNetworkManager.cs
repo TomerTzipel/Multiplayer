@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-    
-
 
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     [SerializeField] private MainMenuUIManager uiManager;
@@ -30,8 +28,6 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         }
 
         uiManager.EnableAllButtons(false);
-
-        Debug.Log("Creating Game");
 
         Runner.StartGame(new StartGameArgs()
         {
@@ -69,10 +65,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     private void OnSessionStarted(NetworkRunner obj)
     {
         if (!Runner.IsSceneAuthority) return;
-
-        Debug.Log("Loading Scene");
         Runner.LoadScene("SelectionScene");
-        Debug.Log("After Scene Load");
         Runner.RemoveCallbacks(this);
     }
 

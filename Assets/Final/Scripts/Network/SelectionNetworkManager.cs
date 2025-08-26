@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public enum Team
 {
     Red, Blue, Spectator
@@ -20,6 +21,7 @@ public struct PlayerData : INetworkStruct
 
 public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 {
+    [SerializeField] private SelectionUIManager uiManager;
 
     [Networked, Capacity(8),OnChangedRender(nameof(OnPlayerDataUpdate))]
     private NetworkDictionary<PlayerRef, PlayerData> _playersData  => default;
@@ -27,45 +29,19 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     public override void Spawned()
     {
         Runner.AddCallbacks(this);
+        OnPlayerDataUpdate();
     }
-    public void OnPlayerJoinTeam(Team team)
+    
+
+    public void OnPlayerDataUpdate()
     {
-        //Call the proper rpc
-    }
-
-    public void OnPlayerDataUpdate(NetworkBehaviourBuffer previous)
-    {
-        var priorPlayerData = GetDictionaryReader<PlayerRef, PlayerData>(nameof(_playersData)).Read(previous);
-
-        List<string> spectators = new List<string>(8);
-        List<PlayerData> redTeamPlayers = new List<PlayerData>(2);
-        List<PlayerData> blueTeamPlayers = new List<PlayerData>(2);
-
-        foreach (var kvp in _playersData)
-        {
-            switch (kvp.Value.Team)
-            {
-                case Team.Red:
-                    redTeamPlayers.Add(kvp.Value);
-                    break;
-                case Team.Blue:
-                    blueTeamPlayers.Add(kvp.Value);
-                    break;
-                case Team.Spectator:
-                    spectators.Add((string)kvp.Value.Name);
-                    break;
-            }
-
-        }
-        //Update the spectators UI
-
-        //Update the Teams UI
-
-        //Update character selection buttons
+        uiManager.UpdateUI(_playersData);
 
         if (!HasStateAuthority) return;
         
         bool EnableStartGameButton = true;
+        bool redPlayerExist = false;
+        bool bluePlayerExist = false;
         foreach (var kvp in _playersData)
         {
             if (!kvp.Value.IsReady)
@@ -73,59 +49,99 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
                 EnableStartGameButton = false;
                 break;
             }
+
+            if (kvp.Value.Team == Team.Red) redPlayerExist = true;
+            if (kvp.Value.Team == Team.Blue) bluePlayerExist = true;
         }
 
-        //Set The Button interictiable to the flag
+        if (!redPlayerExist || !bluePlayerExist) EnableStartGameButton = false;
+
+        uiManager.EnableStartGameButton(EnableStartGameButton);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RequestCharacter_RPC(int characterIndex, RpcInfo info = default)
+    public void RequestTeamChange_RPC(Team team, PlayerRef player, RpcInfo info = default)
+    {
+        PlayerData data = _playersData[player];
+        data.Team = team;
+        data.CharacterIndex = -1;
+        data.IsReady = team == Team.Spectator;
+        _playersData.Set(player, data);
+    }
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestReady_RPC(bool value, PlayerRef player, RpcInfo info = default)
+    {
+        PlayerData data = _playersData[player];
+        data.IsReady = value;
+        _playersData.Set(player, data);
+    }
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestCharacter_RPC(int characterIndex, PlayerRef player, RpcInfo info = default)
     {
         foreach (var kvp in _playersData)
         {
             if(kvp.Value.CharacterIndex == characterIndex)
             {
+                CharacterRequestResult_RPC(player, false);
                 return;
             }
         }
 
-        PlayerData data = _playersData[info.Source];
+        PlayerData data = _playersData[player];
         data.CharacterIndex = characterIndex;
-        _playersData.Set(info.Source, data);
+        _playersData.Set(player, data);
+        CharacterRequestResult_RPC(player, true);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void CharacterRequestResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
+    {
+        if (result)
+        {
+            uiManager.EnableCharacterSelectionPanel(false);
+        }
+        else uiManager.UpdateUI(_playersData);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RequestName_RPC(string name, RpcInfo info = default)
+    public void RequestName_RPC(string name,PlayerRef player ,RpcInfo info = default)
     {
         foreach (var kvp in _playersData)
         {
             if (kvp.Value.Name == name)
             {
-                NameRequestResult_RPC(info.Source,false);
+                NameRequestResult_RPC(player, false);
                 return;
             }
         }
 
-        PlayerData data = _playersData[info.Source];
+        PlayerData data = _playersData[player];
         data.Name = name;
-        _playersData.Set(info.Source, data);
-        NameRequestResult_RPC(info.Source, true);
+        _playersData.Set(player, data);
+        NameRequestResult_RPC(player, true);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void NameRequestResult_RPC([RpcTarget] PlayerRef targetPlayer,bool result)
     {
+        
         if (result)
         {
-            //Turn the name selection panel off
+            uiManager.EnableNameSelectionPanel(false);
         }
         else
         {
-            //Turn the name in use notice on
+            uiManager.UpdateUI(_playersData);
+            uiManager.EnableNameWarning(true);
         }
     }
 
-
+    public void OnGameStart()
+    {
+        //ORI
+        //Set up passing the data to that scene 
+        //Move to game scene
+    }
 
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)

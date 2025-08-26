@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Sockets;
+using HW3;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,28 +26,106 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public override void Spawned()
     {
-        Debug.Log("In SelectionNetworkManager");
         Runner.AddCallbacks(this);
     }
     public void OnPlayerJoinTeam(Team team)
     {
-        PlayerRef localPlayer = Runner.LocalPlayer;
-        //Assign the player to the team [Network]
-        //Update the proper UI
+        //Call the proper rpc
     }
 
     public void OnPlayerDataUpdate(NetworkBehaviourBuffer previous)
     {
         var priorPlayerData = GetDictionaryReader<PlayerRef, PlayerData>(nameof(_playersData)).Read(previous);
-        Debug.Log("CVhange");
-        //Check if someone chose a name and show him in the spectator list.
 
-        //Check if someone changeed a team, if so handle the change
-        //Check if someone who is on a team is now Ready, and update UI
-        //Check if someone chose a character
+        List<string> spectators = new List<string>(8);
+        List<PlayerData> redTeamPlayers = new List<PlayerData>(2);
+        List<PlayerData> blueTeamPlayers = new List<PlayerData>(2);
 
-        //Check if all players are ready, we can turn on the Host start button, if not turn it off
+        foreach (var kvp in _playersData)
+        {
+            switch (kvp.Value.Team)
+            {
+                case Team.Red:
+                    redTeamPlayers.Add(kvp.Value);
+                    break;
+                case Team.Blue:
+                    blueTeamPlayers.Add(kvp.Value);
+                    break;
+                case Team.Spectator:
+                    spectators.Add((string)kvp.Value.Name);
+                    break;
+            }
+
+        }
+        //Update the spectators UI
+
+        //Update the Teams UI
+
+        //Update character selection buttons
+
+        if (!HasStateAuthority) return;
+        
+        bool EnableStartGameButton = true;
+        foreach (var kvp in _playersData)
+        {
+            if (!kvp.Value.IsReady)
+            {
+                EnableStartGameButton = false;
+                break;
+            }
+        }
+
+        //Set The Button interictiable to the flag
     }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestCharacter_RPC(int characterIndex, RpcInfo info = default)
+    {
+        foreach (var kvp in _playersData)
+        {
+            if(kvp.Value.CharacterIndex == characterIndex)
+            {
+                return;
+            }
+        }
+
+        PlayerData data = _playersData[info.Source];
+        data.CharacterIndex = characterIndex;
+        _playersData.Set(info.Source, data);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestName_RPC(string name, RpcInfo info = default)
+    {
+        foreach (var kvp in _playersData)
+        {
+            if (kvp.Value.Name == name)
+            {
+                NameRequestResult_RPC(info.Source,false);
+                return;
+            }
+        }
+
+        PlayerData data = _playersData[info.Source];
+        data.Name = name;
+        _playersData.Set(info.Source, data);
+        NameRequestResult_RPC(info.Source, true);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void NameRequestResult_RPC([RpcTarget] PlayerRef targetPlayer,bool result)
+    {
+        if (result)
+        {
+            //Turn the name selection panel off
+        }
+        else
+        {
+            //Turn the name in use notice on
+        }
+    }
+
+
 
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -59,7 +138,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        //TODO: Handle Player Leave
+        _playersData.Remove(player);
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {

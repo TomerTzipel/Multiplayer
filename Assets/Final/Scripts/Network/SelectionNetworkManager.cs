@@ -4,97 +4,62 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
+public enum Team
 {
-    
+    Red, Blue, Spectator
+}
 
+public struct PlayerData : INetworkStruct
+{
+    public NetworkString<_8> Name;
+    public Team Team;
+    public int CharacterIndex;
+    public NetworkBool IsReady;   
+}
 
-    [SerializeField] private NetworkRunnerRef networkRunnerRef;
-    [SerializeField] private MainMenuUIManager uiManager;
-    private List<SessionInfo> _sessions = new List<SessionInfo>(4);
+public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
+{
 
-    private NetworkRunner Runner { get { return networkRunnerRef.CurrentNetworkRunner; } }
+    [Networked, Capacity(8),OnChangedRender(nameof(OnPlayerDataUpdate))]
+    private NetworkDictionary<PlayerRef, PlayerData> _playersData  => default;
 
-    private void Awake()
+    public override void Spawned()
     {
-        networkRunnerRef.GenerateRunner(this);
+        Debug.Log("In SelectionNetworkManager");
+        Runner.AddCallbacks(this);
+    }
+    public void OnPlayerJoinTeam(Team team)
+    {
+        PlayerRef localPlayer = Runner.LocalPlayer;
+        //Assign the player to the team [Network]
+        //Update the proper UI
     }
 
-    public bool CreateSession(string name,bool isVisible,int playerCount)
+    public void OnPlayerDataUpdate(NetworkBehaviourBuffer previous)
     {
+        var priorPlayerData = GetDictionaryReader<PlayerRef, PlayerData>(nameof(_playersData)).Read(previous);
+        Debug.Log("CVhange");
+        //Check if someone chose a name and show him in the spectator list.
 
-        //Disallow duplication of session names
-        foreach (SessionInfo session in _sessions) 
-        {
-            if (session.Name == name) return false;
-        }
+        //Check if someone changeed a team, if so handle the change
+        //Check if someone who is on a team is now Ready, and update UI
+        //Check if someone chose a character
 
-        uiManager.EnableAllButtons(false);
-
-        Debug.Log("Creating Game");
-
-        Runner.StartGame(new StartGameArgs()
-        {
-            GameMode = GameMode.Host,
-            SessionName = name,
-            PlayerCount = playerCount,
-            OnGameStarted = OnSessionStarted,
-            IsVisible = isVisible
-        });
-
-        return true;
-    }
-    public bool JoinSession(string name)
-    {
-        //Make sure the session exists and isn't creating a new session 
-        bool doesExist = false;
-        foreach (SessionInfo session in _sessions)
-        {
-            if (session.Name == name) doesExist = true;
-        }
-
-        if (!doesExist) return false;
-
-        //TODO: Disable buttons
-        Runner.StartGame(new StartGameArgs()
-        {
-            GameMode = GameMode.Client,
-            SessionName = name,
-            OnGameStarted = OnSessionStarted
-        });
-
-        return true;
-    }
-
-    private void OnSessionStarted(NetworkRunner obj)
-    {
-        if (!Runner.IsSceneAuthority) return;
-
-        Debug.Log("Loading Scene");
-        Runner.LoadScene("SelectionScene");
-        Debug.Log("After Scene Load");
-        Runner.RemoveCallbacks(this);
+        //Check if all players are ready, we can turn on the Host start button, if not turn it off
     }
 
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+        _playersData.Add(player,new PlayerData() { CharacterIndex = -1,IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"}); 
     }
-
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-        throw new NotImplementedException();
-    }
-    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-    {
-        _sessions = sessionList;
-        uiManager.UpdateSessions(_sessions);
-    }
-
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        //TODO: Handle Join Errors
+        //Handle Player Shutdown
+    }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        //TODO: Handle Player Leave
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {
@@ -128,7 +93,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        throw new NotImplementedException();
+
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
@@ -146,7 +111,6 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         throw new NotImplementedException();
     }
 
-
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
     {
         throw new NotImplementedException();
@@ -159,10 +123,15 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         throw new NotImplementedException();
     }
@@ -173,6 +142,10 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         throw new NotImplementedException();
     }
+
+
+
     #endregion
+
 
 }

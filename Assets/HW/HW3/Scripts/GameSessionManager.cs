@@ -18,7 +18,7 @@ namespace HW3
         [SerializeField] private Transform[] characterSpawnPositions;
         [SerializeField] private CharacterButtonHandler[] buttonHandlers;
 
-        [SerializeField] private UserDataManager userDataManager;
+        [SerializeField] private UserDataManager userDataManager; 
         [SerializeField] private ChatNetworkManager chatNetworkManager;
         [SerializeField] private ChatUIManager chatUIManager;
 

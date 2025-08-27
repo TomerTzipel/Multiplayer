@@ -8,12 +8,7 @@ public class NetworkRunnerRef : ScriptableObject
 
     public NetworkRunner CurrentNetworkRunner { get; private set; }
 
-    public void GenerateNewRunner()
-    {
-        if(CurrentNetworkRunner != null) Destroy(CurrentNetworkRunner.gameObject);
-
-        CurrentNetworkRunner = Instantiate(networkRunnerPrefab);
-    }
+    
     public void GenerateRunner(INetworkRunnerCallbacks networkManager)
     {
         GenerateNewRunner();
@@ -23,5 +18,11 @@ public class NetworkRunnerRef : ScriptableObject
     public void AddCallbacks(INetworkRunnerCallbacks networkManager)
     {
         CurrentNetworkRunner.AddCallbacks(networkManager);
+    }
+    private void GenerateNewRunner()
+    {
+        if (CurrentNetworkRunner != null) Destroy(CurrentNetworkRunner.gameObject);
+
+        CurrentNetworkRunner = Instantiate(networkRunnerPrefab);
     }
 }

@@ -2,20 +2,23 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
+
 
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     [SerializeField] private MainMenuUIManager uiManager;
     private List<SessionInfo> _sessions = new List<SessionInfo>(4);
 
     private NetworkRunner Runner { get { return networkRunnerRef.CurrentNetworkRunner; } }
-
+    private const string lobbyName = "MainLobby";
     private void Awake()
     {
         networkRunnerRef.GenerateRunner(this);
+        JoinMainLobby();
     }
 
     public bool CreateSession(string name,bool isVisible,int playerCount)
@@ -33,6 +36,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             GameMode = GameMode.Host,
             SessionName = name,
+            CustomLobbyName = lobbyName,
             PlayerCount = playerCount,
             OnGameStarted = OnSessionStarted,
             IsVisible = isVisible
@@ -51,11 +55,11 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         if (!doesExist) return false;
 
-        //TODO: Disable buttons
+        uiManager.EnableAllButtons(false);
         Runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Client,
-            SessionName = name,
+            SessionName = name,   
             OnGameStarted = OnSessionStarted
         });
 
@@ -64,9 +68,15 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     private void OnSessionStarted(NetworkRunner obj)
     {
-        if (!Runner.IsSceneAuthority) return;
-        Runner.LoadScene("SelectionScene");
         Runner.RemoveCallbacks(this);
+
+        if (!Runner.IsSceneAuthority) return;
+        Runner.LoadScene("SelectionScene");       
+    }
+
+    private async void JoinMainLobby()
+    {
+        await Runner.JoinSessionLobby(SessionLobby.Custom, lobbyName);
     }
 
     #region Network Runner Callbacks
@@ -81,17 +91,21 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
+        Debug.Log("Session List Updated");
         _sessions = sessionList;
         uiManager.UpdateSessions(_sessions);
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        //TODO: Handle Join Errors
+        networkRunnerRef.GenerateRunner(this);
+        uiManager.EnableAllButtons(false);
+        JoinMainLobby();
+        uiManager.EnableAllButtons(true);
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
@@ -159,8 +173,6 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         throw new NotImplementedException();
     }
-
-
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {

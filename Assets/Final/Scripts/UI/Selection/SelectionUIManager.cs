@@ -128,7 +128,7 @@ public class SelectionUIManager : MonoBehaviour
         UpdateSpectatorList(spectators);
 
         joinRedButton.gameObject.SetActive(redPlayersIndex < 2);
-        joinBlueButton.gameObject.SetActive(redPlayersIndex < 2);
+        joinBlueButton.gameObject.SetActive(bluePlayersIndex < 2);
     }
     public void EnableStartGameButton(bool value)
     {

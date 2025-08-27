@@ -23,6 +23,8 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private SelectionUIManager uiManager;
 
+    private const int NO_CHARACTER = -1;
+
     [Networked, Capacity(8),OnChangedRender(nameof(OnPlayerDataUpdate))]
     private NetworkDictionary<PlayerRef, PlayerData> _playersData  => default;
 
@@ -64,7 +66,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     {
         PlayerData data = _playersData[player];
         data.Team = team;
-        data.CharacterIndex = -1;
+        data.CharacterIndex = NO_CHARACTER;
         data.IsReady = team == Team.Spectator;
         _playersData.Set(player, data);
     }
@@ -72,9 +74,23 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     public void RequestReady_RPC(bool value, PlayerRef player, RpcInfo info = default)
     {
         PlayerData data = _playersData[player];
+        if (data.CharacterIndex == NO_CHARACTER)
+        {
+            RequestReadyResult_RPC(player, false);
+            return;
+        }
+
         data.IsReady = value;
         _playersData.Set(player, data);
+        RequestReadyResult_RPC(player, true);
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RequestReadyResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
+    {
+        if (!result) uiManager.UpdateUI(_playersData);
+    }
+
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RequestCharacter_RPC(int characterIndex, PlayerRef player, RpcInfo info = default)
     {
@@ -146,7 +162,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        _playersData.Add(player,new PlayerData() { CharacterIndex = -1,IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"}); 
+        _playersData.Add(player,new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"}); 
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
@@ -158,7 +174,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
@@ -168,7 +184,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
@@ -193,12 +209,12 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)

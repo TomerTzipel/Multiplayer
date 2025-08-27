@@ -435,7 +435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkManager: {fileID: 158961773}
-  sessionHandlerPrefab: {fileID: 0}
+  sessionHandlerPrefab: {fileID: 7220418507626644021, guid: fc645600178496f48aaefe82067c530f, type: 3}
   sessoionsScrollViewContent: {fileID: 1300502683}
   sessionsCountText: {fileID: 1980043807}
 --- !u!4 &84747756

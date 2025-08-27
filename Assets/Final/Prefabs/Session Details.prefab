@@ -121,9 +121,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: HW3.SessionHandler, Assembly-CSharp
-        m_MethodName: JoinSession
+      - m_Target: {fileID: 7220418507626644021}
+        m_TargetAssemblyTypeName: SessionHandler, Assembly-CSharp
+        m_MethodName: OnJoinSessionClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

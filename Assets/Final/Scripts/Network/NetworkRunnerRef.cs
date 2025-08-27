@@ -15,6 +15,7 @@ public class NetworkRunnerRef : ScriptableObject
     {
         GenerateNewRunner();
         CurrentNetworkRunner.AddCallbacks(networkManager);
+        CurrentNetworkRunner.ProvideInput = true;
     }
 
     public void AddCallbacks(INetworkRunnerCallbacks networkManager)

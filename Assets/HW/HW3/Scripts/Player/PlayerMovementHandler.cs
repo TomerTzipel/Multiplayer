@@ -22,6 +22,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     private bool _turnQueued = false;
     private Vector2 _turnDirectionCache;
     private bool _stopQueued = false;
+
     public override void Spawned()
     {
         agent.enabled = true;

@@ -88,7 +88,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RequestReadyResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
     {
-        if (!result) uiManager.UpdateUI(_playersData);
+        if (!result) OnPlayerDataUpdate();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -116,7 +116,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         {
             uiManager.EnableCharacterSelectionPanel(false);
         }
-        else uiManager.UpdateUI(_playersData);
+        else OnPlayerDataUpdate();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -147,7 +147,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         }
         else
         {
-            uiManager.UpdateUI(_playersData);
+            OnPlayerDataUpdate();
             uiManager.EnableNameWarning(true);
         }
     }

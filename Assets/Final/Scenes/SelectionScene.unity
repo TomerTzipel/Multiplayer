@@ -320,6 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiManager: {fileID: 825881352}
+  networkRunnerRef: {fileID: 11400000, guid: 90b6fd25354ac6a4f8c83ea73a02eb09, type: 2}
 --- !u!1 &184510901
 GameObject:
   m_ObjectHideFlags: 0

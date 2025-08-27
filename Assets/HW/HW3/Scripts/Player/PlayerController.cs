@@ -7,7 +7,6 @@ namespace HW3
 {
     public class PlayerController : NetworkBehaviour
     {
-
         [field: SerializeField] public CharacterSettings Settings { get; private set; }
         [SerializeField] private TMP_Text playerNameText;
         [SerializeField] private PlayerMovementHandler movementHandler;

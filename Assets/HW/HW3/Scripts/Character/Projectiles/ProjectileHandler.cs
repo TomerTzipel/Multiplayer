@@ -11,7 +11,7 @@ namespace HW3
         [SerializeField] private ProjectileSettings settings;
         [SerializeField] private GameObject visuals; 
         [SerializeField] private Collider hitbox;
-        [Networked] private int Damage { get; set; }
+        [Networked] public int Damage { get; set; }
 
         private float _lifetime;
         private bool _destroyFlag = false;

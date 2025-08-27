@@ -22,7 +22,7 @@ public struct PlayerData : INetworkStruct
 public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private SelectionUIManager uiManager;
-
+    [SerializeField] private NetworkRunnerRef networkRunnerRef;
     private const int NO_CHARACTER = -1;
 
     [Networked, Capacity(8),OnChangedRender(nameof(OnPlayerDataUpdate))]
@@ -154,9 +154,15 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnGameStart()
     {
-        //ORI
-        //Set up passing the data to that scene 
-        //Move to game scene
+        Dictionary <PlayerRef, PlayerData> playerData = new Dictionary<PlayerRef, PlayerData>(8);
+        foreach (var kvp in _playersData)
+        {
+            playerData.Add(kvp.Key, kvp.Value);
+        }
+        networkRunnerRef.PlayerData = playerData;
+
+        Debug.Log($"Selection - {networkRunnerRef.PlayerData.Count}");
+        Runner.LoadScene("GameScene");
     }
 
     #region Network Runner Callbacks
@@ -239,7 +245,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadStart(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)

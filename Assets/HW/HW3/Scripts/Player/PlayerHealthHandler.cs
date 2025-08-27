@@ -52,7 +52,7 @@ public class PlayerHealthHandler : NetworkBehaviour
         HealthBar.UpdateSlider(hpPercentage, hp, _maxHealth);
     }
 
-    //Used to reverse the local health bar changeto keep the UI synced
+    //Used to reverse the local health bar change to keep the UI synced
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void FailedHitValidation_RPC([RpcTarget] PlayerRef target)
     {
@@ -71,7 +71,7 @@ public class PlayerHealthHandler : NetworkBehaviour
 
         if (!other.CompareTag(PROJECTILE_TAG)) return;
 
-         ProjectileHandler projectile = other.GetComponent<ProjectileHandler>();
+        HW3.ProjectileHandler projectile = other.GetComponent<HW3.ProjectileHandler>();
 
          //Self hit 
          if (projectile.HasStateAuthority && Object.HasStateAuthority) return;
@@ -100,7 +100,7 @@ public class PlayerHealthHandler : NetworkBehaviour
          }
     }
 
-    private void PlayHitEffect(ProjectileHandler projectile) 
+    private void PlayHitEffect(HW3.ProjectileHandler projectile) 
     {
         projectile.TurnOff();
         BloodEffect.Play();

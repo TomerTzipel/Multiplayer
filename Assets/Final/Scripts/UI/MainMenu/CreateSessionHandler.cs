@@ -24,6 +24,8 @@ public class CreateSessionHandler : MonoBehaviour
 
     public void CreateSession()
     {
+        if (playerCountInputField.text == string.Empty) return;
+
         int playerCount = int.Parse(playerCountInputField.text);
         if (playerCount < MIN_PLAYERS || playerCount > MAX_PLAYERS) return;
 

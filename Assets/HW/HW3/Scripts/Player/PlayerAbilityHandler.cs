@@ -1,8 +1,8 @@
 using Fusion;
-using HW2;
+
 using HW3;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public class PlayerAbilityHandler : NetworkBehaviour
 {
@@ -32,6 +32,6 @@ public class PlayerAbilityHandler : NetworkBehaviour
 
     private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
     {
-        obj.GetComponent<ProjectileHandler>().NetworkInitialize(controller.Settings.Damage);
+        obj.GetComponent<HW3.ProjectileHandler>().NetworkInitialize(controller.Settings.Damage);
     }
 }

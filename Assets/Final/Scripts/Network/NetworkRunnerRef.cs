@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "NetworkRunnerRef", menuName = "Scriptable Objects/NetworkRunnerRef")]
 public class NetworkRunnerRef : ScriptableObject
@@ -8,7 +9,8 @@ public class NetworkRunnerRef : ScriptableObject
 
     public NetworkRunner CurrentNetworkRunner { get; private set; }
 
-    
+    public Dictionary<PlayerRef, PlayerData> PlayerData { get; set; }
+
     public void GenerateRunner(INetworkRunnerCallbacks networkManager)
     {
         GenerateNewRunner();

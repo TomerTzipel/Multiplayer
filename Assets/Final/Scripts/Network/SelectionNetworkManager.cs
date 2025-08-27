@@ -4,6 +4,7 @@ using HW3;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [Serializable]
 public enum Team
@@ -165,6 +166,13 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         Runner.LoadScene("GameScene");
     }
 
+    public void OnSelectionLeave()
+    {
+        if(Runner.IsServer)
+        Runner.Shutdown();
+        SceneManager.LoadScene("MainMenuScene");
+    }
+
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
@@ -176,6 +184,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"Player {player.PlayerId} left");
         _playersData.Remove(player);
     }
     public void OnConnectedToServer(NetworkRunner runner)

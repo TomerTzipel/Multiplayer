@@ -2,11 +2,15 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 {
-    [SerializeField] private NetworkRunnerRef networkRunnerRef; 
+    [SerializeField] private NetworkRunnerRef networkRunnerRef;
+    [SerializeField] private CamerasRef camerasRef;
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private CinemachineCamera cineCam;
 
     [Networked, Capacity(8)]
     private NetworkDictionary<PlayerRef, PlayerData> _playersData => default;
@@ -14,7 +18,8 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     public override void Spawned()
     {
         Runner.AddCallbacks(this);
-
+        camerasRef.MainCamera = mainCamera;
+        camerasRef.CineCam = cineCam;
         if (!HasStateAuthority) return;
 
         foreach (var kvp in networkRunnerRef.PlayerData)

@@ -25,7 +25,7 @@ public class PlayerAbilityHandler : NetworkBehaviour
 
     private void HandleRangedAttack()
     {
-        animationStateHandler.StartThrowAnimation();
+        animationStateHandler.StartThrowAnimation(Vector2.up);
         Runner.Spawn(controller.Settings.ProjectilePrefab, spawnPoint.position, spawnPoint.rotation, onBeforeSpawned: InitializeProjectile);
         _rangedAttackQueued = false;
     }

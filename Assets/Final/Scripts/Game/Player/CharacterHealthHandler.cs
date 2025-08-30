@@ -41,7 +41,7 @@ public class CharacterHealthHandler : NetworkBehaviour
 
         ProjectileHandler projectile = other.GetComponent<ProjectileHandler>();
 
-        if (projectile.OwnerName == controller.OwnerName) return;
+        if (projectile.OwnerName == controller.PlayerData.Name) return;
 
         TakeDamage(projectile.Damage);
         Runner.Despawn(projectile.Object);

@@ -1,6 +1,7 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class CharacterMovementHandler : NetworkBehaviour
@@ -9,7 +10,6 @@ public class CharacterMovementHandler : NetworkBehaviour
     private const string WALKABLE_LAYER_MASK = "Walkable";
 
     [SerializeField] private PlayerCharacterController controller;
-    [SerializeField] private AnimationStateHandler animationStateHandler;
 
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private GameObject visualsParent;
@@ -18,10 +18,8 @@ public class CharacterMovementHandler : NetworkBehaviour
 
     [Networked] private NetworkBool _hasPath { get; set; } = false;
 
-    [Networked] private NetworkBool _turnQueued { get; set; } = false;
-    [Networked] private Vector2 _nextTurnDirection { get; set; }
-    [Networked] private NetworkBool _stopQueued { get; set; } = false;
-
+    public event UnityAction OnStartMoving;
+    public event UnityAction OnStopMoving;
     public override void Spawned()
     {
         agent.enabled = true;
@@ -30,7 +28,34 @@ public class CharacterMovementHandler : NetworkBehaviour
         agent.updatePosition = false;
         agent.updateRotation = false;
     }
-    public void StartMoving()
+    private void OnEnable()
+    {
+        if (Object == null) return;
+
+        controller.OnRangedAttack += HandleRangedAttack;
+    }
+    private void OnDisable()
+    {
+        if (Object == null) return;
+
+        controller.OnRangedAttack -= HandleRangedAttack;
+    }
+    public void FixedUpdateNetworkCall()
+    {
+        if (!HasStateAuthority) return;
+
+        GetInput<PlayerInput>(out var input);
+ 
+        if (input.Buttons.IsSet(Buttons.Move))
+        {
+            StartMoving();
+        }
+
+        TurnTowardsMoveDirection();
+        Move();
+    }
+
+    private void StartMoving()
     {
         int groundLayerMask = LayerMask.GetMask(WALKABLE_LAYER_MASK);
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -40,49 +65,27 @@ public class CharacterMovementHandler : NetworkBehaviour
             Debug.DrawLine(ray.origin, _destiantion, Color.green, 5f);
             agent.SetDestination(_destiantion);
             _hasPath = true;
-            animationStateHandler.StartMoveAnimation();
+            OnStartMoving.Invoke();
         }
     }
-    public void Turn(Vector2 direction)
+
+    private void HandleRangedAttack(Vector2 direction)
     {
-        _turnQueued = true;
-        _nextTurnDirection = direction;
-    }
-    public void Stop()
-    {
-        _stopQueued = true;
-    }
-    public void FixedUpdateNetworkCall()
-    {
-        HandleTurning();
-        HandleMoving();
+        StopMoving();
+        TurnTowards(direction);
     }
 
-    private void HandleTurning()
+    private void TurnTowardsMoveDirection()
     {
-        if (_turnQueued)
-        {
-            TurnTowards(_nextTurnDirection);
-            _turnQueued = false;
-            return;
-        }
-
-        if (!_hasPath) { return; }
+        if (!_hasPath) return; 
 
         Vector2 lookDirection = new Vector2(agent.nextPosition.x - transform.position.x, agent.nextPosition.z - transform.position.z);
         TurnTowards(lookDirection);
     }
 
-    private void HandleMoving()
+    private void Move()
     {
-        if (_stopQueued)
-        {
-            StopMoving();
-            _stopQueued = false;
-            return;
-        }
-
-        if (!_hasPath) { return; }
+        if (!_hasPath) return; 
 
         if (WasDestinationReached())
         {
@@ -92,12 +95,13 @@ public class CharacterMovementHandler : NetworkBehaviour
 
         transform.position = agent.nextPosition;
     }
+
     private void StopMoving()
     {
         _hasPath = false;
         agent.ResetPath();
         agent.velocity = Vector3.zero;
-        animationStateHandler.StopMoveAnimation();
+        OnStopMoving.Invoke();
     }
 
     private void TurnTowards(Vector2 direction)

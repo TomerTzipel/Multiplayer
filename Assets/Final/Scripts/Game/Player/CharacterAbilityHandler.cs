@@ -1,34 +1,38 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class CharacterAbilityHandler : NetworkBehaviour
 {
     [SerializeField] private PlayerCharacterController controller;
     [SerializeField] private Transform spawnPoint;
-    [SerializeField] private AnimationStateHandler animationStateHandler;
+    
 
-    [Networked] private bool _rangedAttackQueued { get; set; } = false;
+    public event UnityAction<Vector2> OnRangedAttack;
 
-    public void FixedUpdateNetworkCall()
+    public override void FixedUpdateNetwork()
     {
-        if (_rangedAttackQueued) HandleRangedAttack();
+        if (GetInput<PlayerInput>(out var input) == false) return;
 
+        if (!HasStateAuthority) return;
+
+        if (input.Buttons.IsSet(Buttons.Attack))
+        {
+            RangedAttack();
+        }
     }
-
-    public void DoRangedAttack()
+    public void RangedAttack()
     {
-        _rangedAttackQueued = true;
-    }
-
-    private void HandleRangedAttack()
-    {
-        animationStateHandler.StartThrowAnimation();
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Vector2 playerScreenPosition = controller.CamerasRef.MainCamera.WorldToScreenPoint(transform.position);
+        Vector2 direction = mousePosition - playerScreenPosition;
+        OnRangedAttack.Invoke(direction);
         Runner.Spawn(controller.Settings.ProjectilePrefab, spawnPoint.position, spawnPoint.rotation, onBeforeSpawned: InitializeProjectile);
-        _rangedAttackQueued = false;
     }
 
     private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
     {
-        obj.GetComponent<ProjectileHandler>().NetworkInitialize(controller.Settings.Damage,(string)controller.OwnerName);
+        obj.GetComponent<ProjectileHandler>().NetworkInitialize(controller.Settings.Damage,(string)controller.PlayerData.Name);
     }
 }

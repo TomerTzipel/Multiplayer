@@ -3,6 +3,7 @@ using HW3;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 public class PlayerMovementHandler : NetworkBehaviour
 {
@@ -30,6 +31,12 @@ public class PlayerMovementHandler : NetworkBehaviour
         agent.Warp(transform.position);
         agent.updatePosition = false;
         agent.updateRotation = false;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        HandleTurning();
+        HandleMoving();
     }
 
     public void StartMoving()

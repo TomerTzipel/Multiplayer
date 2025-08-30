@@ -2,17 +2,103 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
+using UnityEngine.Windows;
+
+enum Buttons
+{
+    Move = 0,
+    Attack = 1
+}
+public struct PlayerInput : INetworkInput
+{
+    public NetworkButtons Buttons;
+}
 
 public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallbacks
 {
-    [field: SerializeField] public CharacterSettings Settings { get; private set; }
-    [Networked] public NetworkString<_8> OwnerName { get; set; }
-    public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
+    [SerializeField] private TMP_Text playerNameText;
+    [SerializeField] private CharacterMovementHandler movementHandler;
+    [SerializeField] private CharacterHealthHandler healthHandler;
+    [SerializeField] private CharacterAbilityHandler abilityHandler;
+    [SerializeField] private AnimationStateHandler animationStateHandler;
 
+    private InputSystem_Actions _inputSystemActions = new InputSystem_Actions();
+
+    [field: SerializeField] public CharacterSettings Settings { get; private set; }
+    [field: SerializeField] public CamerasRef CamerasRef { get; private set; }
+  
+    [Networked] public PlayerData PlayerData { get; set; }
+
+    public event UnityAction<Vector2> OnRangedAttack { add { abilityHandler.OnRangedAttack += value; } remove { abilityHandler.OnRangedAttack -= value; } }
+    public event UnityAction OnStartMoving { add { movementHandler.OnStartMoving += value; } remove { movementHandler.OnStartMoving -= value; } }
+    public event UnityAction OnStopMoving { add { movementHandler.OnStopMoving += value; } remove { movementHandler.OnStopMoving -= value; } }
+    public void NetworkInitialize(PlayerData data)
+    {
+        PlayerData = data;
+        healthHandler.Health = Settings.MaxHealth;
     }
 
+    public override void Spawned()
+    {
+        playerNameText.transform.parent.forward = CamerasRef.MainCamera.transform.forward;
+        playerNameText.text = (string)PlayerData.Name;
+
+        switch (PlayerData.Team)
+        {
+            case Team.Red:
+                playerNameText.color = Color.red;
+                break;
+            case Team.Blue:
+                playerNameText.color = Color.blue;
+                break;
+            default:
+                break;
+        }
+
+        if (Object.HasInputAuthority)
+        {
+            CamerasRef.CineCam.LookAt = transform;
+            CamerasRef.CineCam.Follow = transform;
+            OnEnable();
+            
+        }
+    }
+    private void OnEnable()
+    {
+        if (Object == null) return;
+
+        if (Object.HasInputAuthority)
+        {
+            Runner.AddCallbacks(this);
+            _inputSystemActions.Player.Enable();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (Object == null) return;
+
+        if (Object.HasStateAuthority)
+        {
+            Runner.RemoveCallbacks(this);
+            _inputSystemActions.Player.Disable();
+        }
+    }
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        if (!HasInputAuthority) return;
+
+        var playerInput = new PlayerInput();
+
+        playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
+        playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.RangedAttack.IsPressed());
+    }
+
+  
     #region Unused Callbacks
     public void OnConnectedToServer(NetworkRunner runner)
     {

@@ -168,6 +168,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"Player{player.PlayerId} Has Joined");
         _playersData.Add(player,new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"}); 
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)

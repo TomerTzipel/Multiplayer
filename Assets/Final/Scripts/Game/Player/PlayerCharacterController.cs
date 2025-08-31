@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
 enum Buttons
 {
@@ -26,7 +24,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     [SerializeField] private CharacterAbilityHandler abilityHandler;
     [SerializeField] private AnimationStateHandler animationStateHandler;
 
-    private InputSystem_Actions _inputSystemActions = new InputSystem_Actions();
+    private InputSystem_Actions _inputSystemActions;
 
     [field: SerializeField] public CharacterSettings Settings { get; private set; }
     [field: SerializeField] public CamerasRef CamerasRef { get; private set; }
@@ -44,6 +42,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public override void Spawned()
     {
+        _inputSystemActions = new InputSystem_Actions();
         playerNameText.transform.parent.forward = CamerasRef.MainCamera.transform.forward;
         playerNameText.text = (string)PlayerData.Name;
 

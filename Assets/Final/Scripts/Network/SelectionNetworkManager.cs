@@ -199,6 +199,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void PlayerDataResponse_RPC(NetworkString<_8> name, PlayerRef player)
     {
+        Debug.Log("hello from the other side");
         PlayerRef oldPlayerRef = player; //Initialize to be able to compile
         foreach (var kvp in _playersData)
         {
@@ -212,10 +213,6 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
         _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
-        foreach (var kvp in _playersData)
-        {
-            Debug.Log(kvp);
-        }
     }
     
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)

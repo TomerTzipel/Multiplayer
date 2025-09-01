@@ -224,6 +224,8 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        if (!HasStateAuthority) return;
+
         Debug.Log($"Player {player.PlayerId} left");
         _playersData.Remove(player);
     }

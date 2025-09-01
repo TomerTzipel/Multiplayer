@@ -23,7 +23,7 @@ public class PlayerStatusHandler : MonoBehaviour
         characterSplashImage.sprite = null;
     }
 
-    public void UpdateUI(PlayerRef player,PlayerData data,PlayerRef localPlayer, CharacterSettings[] characters)
+    public void UpdateUI(PlayerRef player,PlayerData data,PlayerRef localPlayer, CharactersRef charactersRef)
     {
         gameObject.SetActive(true);
         if (data.IsReady) readyStatusImage.color = Color.green;
@@ -35,7 +35,7 @@ public class PlayerStatusHandler : MonoBehaviour
 
         if(data.CharacterIndex >= 0)
         {
-            characterSplashImage.sprite = characters[data.CharacterIndex].Splash;
+            characterSplashImage.sprite = charactersRef.Characters[data.CharacterIndex].Settings.Splash;
         }    
     }
 

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class SelectionUIManager : MonoBehaviour
 {
     [SerializeField] private SelectionNetworkManager networkManager;
-    [SerializeField] private CharacterSettings[] characterSettings;
+    [SerializeField] private CharactersRef charactersRef;
     [SerializeField] private CharacterButtonHandler[] buttonHandlers;
 
 
@@ -38,7 +38,7 @@ public class SelectionUIManager : MonoBehaviour
         for (int i = 0; i < buttonHandlers.Length; i++)
         {
             buttonHandlers[i].OnCharacterSelect += HandleCharacterSelect;
-            buttonHandlers[i].Initialize(i, characterSettings[i].name, characterSettings[i].Splash);
+            buttonHandlers[i].Initialize(i, charactersRef.Characters[i].Settings.Name, charactersRef.Characters[i].Settings.Splash);
         }
 
         foreach (PlayerStatusHandler handler in redTeamPlayerStatusHandlers)
@@ -103,12 +103,12 @@ public class SelectionUIManager : MonoBehaviour
             switch (kvp.Value.Team)
             {
                 case Team.Red:
-                    redTeamPlayerStatusHandlers[redPlayersIndex].UpdateUI(kvp.Key, kvp.Value, LocalPlayer, characterSettings);
+                    redTeamPlayerStatusHandlers[redPlayersIndex].UpdateUI(kvp.Key, kvp.Value, LocalPlayer, charactersRef);
                     joinRedButton.interactable = kvp.Key != LocalPlayer;
                     redPlayersIndex++;
                     break;
                 case Team.Blue:
-                    blueTeamPlayerStatusHandlers[bluePlayersIndex].UpdateUI(kvp.Key, kvp.Value, LocalPlayer, characterSettings);
+                    blueTeamPlayerStatusHandlers[bluePlayersIndex].UpdateUI(kvp.Key, kvp.Value, LocalPlayer, charactersRef);
                     joinBlueButton.interactable = kvp.Key != LocalPlayer;
                     bluePlayersIndex++;
                     break;

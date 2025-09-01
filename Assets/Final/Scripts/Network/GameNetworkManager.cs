@@ -1,16 +1,24 @@
 using Fusion;
 using Fusion.Sockets;
+using HW2;
+using HW3;
 using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
+    [SerializeField] private CharactersRef charactersRef;
     [SerializeField] private CamerasRef camerasRef;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private CinemachineCamera cineCam;
+
+    [SerializeField] private Transform[] redTeamSpawns;
+    [SerializeField] private Transform[] blueTeamSpawns;
+    [SerializeField] private Transform spectatorSpawn;
 
     [Networked, Capacity(8)]
     private NetworkDictionary<PlayerRef, PlayerData> _playersData => default;
@@ -20,15 +28,38 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
         Runner.AddCallbacks(this);
         camerasRef.MainCamera = mainCamera;
         camerasRef.CineCam = cineCam;
+
+
         if (!HasStateAuthority) return;
+
+        int redSpawncount = 0, blueSpawncount = 0;
 
         foreach (var kvp in networkRunnerRef.PlayerData)
         {
             _playersData.Add(kvp.Key, kvp.Value);
-        }
 
-        //Spawn each player controller
-        Debug.Log($"Game - {networkRunnerRef.PlayerData.Count}");
+            switch (kvp.Value.Team)
+            {
+                case Team.Red:
+                    Runner.Spawn(charactersRef.Characters[kvp.Value.CharacterIndex], redTeamSpawns[redSpawncount].position,inputAuthority: kvp.Key, onBeforeSpawned: InitializeCharacter);
+                    redSpawncount++;
+                    break;
+
+                case Team.Blue:
+                    Runner.Spawn(charactersRef.Characters[kvp.Value.CharacterIndex], redTeamSpawns[blueSpawncount].position, inputAuthority: kvp.Key, onBeforeSpawned: InitializeCharacter);
+                    blueSpawncount++;
+                    break;
+                case Team.Spectator:
+                    //Create a spectator
+                    break;
+            }
+
+        }     
+    }
+
+    private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
+    { 
+        obj.GetComponent<PlayerCharacterController>().NetworkInitialize(_playersData[obj.InputAuthority]);
     }
 
     #region Network Runner Callbacks

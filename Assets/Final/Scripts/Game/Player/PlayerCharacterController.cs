@@ -34,6 +34,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     public event UnityAction<Vector2> OnRangedAttack { add { abilityHandler.OnRangedAttack += value; } remove { abilityHandler.OnRangedAttack -= value; } }
     public event UnityAction OnStartMoving { add { movementHandler.OnStartMoving += value; } remove { movementHandler.OnStartMoving -= value; } }
     public event UnityAction OnStopMoving { add { movementHandler.OnStopMoving += value; } remove { movementHandler.OnStopMoving -= value; } }
+
     public void NetworkInitialize(PlayerData data)
     {
         PlayerData = data;

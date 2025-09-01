@@ -22,7 +22,13 @@ public class NetworkRunnerRef : ScriptableObject
     {
         CurrentNetworkRunner.AddCallbacks(networkManager);
     }
-    private void GenerateNewRunner()
+    
+    public void RemoveCallbacks(INetworkRunnerCallbacks networkManager)
+    {
+        CurrentNetworkRunner.RemoveCallbacks(networkManager);
+    }
+    
+    public void GenerateNewRunner()
     {
         if (CurrentNetworkRunner != null) Destroy(CurrentNetworkRunner.gameObject);
 

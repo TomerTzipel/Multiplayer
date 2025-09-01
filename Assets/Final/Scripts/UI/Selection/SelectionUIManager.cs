@@ -17,6 +17,7 @@ public class SelectionUIManager : MonoBehaviour
     [SerializeField] private TMP_Text spectatorsListText;
 
     [SerializeField] private Button startGameButton;
+    [SerializeField] private Button leaveButton;
 
     [SerializeField] private Button joinRedButton;
     [SerializeField] private Button joinBlueButton;
@@ -67,6 +68,7 @@ public class SelectionUIManager : MonoBehaviour
         }
 
         startGameButton.interactable = value;
+        leaveButton.interactable = value;
         joinRedButton.interactable = value;
         joinBlueButton.interactable = value;
         joinSpectatorsButton.interactable = value;

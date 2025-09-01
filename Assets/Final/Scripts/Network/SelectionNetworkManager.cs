@@ -197,7 +197,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void PlayerDataResponse_RPC(NetworkString<_8> name, PlayerRef player)
+    public void PlayerDataResponse_RPC(NetworkString<_8> name, PlayerRef player, RpcInfo info = default)
     {
         Debug.Log("hello from the other side");
         PlayerRef oldPlayerRef = player; //Initialize to be able to compile

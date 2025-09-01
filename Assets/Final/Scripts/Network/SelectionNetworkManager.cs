@@ -193,18 +193,17 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             PlayerPrefs.SetString("Name", $"Player{targetPlayer.PlayerId}");
             PlayerPrefs.Save();
         }
-        Debug.Log(targetPlayer);
         PlayerDataResponse_RPC(PlayerPrefs.GetString("Name"), targetPlayer);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void PlayerDataResponse_RPC(NetworkString<_8> name, PlayerRef player, RpcInfo info = default)
+    public void PlayerDataResponse_RPC(string playerName, PlayerRef player, RpcInfo info = default)
     {
-        Debug.Log("hello from the other side");
+        Debug.Log($"May god help us");
         PlayerRef oldPlayerRef = player; //Initialize to be able to compile
         foreach (var kvp in _playersData)
         {
-            if (kvp.Value.Name == PlayerPrefs.GetString("Name"))
+            if (kvp.Value.Name == playerName)
             {
                 oldPlayerRef = kvp.Key;
                 PlayerData tempPlayerData = _playersData[oldPlayerRef];
@@ -213,7 +212,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
                 return;
             }
         }
-        _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
+        _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{playerName}"});
     }
     
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)

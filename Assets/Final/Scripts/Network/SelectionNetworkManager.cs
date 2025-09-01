@@ -180,13 +180,13 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!HasStateAuthority) return;
         
-        Debug.Log("Joined");
         PlayerDataRequest_RPC(player);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void PlayerDataRequest_RPC([RpcTarget] PlayerRef targetPlayer)
     {
+        Debug.Log("Joined");
         if (!PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") != networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name)
         {
             PlayerPrefs.SetString("GameSession", networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name);

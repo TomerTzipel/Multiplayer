@@ -193,7 +193,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             PlayerPrefs.SetString("Name", $"Player{targetPlayer.PlayerId}");
             PlayerPrefs.Save();
         }
-        Debug.Log(PlayerPrefs.GetString("Name"));
+        Debug.Log(targetPlayer);
         PlayerDataResponse_RPC(PlayerPrefs.GetString("Name"), targetPlayer);
     }
 

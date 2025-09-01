@@ -31,6 +31,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public override void Spawned()
     {
+        Debug.Log("Spawned");
         Runner.AddCallbacks(this);
         OnPlayerDataUpdate();
     }
@@ -168,7 +169,6 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnSelectionLeave()
     {
-        if(Runner.IsServer)
         Runner.Shutdown();
         SceneManager.LoadScene("MainMenuScene");
     }
@@ -176,7 +176,28 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        _playersData.Add(player,new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"}); 
+        if (PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") == runner.SessionInfo.Name)
+        {
+            PlayerRef oldPlayerRef = player;
+            foreach (var kvp in _playersData)
+            {
+                if (kvp.Value.Name == PlayerPrefs.GetString("Name"))
+                {
+                    oldPlayerRef = kvp.Key;
+                    break;
+                }
+            }
+            PlayerData tempPlayerData = _playersData[oldPlayerRef];
+            _playersData.Remove(oldPlayerRef);
+            _playersData.Add(player, tempPlayerData);
+        }
+        else
+        {
+            PlayerPrefs.SetString("GameSession", runner.SessionInfo.Name);
+            PlayerPrefs.SetString("Name", $"Player{player.PlayerId}");
+            PlayerPrefs.Save();
+            _playersData.Add(player,new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
+        }
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
@@ -212,9 +233,34 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         throw new NotImplementedException();
     }
 
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+    public async void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
-        throw new NotImplementedException();
+        Debug.Log("Migrated");
+        await runner.Shutdown(shutdownReason: ShutdownReason.HostMigration);
+        
+        networkRunnerRef.GenerateNewRunner();
+        
+        StartGameResult result = await networkRunnerRef.CurrentNetworkRunner.StartGame(new StartGameArgs() {
+            HostMigrationToken = hostMigrationToken,
+            HostMigrationResume = HostMigrationResume
+        });
+    }
+
+    private void HostMigrationResume(NetworkRunner runner)
+    {
+        Debug.Log("Resumed");
+        foreach (var resumeNO in runner.GetResumeSnapshotNetworkObjects())
+        {
+            runner.Spawn(resumeNO, onBeforeSpawned: (runner, newNO) =>
+            {
+                newNO.CopyStateFrom(resumeNO);
+
+                if (resumeNO.TryGetBehaviour<SelectionNetworkManager>(out var networkManager))
+                {
+                    newNO.GetComponent<SelectionNetworkManager>().CopyStateFrom(networkManager);
+                }
+            });
+        }
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)

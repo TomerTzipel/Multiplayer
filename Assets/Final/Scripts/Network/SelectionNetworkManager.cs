@@ -180,6 +180,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!HasStateAuthority) return;
         
+        Debug.Log("Joined");
         PlayerDataRequest_RPC(player);
     }
 
@@ -188,7 +189,6 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") != networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name)
         {
-            Debug.Log("No previous session");
             PlayerPrefs.SetString("GameSession", networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name);
             PlayerPrefs.SetString("Name", $"Player{targetPlayer.PlayerId}");
             PlayerPrefs.Save();

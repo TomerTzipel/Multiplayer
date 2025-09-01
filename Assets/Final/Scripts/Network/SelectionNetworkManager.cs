@@ -189,7 +189,6 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         //if (!PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") != networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name)
         if (PlayerPrefs.GetString("GameSession") != networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name)
         {
-            Debug.Log("My name is");
             PlayerPrefs.SetString("GameSession", networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name);
             PlayerPrefs.SetString("Name", $"Player{targetPlayer.PlayerId}");
             PlayerPrefs.Save();
@@ -213,6 +212,10 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
         _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
+        foreach (var kvp in _playersData)
+        {
+            Debug.Log(kvp);
+        }
     }
     
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)

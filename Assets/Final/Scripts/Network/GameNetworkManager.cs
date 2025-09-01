@@ -26,6 +26,8 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     public override void Spawned()
     {
         Runner.AddCallbacks(this);
+
+        Debug.Log("Setting Cameras");
         camerasRef.MainCamera = mainCamera;
         camerasRef.CineCam = cineCam;
 
@@ -46,7 +48,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
                     break;
 
                 case Team.Blue:
-                    Runner.Spawn(charactersRef.Characters[kvp.Value.CharacterIndex], redTeamSpawns[blueSpawncount].position, inputAuthority: kvp.Key, onBeforeSpawned: InitializeCharacter);
+                    Runner.Spawn(charactersRef.Characters[kvp.Value.CharacterIndex], blueTeamSpawns[blueSpawncount].position, inputAuthority: kvp.Key, onBeforeSpawned: InitializeCharacter);
                     blueSpawncount++;
                     break;
                 case Team.Spectator:
@@ -86,12 +88,12 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -106,22 +108,22 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)

@@ -176,7 +176,10 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        if (PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") == runner.SessionInfo.Name)
+        if (!HasStateAuthority) return;
+
+        _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+        /*if (PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") == runner.SessionInfo.Name)
         {
             PlayerRef oldPlayerRef = player;
             foreach (var kvp in _playersData)
@@ -196,8 +199,8 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             PlayerPrefs.SetString("GameSession", runner.SessionInfo.Name);
             PlayerPrefs.SetString("Name", $"Player{player.PlayerId}");
             PlayerPrefs.Save();
-            _playersData.Add(player,new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
-        }
+            _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+        }*/
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {

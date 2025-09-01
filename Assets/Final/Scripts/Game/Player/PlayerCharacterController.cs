@@ -44,6 +44,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     public override void Spawned()
     {
         _inputSystemActions = new InputSystem_Actions();
+        Debug.Log("Camera - " + CamerasRef.MainCamera == null);
         playerNameText.transform.parent.forward = CamerasRef.MainCamera.transform.forward;
         playerNameText.text = (string)PlayerData.Name;
 
@@ -69,22 +70,29 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     }
     private void OnEnable()
     {
-        if (Object == null) return;
+        if (Object == null || Runner == null) return;
 
         if (Object.HasInputAuthority)
         {
             Runner.AddCallbacks(this);
             _inputSystemActions.Player.Enable();
+            _inputSystemActions.Player.MouseMove.Enable();
+            _inputSystemActions.Player.RangedAttack.Enable();
         }
     }
 
     private void OnDisable()
     {
-        if (Object == null) return;
+        if (Object == null || Runner == null) return;
 
-        if (Object.HasStateAuthority)
+        if (Object.HasInputAuthority)
         {
             Runner.RemoveCallbacks(this);
+            
+            if(_inputSystemActions == null) return;
+
+            _inputSystemActions.Player.MouseMove.Disable();
+            _inputSystemActions.Player.RangedAttack.Disable();
             _inputSystemActions.Player.Disable();
         }
     }
@@ -95,7 +103,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
         var playerInput = new PlayerInput();
 
         playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
-        playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.RangedAttack.IsPressed());
+        playerInput.Buttons.Set(Buttons.Attack, _inputSystemActions.Player.RangedAttack.IsPressed());
     }
 
   

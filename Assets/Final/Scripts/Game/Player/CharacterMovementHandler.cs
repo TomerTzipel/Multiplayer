@@ -42,13 +42,15 @@ public class CharacterMovementHandler : NetworkBehaviour
     }
     public void FixedUpdateNetworkCall()
     {
-        if (!HasStateAuthority) return;
 
-        GetInput<PlayerInput>(out var input);
- 
-        if (input.Buttons.IsSet(Buttons.Move))
+        if(GetInput<PlayerInput>(out var input))
         {
-            StartMoving();
+            Debug.Log("Move" + input.Buttons.IsSet(Buttons.Move));
+            if (input.Buttons.IsSet(Buttons.Move))
+            {
+                Debug.Log("Move");
+                StartMoving();
+            }      
         }
 
         TurnTowardsMoveDirection();

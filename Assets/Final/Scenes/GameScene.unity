@@ -177,7 +177,7 @@ Transform:
   m_GameObject: {fileID: 373502385}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.1905937, y: 16.455862, z: -16.508339}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -196,6 +196,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkRunnerRef: {fileID: 11400000, guid: 90b6fd25354ac6a4f8c83ea73a02eb09, type: 2}
+  charactersRef: {fileID: 11400000, guid: 99437913a92c68942b8b83d5ea3ccf32, type: 2}
+  camerasRef: {fileID: 11400000, guid: 6586717bd3e6573469777b23a2debc2d, type: 2}
+  mainCamera: {fileID: 550820555}
+  cineCam: {fileID: 999581395}
+  redTeamSpawns:
+  - {fileID: 751750479}
+  - {fileID: 1629382928}
+  blueTeamSpawns:
+  - {fileID: 1874509552}
+  - {fileID: 1813839699}
+  spectatorSpawn: {fileID: 1374920136}
 --- !u!114 &373502388
 MonoBehaviour:
   m_ObjectHideFlags: 0

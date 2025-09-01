@@ -13,12 +13,15 @@ public class CharacterAbilityHandler : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput<PlayerInput>(out var input) == false) return;
-
         if (!HasStateAuthority) return;
+
+        GetInput<PlayerInput>(out var input);
+
+        Debug.Log("Attack" + input.Buttons.IsSet(Buttons.Attack));
 
         if (input.Buttons.IsSet(Buttons.Attack))
         {
+            Debug.Log("Ranged Attack");
             RangedAttack();
         }
     }

@@ -2632,17 +2632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkManager: {fileID: 108610801}
-  characterSettings:
-  - {fileID: 11400000, guid: 62608c172916f074193a76948810f2c9, type: 2}
-  - {fileID: 11400000, guid: e2eda8a7a19955245b37ac4b3b3b1728, type: 2}
-  - {fileID: 11400000, guid: e5af7c977f3a3ab47bb203e38bc74f7b, type: 2}
-  - {fileID: 11400000, guid: 84b95e96cbe2db44aad9a3b5006f85f7, type: 2}
-  - {fileID: 11400000, guid: 91167dcd27ffe48479fd6ad37404c855, type: 2}
-  - {fileID: 11400000, guid: 22c7ecc249992f149be1976dfea08cef, type: 2}
-  - {fileID: 11400000, guid: cb8cd12d26b4c39459c612aa8af084b9, type: 2}
-  - {fileID: 11400000, guid: 057dd04e5ff34e94c8cee778169c324c, type: 2}
-  - {fileID: 11400000, guid: e65f53beaad6c3046894c1236883db2a, type: 2}
-  - {fileID: 11400000, guid: 5955fecada59ae3468ba7da1106310f8, type: 2}
+  charactersRef: {fileID: 11400000, guid: 99437913a92c68942b8b83d5ea3ccf32, type: 2}
   buttonHandlers:
   - {fileID: 7433281323687963060}
   - {fileID: 1863129427}
@@ -5916,7 +5906,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Leave
+  m_text: LEAVE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5925,8 +5915,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

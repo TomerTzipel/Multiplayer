@@ -3,6 +3,7 @@ using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -43,9 +44,13 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public override void Spawned()
     {
+        Debug.Log("Spawning Player");
+        Camera camera = Camera.main;
+        CinemachineCamera cinCam = camera.GetComponent<CamerasManager>().CineCam;
+
         _inputSystemActions = new InputSystem_Actions();
-        Debug.Log("Camera - " + CamerasRef.MainCamera == null);
-        playerNameText.transform.parent.forward = CamerasRef.MainCamera.transform.forward;
+
+        playerNameText.transform.parent.forward = camera.transform.forward;
         playerNameText.text = (string)PlayerData.Name;
 
         switch (PlayerData.Team)
@@ -62,12 +67,12 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
         if (Object.HasInputAuthority)
         {
-            CamerasRef.CineCam.LookAt = transform;
-            CamerasRef.CineCam.Follow = transform;
+            cinCam.LookAt = transform;
+            cinCam.Follow = transform;
             OnEnable();
-            
         }
     }
+
     private void OnEnable()
     {
         if (Object == null || Runner == null) return;
@@ -104,6 +109,8 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
         playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
         playerInput.Buttons.Set(Buttons.Attack, _inputSystemActions.Player.RangedAttack.IsPressed());
+
+        input.Set(playerInput);
     }
 
   
@@ -199,6 +206,8 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     {
 
     }
+
+  
     #endregion
 
 }

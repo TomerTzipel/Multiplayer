@@ -179,8 +179,10 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (!HasStateAuthority) return;
-        
-        PlayerDataRequest_RPC(player);
+
+
+        _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+        //PlayerDataRequest_RPC(player);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

@@ -14,6 +14,7 @@ public class AnimationStateHandler : NetworkBehaviour
     public override void Spawned()
     {
         Velocity = 0.0f;
+        OnEnable();
     }
 
     private void OnEnable()

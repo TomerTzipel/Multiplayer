@@ -17,8 +17,6 @@ public class CharacterAbilityHandler : NetworkBehaviour
 
         GetInput<PlayerInput>(out var input);
 
-        Debug.Log("Attack" + input.Buttons.IsSet(Buttons.Attack));
-
         if (input.Buttons.IsSet(Buttons.Attack))
         {
             Debug.Log("Ranged Attack");

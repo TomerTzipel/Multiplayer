@@ -17,3 +17,4 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 100
   <BaseSpeed>k__BackingField: 20
   <Damage>k__BackingField: 10
+  <ProjectilePrefab>k__BackingField: {fileID: 269263715953043432, guid: aa708c96b6c8b6047b230dd895b9b858, type: 3}

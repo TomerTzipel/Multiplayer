@@ -18,15 +18,19 @@ public class CharacterMovementHandler : NetworkBehaviour
 
     [Networked] private NetworkBool _hasPath { get; set; } = false;
 
+    private Camera _camera;
+
     public event UnityAction OnStartMoving;
     public event UnityAction OnStopMoving;
     public override void Spawned()
     {
+        _camera = Camera.main;
         agent.enabled = true;
         agent.speed = controller.Settings.BaseSpeed;
         agent.Warp(transform.position);
         agent.updatePosition = false;
         agent.updateRotation = false;
+        OnEnable();
     }
     private void OnEnable()
     {
@@ -40,12 +44,14 @@ public class CharacterMovementHandler : NetworkBehaviour
 
         controller.OnRangedAttack -= HandleRangedAttack;
     }
-    public void FixedUpdateNetworkCall()
+
+    
+    public override void FixedUpdateNetwork()
     {
+        if(!HasStateAuthority) return;
 
         if(GetInput<PlayerInput>(out var input))
         {
-            Debug.Log("Move" + input.Buttons.IsSet(Buttons.Move));
             if (input.Buttons.IsSet(Buttons.Move))
             {
                 Debug.Log("Move");
@@ -60,7 +66,7 @@ public class CharacterMovementHandler : NetworkBehaviour
     private void StartMoving()
     {
         int groundLayerMask = LayerMask.GetMask(WALKABLE_LAYER_MASK);
-        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, 80f, groundLayerMask))
         {
             _destiantion = hit.point;

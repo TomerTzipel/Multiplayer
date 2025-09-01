@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     [SerializeField] private CharactersRef charactersRef;
+
     [SerializeField] private CamerasRef camerasRef;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private CinemachineCamera cineCam;
@@ -25,15 +26,11 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public override void Spawned()
     {
+        Debug.Log("Spawning Game Manager");
         Runner.AddCallbacks(this);
 
-        Debug.Log("Setting Cameras");
-        camerasRef.MainCamera = mainCamera;
-        camerasRef.CineCam = cineCam;
-
-
         if (!HasStateAuthority) return;
-
+        Debug.Log("Impossible");
         int redSpawncount = 0, blueSpawncount = 0;
 
         foreach (var kvp in networkRunnerRef.PlayerData)

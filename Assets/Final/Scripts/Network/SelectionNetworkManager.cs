@@ -186,9 +186,9 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void PlayerDataRequest_RPC([RpcTarget] PlayerRef targetPlayer)
     {
+        Debug.Log("I am oronson");
         if (!PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") != networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name)
         {
-            Debug.Log("I am oronson");
             PlayerPrefs.SetString("GameSession", networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name);
             PlayerPrefs.SetString("Name", $"Player{targetPlayer.PlayerId}");
             PlayerPrefs.Save();

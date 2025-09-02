@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 public class CharacterMovementHandler : NetworkBehaviour
 {
@@ -18,13 +19,10 @@ public class CharacterMovementHandler : NetworkBehaviour
 
     [Networked] private NetworkBool _hasPath { get; set; } = false;
 
-    private Camera _camera;
-
     public event UnityAction OnStartMoving;
     public event UnityAction OnStopMoving;
     public override void Spawned()
-    {
-        _camera = Camera.main;
+    { 
         agent.enabled = true;
         agent.speed = controller.Settings.BaseSpeed;
         agent.Warp(transform.position);
@@ -36,45 +34,53 @@ public class CharacterMovementHandler : NetworkBehaviour
     {
         if (Object == null) return;
 
-        controller.OnRangedAttack += HandleRangedAttack;
+        controller.OnBasicAttack += HandleRangedAttack;
     }
     private void OnDisable()
     {
         if (Object == null) return;
 
-        controller.OnRangedAttack -= HandleRangedAttack;
+        controller.OnBasicAttack -= HandleRangedAttack;
     }
 
     
     public override void FixedUpdateNetwork()
     {
-        if(!HasStateAuthority) return;
-
-        if(GetInput<PlayerInput>(out var input))
+        if (HasStateAuthority)
         {
-            if (input.Buttons.IsSet(Buttons.Move))
+            GetInput<PlayerInput>(out var input);
+            if (input.Buttons.IsSet(Buttons.Move) && Runner.IsForward)
             {
                 Debug.Log("Move");
-                StartMoving();
-            }      
+                StartMoving(input.TargetPosition);
+            }
+            TurnTowardsMoveDirection();
+            Move();
         }
-
-        TurnTowardsMoveDirection();
-        Move();
+        
     }
 
-    private void StartMoving()
+    public bool GetMoveTargetPosition(out Vector3 targetPosition)
     {
         int groundLayerMask = LayerMask.GetMask(WALKABLE_LAYER_MASK);
-        Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Ray ray = controller.MainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, 80f, groundLayerMask))
         {
-            _destiantion = hit.point;
-            Debug.DrawLine(ray.origin, _destiantion, Color.green, 5f);
-            agent.SetDestination(_destiantion);
-            _hasPath = true;
-            OnStartMoving.Invoke();
+            targetPosition = hit.point;
+            Debug.DrawLine(ray.origin, targetPosition, Color.green, 5f);
+            return true;            
         }
+
+        targetPosition = Vector3.zero;
+        return false;
+    }
+
+    private void StartMoving(Vector3 destination)
+    {
+        _destiantion = destination;
+        agent.SetDestination(_destiantion);
+        _hasPath = true;
+        OnStartMoving.Invoke();
     }
 
     private void HandleRangedAttack(Vector2 direction)

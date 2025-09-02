@@ -21,7 +21,7 @@ public class AnimationStateHandler : NetworkBehaviour
     {
         if (Object == null) return;
 
-        controller.OnRangedAttack += StartThrowAnimation;
+        controller.OnBasicAttack += StartThrowAnimation;
         controller.OnStartMoving += StartMoveAnimation;
         controller.OnStopMoving += StopMoveAnimation;
     }
@@ -29,7 +29,7 @@ public class AnimationStateHandler : NetworkBehaviour
     {
         if (Object == null) return;
 
-        controller.OnRangedAttack -= StartThrowAnimation;
+        controller.OnBasicAttack -= StartThrowAnimation;
         controller.OnStartMoving -= StartMoveAnimation;
         controller.OnStopMoving -= StopMoveAnimation;
     }

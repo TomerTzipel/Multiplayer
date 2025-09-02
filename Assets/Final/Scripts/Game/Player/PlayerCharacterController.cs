@@ -1,6 +1,7 @@
 using Fusion;
 using Fusion.Sockets;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
@@ -10,11 +11,13 @@ using UnityEngine.Events;
 enum Buttons
 {
     Move = 0,
-    Attack = 1
+    BasicAttack = 1
 }
 public struct PlayerInput : INetworkInput
 {
     public NetworkButtons Buttons;
+    public Vector2 Direction;
+    public Vector3 TargetPosition;
 }
 
 public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallbacks
@@ -30,9 +33,11 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     [field: SerializeField] public CharacterSettings Settings { get; private set; }
     [field: SerializeField] public CamerasRef CamerasRef { get; private set; }
   
+    public Camera MainCamera { get; private set; }
+
     [Networked] public PlayerData PlayerData { get; set; }
 
-    public event UnityAction<Vector2> OnRangedAttack { add { abilityHandler.OnRangedAttack += value; } remove { abilityHandler.OnRangedAttack -= value; } }
+    public event UnityAction<Vector2> OnBasicAttack { add { abilityHandler.OnBasicAttack += value; } remove { abilityHandler.OnBasicAttack -= value; } }
     public event UnityAction OnStartMoving { add { movementHandler.OnStartMoving += value; } remove { movementHandler.OnStartMoving -= value; } }
     public event UnityAction OnStopMoving { add { movementHandler.OnStopMoving += value; } remove { movementHandler.OnStopMoving -= value; } }
 
@@ -45,12 +50,31 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     public override void Spawned()
     {
         Debug.Log("Spawning Player");
-        Camera camera = Camera.main;
-        CinemachineCamera cinCam = camera.GetComponent<CamerasManager>().CineCam;
+        MainCamera = Camera.main;
+        if (MainCamera.GetComponent<CamerasManager>() == null)
+        {
+            Debug.Log("Camera is null");
+            StartCoroutine(DelayedSpawned());
+        }
+        else
+        {
+            HandleSpawn();
+        }
+            
+    }
+    private IEnumerator DelayedSpawned()
+    {
+        yield return new WaitForEndOfFrame();
+        Debug.Log("Delayed Spawn");
+        HandleSpawn();
+    }
+    private void HandleSpawn()
+    {   
+        CinemachineCamera cinCam = MainCamera.GetComponent<CamerasManager>().CineCam;
 
         _inputSystemActions = new InputSystem_Actions();
 
-        playerNameText.transform.parent.forward = camera.transform.forward;
+        playerNameText.transform.parent.forward = MainCamera.transform.forward;
         playerNameText.text = (string)PlayerData.Name;
 
         switch (PlayerData.Team)
@@ -71,6 +95,11 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
             cinCam.Follow = transform;
             OnEnable();
         }
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        OnDisable();
     }
 
     private void OnEnable()
@@ -107,8 +136,22 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
         var playerInput = new PlayerInput();
 
-        playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
-        playerInput.Buttons.Set(Buttons.Attack, _inputSystemActions.Player.RangedAttack.IsPressed());
+        playerInput.Buttons.Set(Buttons.Move, false);
+        playerInput.Buttons.Set(Buttons.BasicAttack, false);
+
+        if (_inputSystemActions.Player.MouseMove.IsPressed())
+        {
+            if(movementHandler.GetMoveTargetPosition(out Vector3 targetPosition))
+            {
+                playerInput.Buttons.Set(Buttons.Move, true);
+                playerInput.TargetPosition = targetPosition;
+            }
+        }
+        if (_inputSystemActions.Player.RangedAttack.IsPressed())
+        {
+            playerInput.Buttons.Set(Buttons.BasicAttack, true);
+            playerInput.Direction = abilityHandler.GetBasicAttackDirection();
+        }
 
         input.Set(playerInput);
     }
@@ -184,7 +227,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-
+        Debug.Log("Player - Scene Load Done");
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
@@ -208,6 +251,8 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     }
 
   
+
+
     #endregion
 
 }

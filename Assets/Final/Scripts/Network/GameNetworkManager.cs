@@ -1,7 +1,5 @@
 using Fusion;
 using Fusion.Sockets;
-using HW2;
-using HW3;
 using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
@@ -30,7 +28,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
         Runner.AddCallbacks(this);
 
         if (!HasStateAuthority) return;
-        Debug.Log("Impossible");
+
         int redSpawncount = 0, blueSpawncount = 0;
 
         foreach (var kvp in networkRunnerRef.PlayerData)
@@ -135,7 +133,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        
+        Debug.Log("Scene Load Done");
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)

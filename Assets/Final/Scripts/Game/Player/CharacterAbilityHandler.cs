@@ -9,26 +9,37 @@ public class CharacterAbilityHandler : NetworkBehaviour
     [SerializeField] private Transform spawnPoint;
     
 
-    public event UnityAction<Vector2> OnRangedAttack;
+    public event UnityAction<Vector2> OnBasicAttack;
 
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
 
-        GetInput<PlayerInput>(out var input);
-
-        if (input.Buttons.IsSet(Buttons.Attack))
+        if(GetInput<PlayerInput>(out var input))
         {
-            Debug.Log("Ranged Attack");
-            RangedAttack();
-        }
+            
+            if (input.Buttons.IsSet(Buttons.BasicAttack))
+            {
+                if (Runner.IsForward)
+                {
+                    OnBasicAttack.Invoke(input.Direction);
+                    
+                }
+                Debug.Log("Ranged Attack");
+                BasicAttack(input.Direction);
+            }
+        }      
     }
-    public void RangedAttack()
+
+    public Vector2 GetBasicAttackDirection()
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Vector2 playerScreenPosition = controller.CamerasRef.MainCamera.WorldToScreenPoint(transform.position);
-        Vector2 direction = mousePosition - playerScreenPosition;
-        OnRangedAttack.Invoke(direction);
+        Vector2 playerScreenPosition = controller.MainCamera.WorldToScreenPoint(transform.position);
+        return mousePosition - playerScreenPosition;
+    }
+
+    private void BasicAttack(Vector2 direction)
+    {   
         Runner.Spawn(controller.Settings.ProjectilePrefab, spawnPoint.position, spawnPoint.rotation, onBeforeSpawned: InitializeProjectile);
     }
 

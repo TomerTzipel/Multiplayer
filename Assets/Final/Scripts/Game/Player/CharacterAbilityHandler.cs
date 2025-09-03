@@ -20,11 +20,6 @@ public class CharacterAbilityHandler : NetworkBehaviour
 
         if (input.Buttons.IsSet(Buttons.BasicAttack) && _canAttack)
         {
-            Debug.Log("Should Attack");
-        }
-        if (input.Buttons.IsSet(Buttons.BasicAttack) && _canAttack)
-        {
-            Debug.Log("Ranged Attack");
             Vector2 direction = GetBasicAttackDirection();
             OnBasicAttack.Invoke(direction);
             BasicAttack(direction);
@@ -50,6 +45,10 @@ public class CharacterAbilityHandler : NetworkBehaviour
 
     private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
     {
-        obj.GetComponent<ProjectileHandler>().NetworkInitialize(controller.Settings.Damage,(string)controller.PlayerData.Name);
+        obj.GetComponent<ProjectileHandler>().NetworkInitialize(new ProjectileData { Damage = controller.Settings.Damage,
+                                                                                      CritChance = controller.Settings.CritChance, 
+                                                                                      PlayerData = controller.PlayerData,
+                                                                                      Lifetime = controller.Settings.Range,
+                                                                                      Speed = controller.Settings.ProjectileSpeed }); 
     }
 }

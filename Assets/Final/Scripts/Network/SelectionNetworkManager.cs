@@ -186,6 +186,8 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        if (!Runner.IsSharedModeMasterClient) return;
+        
         Debug.Log($"Player {player.PlayerId} left");
         PlayersData.Remove(player);
     }

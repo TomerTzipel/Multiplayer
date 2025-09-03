@@ -26,6 +26,7 @@ public class ProjectileHandler : NetworkBehaviour
     [Networked] private ProjectileData _projectileData { get; set; }
     private float _lifetime;
     private bool _canHit = true;
+    private bool _isDespawning = false;
     public void NetworkInitialize(ProjectileData data)
     {
         _projectileData = data;
@@ -39,7 +40,7 @@ public class ProjectileHandler : NetworkBehaviour
     {
         _lifetime -= Runner.DeltaTime;
 
-        if (_lifetime <= 0) 
+        if (_lifetime <= 0 && !_isDespawning) 
             HideProjectile();
 
         if (HasStateAuthority)
@@ -57,9 +58,7 @@ public class ProjectileHandler : NetworkBehaviour
         visuals.SetActive(false);
 
         if (HasStateAuthority)
-        {
             StartCoroutine(DespawnOnDelay());
-        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -87,7 +86,8 @@ public class ProjectileHandler : NetworkBehaviour
     }
 
     private IEnumerator DespawnOnDelay()
-    { 
+    {
+        _isDespawning = true;
         yield return new WaitForSeconds(DESPAWN_DELAY);
         Runner.Despawn(Object);
     }

@@ -27,8 +27,6 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     }
     public void OnGameStart()
     {
-        
-
         int redSpawncount = 0, blueSpawncount = 0;
 
         foreach (var kvp in selectionManager.PlayersData)

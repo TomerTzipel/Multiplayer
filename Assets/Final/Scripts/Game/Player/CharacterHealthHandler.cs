@@ -3,11 +3,9 @@ using UnityEngine;
 
 public class CharacterHealthHandler : NetworkBehaviour
 {
-    private const string PROJECTILE_TAG = "Projectile";
-
     [SerializeField] private PlayerCharacterController controller;
-    [SerializeField] private BarHandler HealthBar;
-    [SerializeField] private ParticleSystem BloodEffect;
+    [SerializeField] private BarHandler healthBar;
+    [SerializeField] private ParticleSystem bloodEffect;
 
     private int _maxHealth;
 
@@ -16,35 +14,39 @@ public class CharacterHealthHandler : NetworkBehaviour
     public override void Spawned()
     {
         _maxHealth = controller.Settings.MaxHealth;
-        HealthBar.UpdateSlider(1f, _maxHealth, _maxHealth);
+        healthBar.UpdateSlider(1f, _maxHealth, _maxHealth);
     }
 
-    private void TakeDamage(int damage)
+    public bool CompareTeam(Team team)
+    {
+        return team == controller.PlayerData.Team;
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void TakeDamage_RPC(string combatJson, RpcInfo info = default)
+    {
+        CombatData combatData = JsonUtility.FromJson<CombatData>(combatJson);
+        int damage = combatData.Damage;
+
+        if (combatData.WasCrit) 
+            damage *= 2;
+
+        TakeDamage(damage, combatData.AttackerName);
+    }
+
+    public void PlayHitEffect()
+    {
+        bloodEffect.Play();
+    }
+
+    private void TakeDamage(int damage,string AttackerName)
     {
         Health -= damage;
-
         //TODO: Handle Death
     }
     private void HealthChanged()
     {
-        //TODO: Check if the health was lowered and only then play the blood effect
-        BloodEffect.Play();
         float hpPercentage = (((float)Health) / _maxHealth);
-        HealthBar.UpdateSlider(hpPercentage, Health, _maxHealth);
+        healthBar.UpdateSlider(hpPercentage, Health, _maxHealth);
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!other.CompareTag(PROJECTILE_TAG)) return;
-
-        if(!HasStateAuthority) return;
-
-        ProjectileHandler projectile = other.GetComponent<ProjectileHandler>();
-
-        if (projectile.OwnerName == controller.PlayerData.Name) return;
-
-        TakeDamage(projectile.Damage);
-        Runner.Despawn(projectile.Object);
-    }
-
 }

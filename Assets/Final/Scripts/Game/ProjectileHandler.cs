@@ -1,37 +1,94 @@
 using Fusion;
+using System.Collections;
 using UnityEngine;
+public struct ProjectileData : INetworkStruct
+{
+    public PlayerData PlayerData;
+    public int Damage;
+    public int CritChance;
+    public float Speed;
+    public float Lifetime;
+}
+public struct CombatData 
+{
+    public string AttackerName;
+    public int Damage;
+    public bool WasCrit;
+}
 
 public class ProjectileHandler : NetworkBehaviour
 {
-    [SerializeField] private ProjectileSettings settings;
+    private const float DESPAWN_DELAY = 5f;
 
-    [Networked] public int Damage { get; set; }
-    [Networked] public NetworkString<_8> OwnerName { get; set; }
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private GameObject visuals;
 
+    [Networked] private ProjectileData _projectileData { get; set; }
     private float _lifetime;
-
-    public void NetworkInitialize(int damage,string name)
+    private bool _canHit = true;
+    public void NetworkInitialize(ProjectileData data)
     {
-        Damage = damage;
-        OwnerName = name;
+        _projectileData = data;
     }
 
     public override void Spawned()
     {
-        _lifetime = settings.Lifetime;
+        _lifetime = _projectileData.Lifetime;
     }
     public override void FixedUpdateNetwork()
     {
         _lifetime -= Runner.DeltaTime;
-        if (_lifetime <= 0) Runner.Despawn(Object);
+
+        if (_lifetime <= 0) 
+            HideProjectile();
 
         if (HasStateAuthority)
-        {
             Move();
-        }
     }
     private void Move()
     {
-        transform.Translate(Runner.DeltaTime * settings.Speed * Vector3.forward);
+        Vector3 move = Runner.DeltaTime * _projectileData.Speed * transform.forward;
+        rb.MovePosition(transform.position + move);
+    }
+
+    private void HideProjectile()
+    {
+        _canHit = false;
+        visuals.SetActive(false);
+
+        if (HasStateAuthority)
+        {
+            StartCoroutine(DespawnOnDelay());
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!_canHit) return;
+        if (!other.CompareTag("Player")) return;
+
+        CharacterHealthHandler healthHandler = other.GetComponent<CharacterHealthHandler>();
+
+        if (healthHandler.CompareTeam(_projectileData.PlayerData.Team)) return;
+
+        HideProjectile();
+        healthHandler.PlayHitEffect();
+        
+        if (Runner.IsSharedModeMasterClient)
+        {
+            CombatData combatData = new CombatData { Damage = _projectileData.Damage,AttackerName = (string)_projectileData .PlayerData.Name};
+
+            int roll = Random.Range(0, 100);
+
+            combatData.WasCrit = roll < _projectileData.CritChance;
+            string json = JsonUtility.ToJson(combatData);
+            healthHandler.TakeDamage_RPC(json);
+        }
+    }
+
+    private IEnumerator DespawnOnDelay()
+    { 
+        yield return new WaitForSeconds(DESPAWN_DELAY);
+        Runner.Despawn(Object);
     }
 }

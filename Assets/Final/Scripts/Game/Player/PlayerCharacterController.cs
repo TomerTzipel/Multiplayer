@@ -46,7 +46,6 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public override void Spawned()
     {
-        Debug.Log("Spawning Player Controller For " + PlayerData.Name);
         _inputSystemActions = new InputSystem_Actions();
 
         MainCamera = Camera.main;
@@ -87,7 +86,6 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
         if (Object.HasStateAuthority)
         {
-            Debug.Log("Enabling For " + PlayerData.Name);
             Runner.AddCallbacks(this);
             _inputSystemActions.Player.Enable();
             _inputSystemActions.Player.MouseMove.Enable();
@@ -118,14 +116,6 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
         var playerInput = new PlayerInput();
 
-        if (_inputSystemActions.Player.MouseMove.IsPressed())
-        {
-            Debug.Log("Move Input detected For " + PlayerData.Name);
-        }
-        if (_inputSystemActions.Player.RangedAttack.IsPressed())
-        {
-            Debug.Log("Attack Input detected For " + PlayerData.Name);
-        }
         playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
         playerInput.Buttons.Set(Buttons.BasicAttack, _inputSystemActions.Player.RangedAttack.IsPressed());
 

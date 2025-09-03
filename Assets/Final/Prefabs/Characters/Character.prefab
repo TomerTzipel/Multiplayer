@@ -358,8 +358,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 6013206435489237372}
-  HealthBar: {fileID: 5614246625103620984}
-  BloodEffect: {fileID: 564000353923945983}
+  healthBar: {fileID: 5614246625103620984}
+  bloodEffect: {fileID: 564000353923945983}
   _Health: 0
 --- !u!1 &3251712821091063541
 GameObject:

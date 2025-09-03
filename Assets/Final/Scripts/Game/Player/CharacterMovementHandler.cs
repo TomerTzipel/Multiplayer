@@ -51,16 +51,6 @@ public class CharacterMovementHandler : NetworkBehaviour
 
         bool result = GetInput<PlayerInput>(out var input);
 
-        if (!result)
-        {
-            Debug.Log("This is BAD");
-        }
-
-        if (input.Buttons.IsSet(Buttons.Move))
-        {
-            Debug.Log("Should Move");
-        }
-
         if (input.Buttons.IsSet(Buttons.Move))
         {
             SetMoveTarget();

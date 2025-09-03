@@ -167,6 +167,12 @@ public class SelectionUIManager : MonoBehaviour
         EnableAllButtons(false);
         networkManager.RequestCharacter_RPC(characterIndex);
     }
+
+    public void ChooseRandomCharacter()
+    {
+        EnableAllButtons(false);
+
+    }
     
     private void UpdateSpectatorList(List<string> names)
     {

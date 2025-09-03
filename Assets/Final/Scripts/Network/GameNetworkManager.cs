@@ -2,6 +2,7 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using Fusion.Photon.Realtime;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -20,11 +21,14 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     [SerializeField] private Transform[] blueTeamSpawns;
     [SerializeField] private Transform spectatorSpawn;
 
+    [Networked] private NetworkBool gameIsRunning { get; set; } = false;
+
  
     public override void Spawned()
     {
-       
+        if (gameIsRunning) Reconnect();
     }
+    
     public void OnGameStart()
     {
         int redSpawncount = 0, blueSpawncount = 0;
@@ -48,6 +52,8 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
                     break;
             }
         }
+        
+        if (Runner.IsSharedModeMasterClient) gameIsRunning = true;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -76,6 +82,36 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
     { 
         obj.GetComponent<PlayerCharacterController>().NetworkInitialize(selectionManager.PlayersData[Runner.LocalPlayer]);
+    }
+
+    private void Reconnect()
+    {
+        if (!PlayerPrefs.HasKey("Session") || !PlayerPrefs.HasKey("Name"))
+        {
+            //Enter as spectator
+        }
+        
+        string session = PlayerPrefs.GetString("Session");
+        if (session != Runner.SessionInfo.Name)
+        {
+            //Enter as spectator
+        }
+            
+        string name = PlayerPrefs.GetString("Name");
+        
+        foreach (var kvp in selectionManager.PlayersData)
+        {
+            if (kvp.Value.Name == name && kvp.Value.Team != Team.Spectator)
+            {
+                PlayerData tempPlayerData = kvp.Value;
+                selectionManager.PlayersData.Remove(kvp.Key);
+                selectionManager.PlayersData.Add(Runner.LocalPlayer, tempPlayerData);
+                //reconnect as player
+                return;
+            }
+        }
+        
+        //enter as spectator
     }
 
     #region Network Runner Callbacks
@@ -167,7 +203,9 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        
+        PlayerPrefs.DeleteKey("Session");
+        PlayerPrefs.DeleteKey("Name");
+        PlayerPrefs.Save();
     }
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)

@@ -101,17 +101,25 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnSelectionLeave()
     {
+        if (Runner.IsSharedModeMasterClient)
+            foreach (var kvp in PlayersData)
+            {
+                if (kvp.Value.Name != PlayersData[Runner.LocalPlayer].Name) Runner.SetMasterClient(kvp.Key);
+            }
+        
         Runner.Shutdown();
         SceneManager.LoadScene("MainMenuScene");
     }
-
- 
 
     private void OnPlayerDataUpdate()
     {
         uiManager.UpdateUI(PlayersData);
 
-        if (!Runner.IsSharedModeMasterClient) return;
+        if (!Runner.IsSharedModeMasterClient)
+        {
+            uiManager.EnableStartGameButton(false);
+            return;
+        }
 
         bool EnableStartGameButton = true;
         bool redPlayerExist = false;
@@ -149,8 +157,6 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         else OnPlayerDataUpdate();
     }
 
-   
-
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void NameRequestResult_RPC([RpcTarget] PlayerRef targetPlayer,bool result)
     {
@@ -165,56 +171,18 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             uiManager.EnableNameWarning(true);
         }
     }
-
-   
-
+    
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (!Runner.IsSharedModeMasterClient) return;
 
         PlayersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
-        //PlayerDataRequest_RPC(player);
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void PlayerDataRequest_RPC([RpcTarget] PlayerRef targetPlayer)
-    {
-        if (!PlayerPrefs.HasKey("GameSession") && PlayerPrefs.GetString("GameSession") != networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name)
-        {
-            PlayerPrefs.SetString("GameSession", networkRunnerRef.CurrentNetworkRunner.SessionInfo.Name);
-            PlayerPrefs.SetString("Name", $"Player{targetPlayer.PlayerId}");
-            PlayerPrefs.Save();
-        }
-        PlayerDataResponse_RPC(PlayerPrefs.GetString("Name"), targetPlayer);
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void PlayerDataResponse_RPC(NetworkString<_8> name, PlayerRef player)
-    {
-        PlayerRef oldPlayerRef = player; //Initialize to be able to compile
-        foreach (var kvp in PlayersData)
-        {
-            if (kvp.Value.Name == PlayerPrefs.GetString("Name"))
-            {
-                oldPlayerRef = kvp.Key;
-                PlayerData tempPlayerData = PlayersData[oldPlayerRef];
-                PlayersData.Remove(oldPlayerRef);
-                PlayersData.Add(player, tempPlayerData);
-                return;
-            }
-        }
-        PlayersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
     }
     
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        if (shutdownReason == ShutdownReason.Ok)
-        {
-            PlayerPrefs.DeleteKey("GameSession");
-            PlayerPrefs.DeleteKey("Name");
-            PlayerPrefs.Save();
-        }
+        
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
@@ -246,34 +214,9 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         throw new NotImplementedException();
     }
 
-    public async void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
-        Debug.Log("Migrated");
-        await runner.Shutdown(shutdownReason: ShutdownReason.HostMigration);
-        
-        networkRunnerRef.GenerateNewRunner();
-        
-        StartGameResult result = await networkRunnerRef.CurrentNetworkRunner.StartGame(new StartGameArgs() {
-            HostMigrationToken = hostMigrationToken,
-            HostMigrationResume = HostMigrationResume
-        });
-    }
-
-    private void HostMigrationResume(NetworkRunner runner)
-    {
-        Debug.Log("Resumed");
-        foreach (var resumeNO in runner.GetResumeSnapshotNetworkObjects())
-        {
-            runner.Spawn(resumeNO, onBeforeSpawned: (runner, newNO) =>
-            {
-                newNO.CopyStateFrom(resumeNO);
-
-                if (resumeNO.TryGetBehaviour<SelectionNetworkManager>(out var networkManager))
-                {
-                    newNO.GetComponent<SelectionNetworkManager>().CopyStateFrom(networkManager);
-                }
-            });
-        }
+        throw new NotImplementedException();
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)

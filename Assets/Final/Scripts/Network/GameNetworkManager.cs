@@ -27,8 +27,6 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     }
     public void OnGameStart()
     {
-        
-
         int redSpawncount = 0, blueSpawncount = 0;
 
         foreach (var kvp in selectionManager.PlayersData)
@@ -60,6 +58,10 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
         if(playerData.Team != Team.Spectator)
         {
+            PlayerPrefs.SetString("Session", Runner.SessionInfo.Name);
+            PlayerPrefs.SetString("Name", (string)playerData.Name);
+            PlayerPrefs.Save();
+            
             PlayerCharacterController playerController = Runner.Spawn(charactersRef.Characters[playerData.CharacterIndex], spawnPoint,inputAuthority: targetPlayer, onBeforeSpawned: InitializeCharacter);
             playerController.InitializeForLocalPlayer(cinemachineCamera);
         }

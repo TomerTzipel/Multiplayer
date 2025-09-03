@@ -33,7 +33,7 @@ public class SelectionUIManager : MonoBehaviour
     private void Awake()
     {
         selectionCanvas.SetActive(true);
-        startGameButton.gameObject.SetActive(false);
+        EnableStartGameButton(false);
         EnableNameSelectionPanel(true);
         EnableNameWarning(false);
         EnableCharacterSelectionPanel(false);
@@ -136,7 +136,6 @@ public class SelectionUIManager : MonoBehaviour
     }
     public void EnableStartGameButton(bool value)
     {
-        startGameButton.gameObject.SetActive(true);
         startGameButton.interactable = value;
     }
 

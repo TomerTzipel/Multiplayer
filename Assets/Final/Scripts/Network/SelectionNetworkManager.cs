@@ -12,6 +12,7 @@ public enum Team
     Red, Blue, Spectator
 }
 
+
 public struct PlayerData : INetworkStruct
 {
     public NetworkString<_8> Name;
@@ -27,26 +28,97 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     private const int NO_CHARACTER = -1;
 
     [Networked, Capacity(8),OnChangedRender(nameof(OnPlayerDataUpdate))]
-    private NetworkDictionary<PlayerRef, PlayerData> _playersData  => default;
+    public NetworkDictionary<PlayerRef, PlayerData> PlayersData  => default;
 
     public override void Spawned()
     {
-        Debug.Log("Spawned");
+        Debug.Log("Session Manager Spawned");
         Runner.AddCallbacks(this);
         OnPlayerDataUpdate();
     }
     
+   
 
-    public void OnPlayerDataUpdate()
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestTeamChange_RPC(Team team, RpcInfo info = default)
     {
-        uiManager.UpdateUI(_playersData);
+        PlayerData data = PlayersData[info.Source];
+        data.Team = team;
+        data.CharacterIndex = NO_CHARACTER;
+        data.IsReady = team == Team.Spectator;
+        PlayersData.Set(info.Source, data);
+    }
 
-        if (!HasStateAuthority) return;
-        
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestReady_RPC(bool value, RpcInfo info = default)
+    {
+        PlayerData data = PlayersData[info.Source];
+        if (data.CharacterIndex == NO_CHARACTER)
+        {
+            RequestReadyResult_RPC(info.Source, false);
+            return;
+        }
+
+        data.IsReady = value;
+        PlayersData.Set(info.Source, data);
+        RequestReadyResult_RPC(info.Source, true);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestCharacter_RPC(int characterIndex, RpcInfo info = default)
+    {
+        foreach (var kvp in PlayersData)
+        {
+            if (kvp.Value.CharacterIndex == characterIndex)
+            {
+                CharacterRequestResult_RPC(info.Source, false);
+                return;
+            }
+        }
+
+        PlayerData data = PlayersData[info.Source];
+        data.CharacterIndex = characterIndex;
+        PlayersData.Set(info.Source, data);
+        CharacterRequestResult_RPC(info.Source, true);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RequestName_RPC(string name, RpcInfo info = default)
+    {
+        foreach (var kvp in PlayersData)
+        {
+            if (kvp.Value.Name == name)
+            {
+                NameRequestResult_RPC(info.Source, false);
+                return;
+            }
+        }
+
+        PlayerData data = PlayersData[info.Source];
+        data.Name = name;
+        PlayersData.Set(info.Source, data);
+        NameRequestResult_RPC(info.Source, true);
+    }
+   
+
+    public void OnSelectionLeave()
+    {
+        Runner.Shutdown();
+        SceneManager.LoadScene("MainMenuScene");
+    }
+
+ 
+
+    private void OnPlayerDataUpdate()
+    {
+        uiManager.UpdateUI(PlayersData);
+
+        if (!Runner.IsSharedModeMasterClient) return;
+
         bool EnableStartGameButton = true;
         bool redPlayerExist = false;
         bool bluePlayerExist = false;
-        foreach (var kvp in _playersData)
+        foreach (var kvp in PlayersData)
         {
             if (!kvp.Value.IsReady)
             {
@@ -63,56 +135,14 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         uiManager.EnableStartGameButton(EnableStartGameButton);
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RequestTeamChange_RPC(Team team, PlayerRef player, RpcInfo info = default)
-    {
-        PlayerData data = _playersData[player];
-        data.Team = team;
-        data.CharacterIndex = NO_CHARACTER;
-        data.IsReady = team == Team.Spectator;
-        _playersData.Set(player, data);
-    }
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RequestReady_RPC(bool value, PlayerRef player, RpcInfo info = default)
-    {
-        PlayerData data = _playersData[player];
-        if (data.CharacterIndex == NO_CHARACTER)
-        {
-            RequestReadyResult_RPC(player, false);
-            return;
-        }
-
-        data.IsReady = value;
-        _playersData.Set(player, data);
-        RequestReadyResult_RPC(player, true);
-    }
-
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RequestReadyResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
+    private void RequestReadyResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
     {
         if (!result) OnPlayerDataUpdate();
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RequestCharacter_RPC(int characterIndex, PlayerRef player, RpcInfo info = default)
-    {
-        foreach (var kvp in _playersData)
-        {
-            if(kvp.Value.CharacterIndex == characterIndex)
-            {
-                CharacterRequestResult_RPC(player, false);
-                return;
-            }
-        }
-
-        PlayerData data = _playersData[player];
-        data.CharacterIndex = characterIndex;
-        _playersData.Set(player, data);
-        CharacterRequestResult_RPC(player, true);
-    }
-
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void CharacterRequestResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
+    private void CharacterRequestResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
     {
         if (result)
         {
@@ -121,26 +151,10 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         else OnPlayerDataUpdate();
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RequestName_RPC(string name,PlayerRef player ,RpcInfo info = default)
-    {
-        foreach (var kvp in _playersData)
-        {
-            if (kvp.Value.Name == name)
-            {
-                NameRequestResult_RPC(player, false);
-                return;
-            }
-        }
-
-        PlayerData data = _playersData[player];
-        data.Name = name;
-        _playersData.Set(player, data);
-        NameRequestResult_RPC(player, true);
-    }
+   
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void NameRequestResult_RPC([RpcTarget] PlayerRef targetPlayer,bool result)
+    private void NameRequestResult_RPC([RpcTarget] PlayerRef targetPlayer,bool result)
     {
         
         if (result)
@@ -154,34 +168,14 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    public void OnGameStart()
-    {
-        Dictionary <PlayerRef, PlayerData> playerData = new Dictionary<PlayerRef, PlayerData>(8);
-        foreach (var kvp in _playersData)
-        {
-            playerData.Add(kvp.Key, kvp.Value);
-        }
-        networkRunnerRef.PlayerData = playerData;
-
-        networkRunnerRef.RemoveCallbacks(this);
-        
-        Debug.Log($"Selection - {networkRunnerRef.PlayerData.Count}");
-        Runner.LoadScene("GameScene");
-    }
-
-    public void OnSelectionLeave()
-    {
-        Runner.Shutdown();
-        SceneManager.LoadScene("MainMenuScene");
-    }
+   
 
     #region Network Runner Callbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        if (!HasStateAuthority) return;
+        if (!Runner.IsSharedModeMasterClient) return;
 
-
-        _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+        PlayersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
         //PlayerDataRequest_RPC(player);
     }
 
@@ -201,18 +195,18 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     public void PlayerDataResponse_RPC(NetworkString<_8> name, PlayerRef player)
     {
         PlayerRef oldPlayerRef = player; //Initialize to be able to compile
-        foreach (var kvp in _playersData)
+        foreach (var kvp in PlayersData)
         {
             if (kvp.Value.Name == PlayerPrefs.GetString("Name"))
             {
                 oldPlayerRef = kvp.Key;
-                PlayerData tempPlayerData = _playersData[oldPlayerRef];
-                _playersData.Remove(oldPlayerRef);
-                _playersData.Add(player, tempPlayerData);
+                PlayerData tempPlayerData = PlayersData[oldPlayerRef];
+                PlayersData.Remove(oldPlayerRef);
+                PlayersData.Add(player, tempPlayerData);
                 return;
             }
         }
-        _playersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
+        PlayersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator,Name = $"Player{player.PlayerId}"});
     }
     
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
@@ -227,7 +221,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player.PlayerId} left");
-        _playersData.Remove(player);
+        PlayersData.Remove(player);
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {

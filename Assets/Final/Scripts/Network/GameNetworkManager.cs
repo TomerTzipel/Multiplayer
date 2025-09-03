@@ -8,55 +8,73 @@ using UnityEngine;
 
 public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 {
+    [SerializeField] private SelectionNetworkManager selectionManager;
+    [SerializeField] private GameUIManager gameUIManager;
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     [SerializeField] private CharactersRef charactersRef;
 
     [SerializeField] private CamerasRef camerasRef;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private CinemachineCamera cineCam;
+    [SerializeField] private CinemachineCamera cinemachineCamera;
 
     [SerializeField] private Transform[] redTeamSpawns;
     [SerializeField] private Transform[] blueTeamSpawns;
     [SerializeField] private Transform spectatorSpawn;
 
-    [Networked, Capacity(8)]
-    private NetworkDictionary<PlayerRef, PlayerData> _playersData => default;
-
+ 
     public override void Spawned()
     {
-        Debug.Log("Spawning Game Manager");
-        Runner.AddCallbacks(this);
-
-        if (!HasStateAuthority) return;
+       
+    }
+    public void OnGameStart()
+    {
+        
 
         int redSpawncount = 0, blueSpawncount = 0;
 
-        foreach (var kvp in networkRunnerRef.PlayerData)
+        foreach (var kvp in selectionManager.PlayersData)
         {
-            _playersData.Add(kvp.Key, kvp.Value);
-
             switch (kvp.Value.Team)
             {
                 case Team.Red:
-                    Runner.Spawn(charactersRef.Characters[kvp.Value.CharacterIndex], redTeamSpawns[redSpawncount].position,inputAuthority: kvp.Key, onBeforeSpawned: InitializeCharacter);
-                    redSpawncount++;
+                    StartGame_RPC(kvp.Key, redTeamSpawns[redSpawncount].position, kvp.Value);
+                    redSpawncount++;                 
                     break;
 
                 case Team.Blue:
-                    Runner.Spawn(charactersRef.Characters[kvp.Value.CharacterIndex], blueTeamSpawns[blueSpawncount].position, inputAuthority: kvp.Key, onBeforeSpawned: InitializeCharacter);
+                    StartGame_RPC(kvp.Key, redTeamSpawns[redSpawncount].position, kvp.Value);
                     blueSpawncount++;
                     break;
+
                 case Team.Spectator:
-                    //Create a spectator
+                    StartGame_RPC(kvp.Key, spectatorSpawn.position, kvp.Value);
                     break;
             }
+        }
+    }
 
-        }     
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void StartGame_RPC([RpcTarget] PlayerRef targetPlayer,Vector3 spawnPoint,PlayerData playerData)
+    {
+        Runner.RemoveCallbacks(selectionManager);
+        Runner.AddCallbacks(this);
+
+        if(playerData.Team != Team.Spectator)
+        {
+            PlayerCharacterController playerController = Runner.Spawn(charactersRef.Characters[playerData.CharacterIndex], spawnPoint, onBeforeSpawned: InitializeCharacter);
+            playerController.InitializeForLocalPlayer(cinemachineCamera);
+        }
+        else
+        {
+            //Spawn a spectator
+        }
+
+        gameUIManager.SetUpGameUI();
     }
 
     private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
     { 
-        obj.GetComponent<PlayerCharacterController>().NetworkInitialize(_playersData[obj.InputAuthority]);
+        obj.GetComponent<PlayerCharacterController>().NetworkInitialize(selectionManager.PlayersData[Runner.LocalPlayer]);
     }
 
     #region Network Runner Callbacks

@@ -1,4 +1,5 @@
 using Fusion;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -46,41 +47,32 @@ public class CharacterMovementHandler : NetworkBehaviour
     
     public override void FixedUpdateNetwork()
     {
-        if (HasStateAuthority)
-        {
-            GetInput<PlayerInput>(out var input);
-            if (input.Buttons.IsSet(Buttons.Move) && Runner.IsForward)
-            {
-                Debug.Log("Move");
-                StartMoving(input.TargetPosition);
-            }
-            TurnTowardsMoveDirection();
-            Move();
-        }
+        if (!HasStateAuthority) return;
+
+        GetInput<PlayerInput>(out var input);
         
+        if (input.Buttons.IsSet(Buttons.Move))
+        {
+            SetMoveTarget();
+        }
+
+        TurnTowardsMoveDirection();
+        Move();
     }
 
-    public bool GetMoveTargetPosition(out Vector3 targetPosition)
+    private void SetMoveTarget()
     {
         int groundLayerMask = LayerMask.GetMask(WALKABLE_LAYER_MASK);
         Ray ray = controller.MainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
         if (Physics.Raycast(ray, out RaycastHit hit, 80f, groundLayerMask))
         {
-            targetPosition = hit.point;
-            Debug.DrawLine(ray.origin, targetPosition, Color.green, 5f);
-            return true;            
-        }
-
-        targetPosition = Vector3.zero;
-        return false;
-    }
-
-    private void StartMoving(Vector3 destination)
-    {
-        _destiantion = destination;
-        agent.SetDestination(_destiantion);
-        _hasPath = true;
-        OnStartMoving.Invoke();
+            _destiantion = hit.point;
+            agent.SetDestination(_destiantion);
+            _hasPath = true;
+            OnStartMoving.Invoke();
+            Debug.DrawLine(ray.origin, _destiantion, Color.green, 5f);
+        }    
     }
 
     private void HandleRangedAttack(Vector2 direction)

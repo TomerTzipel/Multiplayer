@@ -8,7 +8,6 @@ using UnityEngine;
 public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
 
-
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     [SerializeField] private MainMenuUIManager uiManager;
     private List<SessionInfo> _sessions = new List<SessionInfo>(4);
@@ -34,7 +33,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         Runner.StartGame(new StartGameArgs()
         {
-            GameMode = GameMode.Host,
+            GameMode = GameMode.Shared,
             SessionName = name,
             CustomLobbyName = lobbyName,
             PlayerCount = playerCount,
@@ -58,7 +57,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         uiManager.EnableAllButtons(false);
         Runner.StartGame(new StartGameArgs()
         {
-            GameMode = GameMode.Client,
+            GameMode = GameMode.Shared,
             SessionName = name,   
             OnGameStarted = OnSessionStarted
         });
@@ -71,7 +70,7 @@ public class MainMenuNetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         Runner.RemoveCallbacks(this);
 
         if (!Runner.IsSceneAuthority) return;
-        Runner.LoadScene("SelectionScene");       
+        Runner.LoadScene("CombinedScene");       
     }
 
     private async void JoinMainLobby()

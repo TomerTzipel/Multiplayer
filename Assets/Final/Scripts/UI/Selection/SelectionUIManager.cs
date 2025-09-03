@@ -7,10 +7,11 @@ using UnityEngine.UI;
 
 public class SelectionUIManager : MonoBehaviour
 {
+    [SerializeField] private GameObject selectionCanvas;
+
     [SerializeField] private SelectionNetworkManager networkManager;
     [SerializeField] private CharactersRef charactersRef;
     [SerializeField] private CharacterButtonHandler[] buttonHandlers;
-
 
     [SerializeField] private PlayerStatusHandler[] redTeamPlayerStatusHandlers;
     [SerializeField] private PlayerStatusHandler[] blueTeamPlayerStatusHandlers;
@@ -31,6 +32,7 @@ public class SelectionUIManager : MonoBehaviour
 
     private void Awake()
     {
+        selectionCanvas.SetActive(true);
         startGameButton.gameObject.SetActive(false);
         EnableNameSelectionPanel(true);
         EnableNameWarning(false);
@@ -77,12 +79,12 @@ public class SelectionUIManager : MonoBehaviour
     public void OnPlayerJoinTeam(int team)
     {
         EnableAllButtons(false);
-        networkManager.RequestTeamChange_RPC((Team)team,LocalPlayer);
+        networkManager.RequestTeamChange_RPC((Team)team);
     }
     public void HandleReadyButton(bool value)
     {
         EnableAllButtons(false);
-        networkManager.RequestReady_RPC(value, LocalPlayer);
+        networkManager.RequestReady_RPC(value);
     }
     public void UpdateUI(NetworkDictionary<PlayerRef, PlayerData> playersData)
     {
@@ -159,12 +161,12 @@ public class SelectionUIManager : MonoBehaviour
     public void SelectName(string name)
     {
         EnableAllButtons(false);
-        networkManager.RequestName_RPC(name,LocalPlayer);
+        networkManager.RequestName_RPC(name);
     }
     private void HandleCharacterSelect(int characterIndex)
     {
         EnableAllButtons(false);
-        networkManager.RequestCharacter_RPC(characterIndex, LocalPlayer);
+        networkManager.RequestCharacter_RPC(characterIndex);
     }
     
     private void UpdateSpectatorList(List<string> names)

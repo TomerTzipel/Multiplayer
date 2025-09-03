@@ -8,30 +8,29 @@ public class CharacterAbilityHandler : NetworkBehaviour
     [SerializeField] private PlayerCharacterController controller;
     [SerializeField] private Transform spawnPoint;
     
-
     public event UnityAction<Vector2> OnBasicAttack;
 
+    [Networked] private float _basicAttackCooldown { get; set; } = 0;
+    [Networked] private NetworkBool _canAttack { get; set; } = false;
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
 
-        if(GetInput<PlayerInput>(out var input))
+        GetInput<PlayerInput>(out var input);
+
+        if (input.Buttons.IsSet(Buttons.BasicAttack) && _canAttack)
         {
-            
-            if (input.Buttons.IsSet(Buttons.BasicAttack))
-            {
-                if (Runner.IsForward)
-                {
-                    OnBasicAttack.Invoke(input.Direction);
-                    
-                }
-                Debug.Log("Ranged Attack");
-                BasicAttack(input.Direction);
-            }
-        }      
+            Debug.Log("Ranged Attack");
+            Vector2 direction = GetBasicAttackDirection();
+            OnBasicAttack.Invoke(direction);
+            BasicAttack(direction);
+        }
+
+        _basicAttackCooldown -= Runner.DeltaTime;
+        if (_basicAttackCooldown <= 0) _canAttack = true;
     }
 
-    public Vector2 GetBasicAttackDirection()
+    private Vector2 GetBasicAttackDirection()
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 playerScreenPosition = controller.MainCamera.WorldToScreenPoint(transform.position);
@@ -41,6 +40,8 @@ public class CharacterAbilityHandler : NetworkBehaviour
     private void BasicAttack(Vector2 direction)
     {   
         Runner.Spawn(controller.Settings.ProjectilePrefab, spawnPoint.position, spawnPoint.rotation, onBeforeSpawned: InitializeProjectile);
+        _basicAttackCooldown = controller.Settings.AttackSpeed;
+        _canAttack = false;
     }
 
     private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)

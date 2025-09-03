@@ -49,31 +49,10 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public override void Spawned()
     {
-        Debug.Log("Spawning Player");
-        MainCamera = Camera.main;
-        if (MainCamera.GetComponent<CamerasManager>() == null)
-        {
-            Debug.Log("Camera is null");
-            StartCoroutine(DelayedSpawned());
-        }
-        else
-        {
-            HandleSpawn();
-        }
-            
-    }
-    private IEnumerator DelayedSpawned()
-    {
-        yield return new WaitForEndOfFrame();
-        Debug.Log("Delayed Spawn");
-        HandleSpawn();
-    }
-    private void HandleSpawn()
-    {   
-        CinemachineCamera cinCam = MainCamera.GetComponent<CamerasManager>().CineCam;
-
+        Debug.Log("Spawning Player Controller For" + PlayerData.Name);
         _inputSystemActions = new InputSystem_Actions();
 
+        MainCamera = Camera.main;
         playerNameText.transform.parent.forward = MainCamera.transform.forward;
         playerNameText.text = (string)PlayerData.Name;
 
@@ -89,12 +68,15 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
                 break;
         }
 
-        if (Object.HasInputAuthority)
-        {
-            cinCam.LookAt = transform;
-            cinCam.Follow = transform;
-            OnEnable();
-        }
+    }
+    public void InitializeForLocalPlayer(CinemachineCamera cinemachineCamera)
+    {
+        if (!HasStateAuthority) return;
+
+        cinemachineCamera.LookAt = transform;
+        cinemachineCamera.Follow = transform;
+        OnEnable();
+
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
@@ -130,28 +112,16 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
             _inputSystemActions.Player.Disable();
         }
     }
+
+
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        if (!HasInputAuthority) return;
+        if (!HasStateAuthority) return;
 
         var playerInput = new PlayerInput();
 
-        playerInput.Buttons.Set(Buttons.Move, false);
-        playerInput.Buttons.Set(Buttons.BasicAttack, false);
-
-        if (_inputSystemActions.Player.MouseMove.IsPressed())
-        {
-            if(movementHandler.GetMoveTargetPosition(out Vector3 targetPosition))
-            {
-                playerInput.Buttons.Set(Buttons.Move, true);
-                playerInput.TargetPosition = targetPosition;
-            }
-        }
-        if (_inputSystemActions.Player.RangedAttack.IsPressed())
-        {
-            playerInput.Buttons.Set(Buttons.BasicAttack, true);
-            playerInput.Direction = abilityHandler.GetBasicAttackDirection();
-        }
+        playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
+        playerInput.Buttons.Set(Buttons.BasicAttack, _inputSystemActions.Player.RangedAttack.IsPressed());
 
         input.Set(playerInput);
     }
@@ -160,7 +130,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     #region Unused Callbacks
     public void OnConnectedToServer(NetworkRunner runner)
     {
-
+        Debug.Log("Player - Connected To Server");
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)

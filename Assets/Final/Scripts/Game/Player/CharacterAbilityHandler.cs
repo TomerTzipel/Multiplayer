@@ -11,13 +11,17 @@ public class CharacterAbilityHandler : NetworkBehaviour
     public event UnityAction<Vector2> OnBasicAttack;
 
     [Networked] private float _basicAttackCooldown { get; set; } = 0;
-    [Networked] private NetworkBool _canAttack { get; set; } = false;
+    [Networked] private NetworkBool _canAttack { get; set; } = true;
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
 
         GetInput<PlayerInput>(out var input);
 
+        if (input.Buttons.IsSet(Buttons.BasicAttack) && _canAttack)
+        {
+            Debug.Log("Should Attack");
+        }
         if (input.Buttons.IsSet(Buttons.BasicAttack) && _canAttack)
         {
             Debug.Log("Ranged Attack");

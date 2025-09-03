@@ -456,6 +456,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiManager: {fileID: 825881352}
   networkRunnerRef: {fileID: 11400000, guid: 90b6fd25354ac6a4f8c83ea73a02eb09, type: 2}
+  _PlayersData:
+    _items: []
 --- !u!114 &108610802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,11 +470,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c332b4c473c136428b9f6cde8f6ced1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectionManager: {fileID: 108610801}
+  gameUIManager: {fileID: 825881354}
   networkRunnerRef: {fileID: 11400000, guid: 90b6fd25354ac6a4f8c83ea73a02eb09, type: 2}
   charactersRef: {fileID: 11400000, guid: 99437913a92c68942b8b83d5ea3ccf32, type: 2}
-  camerasRef: {fileID: 11400000, guid: 6586717bd3e6573469777b23a2debc2d, type: 2}
   mainCamera: {fileID: 448018067}
-  cineCam: {fileID: 2108284632}
+  cinemachineCamera: {fileID: 2108284632}
   redTeamSpawns:
   - {fileID: 1264802805}
   - {fileID: 461347833}
@@ -2870,6 +2873,7 @@ GameObject:
   m_Component:
   - component: {fileID: 825881353}
   - component: {fileID: 825881352}
+  - component: {fileID: 825881354}
   m_Layer: 0
   m_Name: Scene Managers
   m_TagString: Untagged
@@ -2889,6 +2893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7900dff8bb0f67645aeb8670f7415811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectionCanvas: {fileID: 1823693017}
   networkManager: {fileID: 108610801}
   charactersRef: {fileID: 11400000, guid: 99437913a92c68942b8b83d5ea3ccf32, type: 2}
   buttonHandlers:
@@ -2933,6 +2938,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &825881354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825881351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb36499a7d66f9f40aff2bd75409f7d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectionCanvas: {fileID: 1823693017}
+  gameCanvas: {fileID: 839935263}
 --- !u!1 &839935263
 GameObject:
   m_ObjectHideFlags: 0
@@ -3370,8 +3389,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 108610801}
-        m_TargetAssemblyTypeName: SelectionNetworkManager, Assembly-CSharp
+      - m_Target: {fileID: 108610802}
+        m_TargetAssemblyTypeName: GameNetworkManager, Assembly-CSharp
         m_MethodName: OnGameStart
         m_Mode: 1
         m_Arguments:

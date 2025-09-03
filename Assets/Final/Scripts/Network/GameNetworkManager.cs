@@ -13,7 +13,6 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     [SerializeField] private CharactersRef charactersRef;
 
-    [SerializeField] private CamerasRef camerasRef;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private CinemachineCamera cinemachineCamera;
 
@@ -42,7 +41,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
                     break;
 
                 case Team.Blue:
-                    StartGame_RPC(kvp.Key, redTeamSpawns[redSpawncount].position, kvp.Value);
+                    StartGame_RPC(kvp.Key, blueTeamSpawns[blueSpawncount].position, kvp.Value);
                     blueSpawncount++;
                     break;
 
@@ -61,7 +60,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
         if(playerData.Team != Team.Spectator)
         {
-            PlayerCharacterController playerController = Runner.Spawn(charactersRef.Characters[playerData.CharacterIndex], spawnPoint, onBeforeSpawned: InitializeCharacter);
+            PlayerCharacterController playerController = Runner.Spawn(charactersRef.Characters[playerData.CharacterIndex], spawnPoint,inputAuthority: targetPlayer, onBeforeSpawned: InitializeCharacter);
             playerController.InitializeForLocalPlayer(cinemachineCamera);
         }
         else

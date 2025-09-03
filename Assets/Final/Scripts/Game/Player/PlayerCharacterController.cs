@@ -16,8 +16,6 @@ enum Buttons
 public struct PlayerInput : INetworkInput
 {
     public NetworkButtons Buttons;
-    public Vector2 Direction;
-    public Vector3 TargetPosition;
 }
 
 public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallbacks
@@ -31,8 +29,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     private InputSystem_Actions _inputSystemActions;
 
     [field: SerializeField] public CharacterSettings Settings { get; private set; }
-    [field: SerializeField] public CamerasRef CamerasRef { get; private set; }
-  
+
     public Camera MainCamera { get; private set; }
 
     [Networked] public PlayerData PlayerData { get; set; }
@@ -49,7 +46,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public override void Spawned()
     {
-        Debug.Log("Spawning Player Controller For" + PlayerData.Name);
+        Debug.Log("Spawning Player Controller For " + PlayerData.Name);
         _inputSystemActions = new InputSystem_Actions();
 
         MainCamera = Camera.main;
@@ -88,8 +85,9 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     {
         if (Object == null || Runner == null) return;
 
-        if (Object.HasInputAuthority)
+        if (Object.HasStateAuthority)
         {
+            Debug.Log("Enabling For " + PlayerData.Name);
             Runner.AddCallbacks(this);
             _inputSystemActions.Player.Enable();
             _inputSystemActions.Player.MouseMove.Enable();
@@ -101,7 +99,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     {
         if (Object == null || Runner == null) return;
 
-        if (Object.HasInputAuthority)
+        if (Object.HasStateAuthority)
         {
             Runner.RemoveCallbacks(this);
             
@@ -120,6 +118,14 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
         var playerInput = new PlayerInput();
 
+        if (_inputSystemActions.Player.MouseMove.IsPressed())
+        {
+            Debug.Log("Move Input detected For " + PlayerData.Name);
+        }
+        if (_inputSystemActions.Player.RangedAttack.IsPressed())
+        {
+            Debug.Log("Attack Input detected For " + PlayerData.Name);
+        }
         playerInput.Buttons.Set(Buttons.Move, _inputSystemActions.Player.MouseMove.IsPressed());
         playerInput.Buttons.Set(Buttons.BasicAttack, _inputSystemActions.Player.RangedAttack.IsPressed());
 

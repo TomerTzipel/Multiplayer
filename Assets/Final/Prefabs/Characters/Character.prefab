@@ -815,7 +815,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1776301696
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 524289
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7566450377121271552}
@@ -907,7 +907,6 @@ MonoBehaviour:
   abilityHandler: {fileID: 6681430787116059585}
   animationStateHandler: {fileID: 4852881815910957575}
   <Settings>k__BackingField: {fileID: 0}
-  <CamerasRef>k__BackingField: {fileID: 11400000, guid: 6586717bd3e6573469777b23a2debc2d, type: 2}
 --- !u!114 &8819377292614367191
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,8 +37,6 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
         OnPlayerDataUpdate();
     }
     
-   
-
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RequestTeamChange_RPC(Team team, RpcInfo info = default)
     {

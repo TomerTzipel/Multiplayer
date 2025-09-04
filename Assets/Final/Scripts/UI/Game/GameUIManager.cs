@@ -1,30 +1,34 @@
 using Fusion;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameUIManager : MonoBehaviour
 {
     [SerializeField] private GameNetworkManager gameManager;
+    [SerializeField] private CharactersRef charactersRef;
 
     [SerializeField] private GameObject selectionCanvas;
     [SerializeField] private GameObject gameCanvas;
 
+    [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject ScoreboardPanel;
 
+    [SerializeField] private TMP_Text gameResultText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text redScoreText;
     [SerializeField] private TMP_Text blueScoreText;
 
-    [SerializeField] private PlayerScoreHandler[] redTeamScoreHandler;
-    [SerializeField] private PlayerScoreHandler[] blueTeamScoreHandler;
+    [SerializeField] private PlayerScoreHandler[] redTeamScoreHandlers;
+    [SerializeField] private PlayerScoreHandler[] blueTeamScoreHandlers;
 
     private InputSystem_Actions _inputSystemActions;
 
     private void Awake()
     {
         _inputSystemActions = new InputSystem_Actions();
+        gameOverPanel.SetActive(false);
         gameCanvas.SetActive(false);
         ScoreboardPanel.SetActive(false);
         UpdateTime(0,0);
@@ -52,38 +56,30 @@ public class GameUIManager : MonoBehaviour
         gameCanvas.SetActive(true);
     }
 
-    public void AddPlayerToScoreboard(string name,Sprite splash,Team team,int playerTeamIndex)
-    {
-        if (team == Team.Red)
-            redTeamScoreHandler[playerTeamIndex].InitializeUI(name, splash);
-        if (team == Team.Blue)
-            blueTeamScoreHandler[playerTeamIndex].InitializeUI(name, splash);
-    }
-
     public void UpdateScoreboard(NetworkDictionary<NetworkString<_8>, ScoreData> playersScoreData)
     {
+        int redIndex = 0, blueIndex = 0;
+
+        for (int i = 0; i < redTeamScoreHandlers.Length; i++)
+        {
+            redTeamScoreHandlers[i].gameObject.SetActive(false);
+            blueTeamScoreHandlers[i].gameObject.SetActive(false);
+        }
+
         foreach (var kvp in playersScoreData)
         {
             if (kvp.Value.Team == Team.Red)
             {
-                foreach (var handler in redTeamScoreHandler)
-                {
-                    if(handler.OwnerName == (string)kvp.Key)
-                    {
-                        handler.UpdateUI(kvp.Value.Kills, kvp.Value.Deaths);
-                    }
-                }
+                redTeamScoreHandlers[redIndex].gameObject.SetActive(true);
+                redTeamScoreHandlers[redIndex].UpdateUI((string)kvp.Key, charactersRef.GetCharacterSpriteAt(kvp.Value.charachterIndex), kvp.Value.Kills, kvp.Value.Deaths);
+                redIndex++;
             }
 
             if (kvp.Value.Team == Team.Blue)
             {
-                foreach (var handler in blueTeamScoreHandler)
-                {
-                    if (handler.OwnerName == (string)kvp.Key)
-                    {
-                        handler.UpdateUI(kvp.Value.Kills, kvp.Value.Deaths);
-                    }
-                }
+                blueTeamScoreHandlers[redIndex].gameObject.SetActive(true);
+                blueTeamScoreHandlers[redIndex].UpdateUI((string)kvp.Key, charactersRef.GetCharacterSpriteAt(kvp.Value.charachterIndex), kvp.Value.Kills, kvp.Value.Deaths);
+                blueIndex++;
             }
 
         }
@@ -96,6 +92,27 @@ public class GameUIManager : MonoBehaviour
     {
         if (team == Team.Red) redScoreText.text = score.ToString("00");
         if (team == Team.Blue) blueScoreText.text = score.ToString("00");
+    }
+
+    public void ActivateGameOverPanel(bool result)
+    {
+        gameOverPanel.SetActive(true);
+        ScoreboardPanel.SetActive(true);
+        if (result)
+        {
+            gameResultText.text = "VICTORY!";
+            gameResultText.color = Color.blue;
+        }
+        else
+        {
+            gameResultText.text = "DEFEAT!";
+            gameResultText.color = Color.red;
+        }
+    }
+    public void LeaveGame()
+    {
+        gameManager.Runner.Shutdown();
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     private void EnableScoreboard(InputAction.CallbackContext _)

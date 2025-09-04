@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SelectionUIManager : MonoBehaviour
@@ -175,9 +176,10 @@ public class SelectionUIManager : MonoBehaviour
     public void ChooseRandomCharacter()
     {
         EnableAllButtons(false);
-
+        networkManager.RequestRandomCharacter_RPC();
     }
-    
+
+ 
     private void UpdateSpectatorList(List<string> names)
     {
         string text = "";

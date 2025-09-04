@@ -1,11 +1,9 @@
 using Fusion;
-using Fusion.Sockets;
-using HW3;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Random = System.Random;
+
 
 [Serializable]
 public enum Team
@@ -84,19 +82,16 @@ public class SelectionNetworkManager : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RequestRandomCharacter_RPC(RpcInfo info = default)
     {
-        Random r = new Random();
-        List<int> characterIndexList = new List<int>();
-        int rInt = 0;
-        
+        List<int> characterIndexList = new List<int>(10);
+   
         for(var i = 0; i < 10; i++) characterIndexList.Add(i);
         foreach (var kvp in PlayersData)
         {
             if (kvp.Value.CharacterIndex != NO_CHARACTER) characterIndexList.Remove(kvp.Value.CharacterIndex);
         }
-        rInt = r.Next(0, characterIndexList.Count);
-        
+ 
         PlayerData data = PlayersData[info.Source];
-        data.CharacterIndex = rInt;
+        data.CharacterIndex = characterIndexList[UnityEngine.Random.Range(0, characterIndexList.Count)];
         PlayersData.Set(info.Source, data);
         CharacterRequestResult_RPC(info.Source, true);
     }

@@ -160,7 +160,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     {
         Debug.Log("Game Is Over");
         Team localPlayerTeam = selectionManager.PlayersData[Runner.LocalPlayer].Team;
-        gameUIManager.ActivateGameOverPanel(localPlayerTeam == winningTeam);
+        gameUIManager.ActivateGameOverPanel(winningTeam, localPlayerTeam);
         //Runner.Shutdown();
     }
 
@@ -209,7 +209,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
@@ -261,7 +261,12 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     {
         if (!Runner.IsSharedModeMasterClient) return;
 
-        if (IsGameRunning) return;
+        if (IsGameRunning)
+        {
+            selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+            StartGame_RPC(player, spectatorSpawn.position, selectionManager.PlayersData[player]);
+            return;
+        }
 
         selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
     }

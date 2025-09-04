@@ -94,10 +94,31 @@ public class GameUIManager : MonoBehaviour
         if (team == Team.Blue) blueScoreText.text = score.ToString("00");
     }
 
-    public void ActivateGameOverPanel(bool result)
+    public void ActivateGameOverPanel(Team winningTeam,Team localPlayerTeam)
     {
         gameOverPanel.SetActive(true);
         ScoreboardPanel.SetActive(true);
+
+        if (localPlayerTeam == Team.Spectator)
+        {
+            if (winningTeam == Team.Red)
+            {
+                gameResultText.text = "RED WON!";
+                gameResultText.color = Color.red;
+            }
+            else
+            {
+                gameResultText.text = "BLUE WON!";
+                gameResultText.color = Color.blue;
+            }
+            return;
+        }
+
+        UpdateGameResultText(winningTeam == localPlayerTeam);
+    }
+
+    private void UpdateGameResultText(bool result)
+    {
         if (result)
         {
             gameResultText.text = "VICTORY!";
@@ -109,6 +130,7 @@ public class GameUIManager : MonoBehaviour
             gameResultText.color = Color.red;
         }
     }
+
     public void LeaveGame()
     {
         gameManager.Runner.Shutdown();

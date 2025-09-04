@@ -12,8 +12,8 @@ TagManager:
   - Walkable
   - Water
   - UI
-  - 
-  - 
+  - BlueWalkable
+  - RedWalkable
   - 
   - 
   - 

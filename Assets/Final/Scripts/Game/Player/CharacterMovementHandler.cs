@@ -9,8 +9,9 @@ using UnityEngine.Windows;
 public class CharacterMovementHandler : NetworkBehaviour
 {
     private const float OFFSET = 0.25f;
-    private const string WALKABLE_LAYER_MASK = "Walkable";
-
+    private const string WALKABLE_LAYER = "Walkable";
+    private const string RED_WALKABLE_LAYER = "RedWalkable";
+    private const string BLUE_WALKABLE_LAYER = "BlueWalkable";
     [SerializeField] private PlayerCharacterController controller;
 
     [SerializeField] private NavMeshAgent agent;
@@ -64,17 +65,30 @@ public class CharacterMovementHandler : NetworkBehaviour
 
     private void SetMoveTarget()
     {
-        int groundLayerMask = LayerMask.GetMask(WALKABLE_LAYER_MASK);
+        string[] layers ={ WALKABLE_LAYER };
+
+        if(controller.PlayerData.Team == Team.Red)
+        {
+            layers = new string[] { WALKABLE_LAYER, RED_WALKABLE_LAYER };
+        }
+        else
+        {
+            layers = new string[] { WALKABLE_LAYER, BLUE_WALKABLE_LAYER };
+        }
+
+        int mask = LayerMask.GetMask(layers);
+
         Ray ray = controller.MainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 80f, groundLayerMask))
+        if (Physics.Raycast(ray, out RaycastHit hit, 80f, mask))
         {
             _destiantion = hit.point;
             agent.SetDestination(_destiantion);
             _hasPath = true;
             OnStartMoving.Invoke();
-            Debug.DrawLine(ray.origin, _destiantion, Color.green, 5f);
-        }    
+        }
+
+      
     }
 
     private void HandleRangedAttack(Vector2 direction)
@@ -107,6 +121,7 @@ public class CharacterMovementHandler : NetworkBehaviour
     private void Respawn(DeathData _)
     {
         StopMoving();
+        agent.Warp(controller.SpawnPoint);
         transform.position = controller.SpawnPoint;
     }
 

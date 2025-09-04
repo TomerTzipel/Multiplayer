@@ -39,6 +39,22 @@ public class SelectionNetworkManager : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RequestTeamChange_RPC(Team team, RpcInfo info = default)
     {
+        int redPlayersCount = 0, bluePlayersCount = 0;
+
+        foreach (var kvp in PlayersData)
+        {
+            if(kvp.Value.Team == Team.Blue)
+                bluePlayersCount++;
+            if (kvp.Value.Team == Team.Red)
+                redPlayersCount++;
+        }
+
+        if((team == Team.Red && redPlayersCount == 2) || (team == Team.Blue && bluePlayersCount == 2))
+        {
+            FailedRequestResult_RPC(info.Source);
+            return;
+        }
+
         PlayerData data = PlayersData[info.Source];
         data.Team = team;
         data.CharacterIndex = NO_CHARACTER;
@@ -52,13 +68,12 @@ public class SelectionNetworkManager : NetworkBehaviour
         PlayerData data = PlayersData[info.Source];
         if (data.CharacterIndex == NO_CHARACTER)
         {
-            RequestReadyResult_RPC(info.Source, false);
+            FailedRequestResult_RPC(info.Source);
             return;
         }
 
         data.IsReady = value;
         PlayersData.Set(info.Source, data);
-        RequestReadyResult_RPC(info.Source, true);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -159,9 +174,9 @@ public class SelectionNetworkManager : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RequestReadyResult_RPC([RpcTarget] PlayerRef targetPlayer, bool result)
+    private void FailedRequestResult_RPC([RpcTarget] PlayerRef targetPlayer)
     {
-        if (!result) OnPlayerDataUpdate();
+        OnPlayerDataUpdate();
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

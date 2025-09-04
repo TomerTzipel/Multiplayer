@@ -80,8 +80,8 @@ public class GameUIManager : MonoBehaviour
 
             if (kvp.Value.Team == Team.Blue)
             {
-                blueTeamScoreHandlers[redIndex].gameObject.SetActive(true);
-                blueTeamScoreHandlers[redIndex].UpdateUI((string)kvp.Key, charactersRef.GetCharacterSpriteAt(kvp.Value.charachterIndex), kvp.Value.Kills, kvp.Value.Deaths);
+                blueTeamScoreHandlers[blueIndex].gameObject.SetActive(true);
+                blueTeamScoreHandlers[blueIndex].UpdateUI((string)kvp.Key, charactersRef.GetCharacterSpriteAt(kvp.Value.charachterIndex), kvp.Value.Kills, kvp.Value.Deaths);
                 blueIndex++;
             }
 

@@ -346,4 +346,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 4798559123433626787}
+  meshRenderer: {fileID: 0}
+  redTeamMaterial: {fileID: 2100000, guid: 38a4e88ab2cb0bf409881feac237c223, type: 2}
+  blueTeamMaterial: {fileID: 2100000, guid: 9e15e1e589c8ab446b1e0d59b16e83f4, type: 2}
   visuals: {fileID: 3294448692318743553}

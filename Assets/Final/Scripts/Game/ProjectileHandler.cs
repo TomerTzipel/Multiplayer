@@ -21,6 +21,9 @@ public class ProjectileHandler : NetworkBehaviour
     private const float DESPAWN_DELAY = 5f;
 
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private Material redTeamMaterial;
+    [SerializeField] private Material blueTeamMaterial;
     [SerializeField] private GameObject visuals;
 
     [Networked] private ProjectileData _projectileData { get; set; }
@@ -35,6 +38,11 @@ public class ProjectileHandler : NetworkBehaviour
     public override void Spawned()
     {
         _lifetime = _projectileData.Lifetime;
+        meshRenderer.material = blueTeamMaterial;
+        if (_projectileData.PlayerData.Team == Team.Red)
+        {
+            meshRenderer.material = redTeamMaterial;
+        }    
     }
     public override void FixedUpdateNetwork()
     {

@@ -1,7 +1,16 @@
 fileFormatVersion: 2
 guid: 4311dac403f1e004db14392e31c92415
+AssetOrigin:
+  serializedVersion: 1
+  productId: 178718
+  packageName: Stylized Rocket Launcher Complete Kit with Visual Effects and Sound
+    - Hand Painted Bazooka - HQ Toon Weapon Set
+  packageVersion: 1.0
+  assetPath: Assets/BigRookGames/_AssetPacks/Stylized Weapon Pack/Stylized Rocket
+    Launcher/Models/Rocket_Launcher.fbx
+  uploadId: 389310
 ModelImporter:
-  serializedVersion: 20101
+  serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -10,18 +19,17 @@ ModelImporter:
       name: Rocket_Launcher_m__rocket_launcher_dif_01_png
     second: {fileID: 2100000, guid: bf62051a534cace4fbf5ed0b96f59ba3, type: 2}
   materials:
-    materialImportMode: 1
-    materialName: 0
+    materialImportMode: 2
+    materialName: 1
     materialSearch: 1
-    materialLocation: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -44,10 +52,12 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -59,6 +69,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -69,6 +80,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -100,16 +112,10 @@ ModelImporter:
   animationType: 2
   humanoidOversampling: 1
   avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 178718
-  packageName: Stylized Rocket Launcher Complete Kit with Visual Effects and Sound
-    - Hand Painted Bazooka - HQ Toon Weapon Set
-  packageVersion: 1.0
-  assetPath: Assets/BigRookGames/_AssetPacks/Stylized Weapon Pack/Stylized Rocket
-    Launcher/Models/Rocket_Launcher.fbx
-  uploadId: 389310

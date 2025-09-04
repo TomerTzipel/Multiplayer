@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 464316}
   - component: {fileID: 3325628}
   - component: {fileID: 2363484}
-  - component: {fileID: 9548778}
   m_Layer: 0
   m_Name: Arrow_Explosive
   m_TagString: Untagged
@@ -65,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1c8657c6b5cdc4eb5bcac1968488b356, type: 2}
+  - {fileID: 2100000, guid: 9e15e1e589c8ab446b1e0d59b16e83f4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,25 +86,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!95 &9548778
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 182122}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: a6c4c9afde33c4603bef3ca6b3a587ca, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0

@@ -222,13 +222,13 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        gameUIManager.ShowPlayerLeftPrompt((string)selectionManager.PlayersData[player].Name);
+        Debug.Log($"Player {player.PlayerId} left");
+        StartCoroutine(gameUIManager.ShowPlayerLeftPrompt((string)selectionManager.PlayersData[player].Name));
 
         if (!Runner.IsSharedModeMasterClient) return;
 
         if (IsGameRunning) return;
 
-        Debug.Log($"Player {player.PlayerId} left");
         selectionManager.PlayersData.Remove(player);
     }
     public void OnConnectedToServer(NetworkRunner runner)

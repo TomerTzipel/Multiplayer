@@ -18,7 +18,7 @@ MonoBehaviour:
   <BaseSpeed>k__BackingField: 20
   <AttackSpeed>k__BackingField: 1
   <Damage>k__BackingField: 10
-  <ProjectileSpeed>k__BackingField: 10
-  <Range>k__BackingField: 10
+  <ProjectileSpeed>k__BackingField: 15
+  <Range>k__BackingField: 3
   <CritChance>k__BackingField: 10
   <ProjectilePrefab>k__BackingField: {fileID: 2172041006688221424, guid: 06c8d1c57d2294e42a8f44c6227519a3, type: 3}

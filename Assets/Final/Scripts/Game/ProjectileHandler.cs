@@ -27,7 +27,7 @@ public class ProjectileHandler : NetworkBehaviour
 
     [Networked] private ProjectileData _projectileData { get; set; }
 
-    private bool _canHit = false;
+    private bool _canHit = true;
     [Networked] float _despawnTimer { get; set; }
     [Networked] float _lifetime { get; set; }
     [Networked,OnChangedRender(nameof(HideProjectile))] NetworkBool _isDespawning { get; set; } = false;

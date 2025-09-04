@@ -1,5 +1,4 @@
 using Fusion;
-using System.Collections;
 using UnityEngine;
 public struct ProjectileData : INetworkStruct
 {
@@ -27,17 +26,19 @@ public class ProjectileHandler : NetworkBehaviour
     [SerializeField] private GameObject visuals;
 
     [Networked] private ProjectileData _projectileData { get; set; }
-    private float _lifetime;
-    private bool _canHit = true;
-    private bool _isDespawning = false;
+
+    private bool _canHit = false;
+    [Networked] float _despawnTimer { get; set; }
+    [Networked] float _lifetime { get; set; }
+    [Networked,OnChangedRender(nameof(HideProjectile))] NetworkBool _isDespawning { get; set; } = false;
     public void NetworkInitialize(ProjectileData data)
     {
         _projectileData = data;
+        _lifetime = _projectileData.Lifetime;
     }
 
     public override void Spawned()
-    {
-        _lifetime = _projectileData.Lifetime;
+    {  
         meshRenderer.material = blueTeamMaterial;
         if (_projectileData.PlayerData.Team == Team.Red)
         {
@@ -46,14 +47,25 @@ public class ProjectileHandler : NetworkBehaviour
     }
     public override void FixedUpdateNetwork()
     {
+        if (!HasStateAuthority) return;
+
         _lifetime -= Runner.DeltaTime;
 
-        if (_lifetime <= 0 && !_isDespawning) 
-            HideProjectile();
+        if (_lifetime <= 0 && !_isDespawning)
+            StartDespawn();
 
-        if (HasStateAuthority)
+        if (_isDespawning)
+        {
+            _despawnTimer -= Runner.DeltaTime;
+            if(_despawnTimer <= 0)
+                Runner.Despawn(Object);
+        }
+        else
+        {
             Move();
+        }          
     }
+
     private void Move()
     {
         Vector3 move = Runner.DeltaTime * _projectileData.Speed * transform.forward;
@@ -64,9 +76,12 @@ public class ProjectileHandler : NetworkBehaviour
     {
         _canHit = false;
         visuals.SetActive(false);
+    }
 
-        if (HasStateAuthority)
-            StartCoroutine(DespawnOnDelay());
+    private void StartDespawn()
+    {
+        _isDespawning = true;
+        _despawnTimer = DESPAWN_DELAY;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -91,12 +106,5 @@ public class ProjectileHandler : NetworkBehaviour
             string json = JsonUtility.ToJson(combatData);
             healthHandler.TakeDamage_RPC(json);
         }
-    }
-
-    private IEnumerator DespawnOnDelay()
-    {
-        _isDespawning = true;
-        yield return new WaitForSeconds(DESPAWN_DELAY);
-        Runner.Despawn(Object);
     }
 }

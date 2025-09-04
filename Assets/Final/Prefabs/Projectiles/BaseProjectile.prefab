@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 7221589645087874057}
   - component: {fileID: 269263715953043432}
   m_Layer: 0
-  m_Name: Arrow
+  m_Name: BaseProjectile
   m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -331,8 +331,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.4448967, y: 0.43937445, z: 1.1899736}
-  m_Center: {x: -0.0014095306, y: 0.019873142, z: 0.5190674}
+  m_Size: {x: 0.4448967, y: 0.43937445, z: 1.8045938}
+  m_Center: {x: -0.0014095306, y: 0.019873142, z: 0.2117573}
 --- !u!114 &269263715953043432
 MonoBehaviour:
   m_ObjectHideFlags: 0

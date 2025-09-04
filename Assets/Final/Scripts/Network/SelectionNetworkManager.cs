@@ -24,6 +24,7 @@ public struct PlayerData : INetworkStruct
 
 public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 {
+    [SerializeField] private GameNetworkManager gameManager;
     [SerializeField] private SelectionUIManager uiManager;
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
     private const int NO_CHARACTER = -1;
@@ -33,7 +34,8 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
     public override void Spawned()
     {
-        Debug.Log("Session Manager Spawned");
+        if (gameManager.IsGameRunning) return;
+
         Runner.AddCallbacks(this);
         OnPlayerDataUpdate();
     }

@@ -36,12 +36,14 @@ public class CharacterMovementHandler : NetworkBehaviour
         if (Object == null) return;
 
         controller.OnBasicAttack += HandleRangedAttack;
+        controller.OnDeath += Respawn;
     }
     private void OnDisable()
     {
         if (Object == null) return;
 
         controller.OnBasicAttack -= HandleRangedAttack;
+        controller.OnDeath -= Respawn;
     }
 
     
@@ -100,6 +102,12 @@ public class CharacterMovementHandler : NetworkBehaviour
         }
 
         transform.position = agent.nextPosition;
+    }
+
+    private void Respawn(DeathData _)
+    {
+        StopMoving();
+        transform.position = controller.SpawnPoint;
     }
 
     private void StopMoving()

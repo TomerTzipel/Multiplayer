@@ -2,7 +2,6 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
-using Fusion.Photon.Realtime;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -21,12 +20,21 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     [SerializeField] private Transform[] blueTeamSpawns;
     [SerializeField] private Transform spectatorSpawn;
 
-    [Networked] private NetworkBool gameIsRunning { get; set; } = false;
+    [Networked] public NetworkBool IsGameRunning { get; set; } = false;
 
- 
+    [Networked, Capacity(8), OnChangedRender(nameof(OnPlayerScoreUpdate))]
+    public NetworkDictionary<NetworkString<_8>, ScoreData> PlayersScoreData => default;
+    [Networked,OnChangedRender(nameof(OnRedTeamScoreUpdate))] private int _redTeamScore { get; set; } = 0;
+    [Networked, OnChangedRender(nameof(OnBlueTeamScoreUpdate))] private int _blueTeamScore { get; set; } = 0;
+    [Networked, OnChangedRender(nameof(OnTimeUpdate))] private int _gameTimeInSeconds { get; set; } = 0;
+
     public override void Spawned()
     {
-        if (gameIsRunning) Reconnect();
+        if (IsGameRunning)
+        {
+            Reconnect();
+            return;
+        }
     }
     
     public void OnGameStart()
@@ -39,11 +47,13 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
             {
                 case Team.Red:
                     StartGame_RPC(kvp.Key, redTeamSpawns[redSpawncount].position, kvp.Value);
+                    gameUIManager.AddPlayerToScoreboard((string)kvp.Value.Name,charactersRef.GetCharacterSpriteAt(kvp.Value.CharacterIndex), Team.Red, redSpawncount);
                     redSpawncount++;                 
                     break;
 
                 case Team.Blue:
                     StartGame_RPC(kvp.Key, blueTeamSpawns[blueSpawncount].position, kvp.Value);
+                    gameUIManager.AddPlayerToScoreboard((string)kvp.Value.Name, charactersRef.GetCharacterSpriteAt(kvp.Value.CharacterIndex), Team.Blue, blueSpawncount);
                     blueSpawncount++;
                     break;
 
@@ -53,7 +63,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
             }
         }
         
-        if (Runner.IsSharedModeMasterClient) gameIsRunning = true;
+        if (Runner.IsSharedModeMasterClient) IsGameRunning = true;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -67,8 +77,11 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
             PlayerPrefs.SetString("Session", Runner.SessionInfo.Name);
             PlayerPrefs.SetString("Name", (string)playerData.Name);
             PlayerPrefs.Save();
-            
+
+            PlayersScoreData.Add(playerData.Name, new ScoreData { Kills = 0, Deaths = 0, Team = playerData.Team });
+
             PlayerCharacterController playerController = Runner.Spawn(charactersRef.Characters[playerData.CharacterIndex], spawnPoint,inputAuthority: targetPlayer, onBeforeSpawned: InitializeCharacter);
+            playerController.OnDeath += HandlePlayerDeath;
             playerController.InitializeForLocalPlayer(cinemachineCamera);
         }
         else
@@ -79,6 +92,40 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
         gameUIManager.SetUpGameUI();
     }
 
+    private void HandlePlayerDeath(DeathData data)
+    {
+        ScoreData killerScoreData = PlayersScoreData[data.KillerName];
+        ScoreData deadScoreData = PlayersScoreData[data.DeadName];
+
+        killerScoreData.Kills++;
+        deadScoreData.Deaths++;
+
+        if (data.DeadTeam == Team.Red)
+            _blueTeamScore++;
+        else
+            _redTeamScore++;
+
+        PlayersScoreData.Set(data.KillerName, killerScoreData);
+        PlayersScoreData.Set(data.DeadName, deadScoreData);
+    }
+    private void OnPlayerScoreUpdate()
+    {
+        gameUIManager.UpdateScoreboard(PlayersScoreData);
+    }
+    private void OnRedTeamScoreUpdate()
+    {
+        gameUIManager.UpdateScore(Team.Red, _redTeamScore);
+    }
+    private void OnBlueTeamScoreUpdate()
+    {
+        gameUIManager.UpdateScore(Team.Blue, _blueTeamScore);
+    }
+    private void OnTimeUpdate()
+    {
+        int minutes = _gameTimeInSeconds/60;
+        int seconds = _gameTimeInSeconds%60;
+        gameUIManager.UpdateTime(minutes, seconds);
+    }
     private void InitializeCharacter(NetworkRunner runner, NetworkObject obj)
     { 
         obj.GetComponent<PlayerCharacterController>().NetworkInitialize(selectionManager.PlayersData[Runner.LocalPlayer]);

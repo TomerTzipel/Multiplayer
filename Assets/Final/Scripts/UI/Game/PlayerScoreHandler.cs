@@ -1,7 +1,14 @@
+using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public struct ScoreData : INetworkStruct
+{
+    public int Kills;
+    public int Deaths;
+    public Team Team;
+}
 
 public class PlayerScoreHandler : MonoBehaviour
 {
@@ -10,15 +17,18 @@ public class PlayerScoreHandler : MonoBehaviour
     [SerializeField] private TMP_Text killsCountText;
     [SerializeField] private TMP_Text deathCountText;
 
-    public void InitializeUI(Sprite splashArt,string name)
+    public string OwnerName { get; private set; }
+
+    public void InitializeUI(string name,Sprite splashArt)
     {
         characterImage.sprite = splashArt;
         nameText.text = name;
+        OwnerName = name;
         UpdateUI(0, 0);
     }
     public void UpdateUI(int kills,int deaths)
     {
-        killsCountText.text = kills.ToString("00");
-        deathCountText.text = deaths.ToString("00");
+        killsCountText.text = kills.ToString();
+        deathCountText.text = deaths.ToString();
     }
 }

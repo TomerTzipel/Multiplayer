@@ -4,4 +4,9 @@ using UnityEngine;
 public class CharactersRef : ScriptableObject
 {
     [field: SerializeField] public PlayerCharacterController[] Characters;
+
+    public Sprite GetCharacterSpriteAt(int index)
+    {
+        return Characters[index].Settings.Splash;
+    }
 }

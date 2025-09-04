@@ -1,11 +1,22 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.Events;
+using static Unity.Cinemachine.InputAxisControllerBase<T>;
+
+public struct DeathData: INetworkStruct
+{
+    public string KillerName;
+    public string DeadName;
+    public Team DeadTeam;
+}
 
 public class CharacterHealthHandler : NetworkBehaviour
 {
     [SerializeField] private PlayerCharacterController controller;
     [SerializeField] private BarHandler healthBar;
     [SerializeField] private ParticleSystem bloodEffect;
+
+    public event UnityAction<DeathData> OnDeath;
 
     private int _maxHealth;
 
@@ -42,7 +53,12 @@ public class CharacterHealthHandler : NetworkBehaviour
     private void TakeDamage(int damage,string AttackerName)
     {
         Health -= damage;
-        //TODO: Handle Death
+        
+        if(Health <=0)
+        {
+            Health = _maxHealth;
+            OnDeath.Invoke(new DeathData { KillerName = AttackerName, DeadName = (string)controller.PlayerData.Name, DeadTeam = controller.PlayerData.Team });
+        }
     }
     private void HealthChanged()
     {

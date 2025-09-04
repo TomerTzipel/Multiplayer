@@ -1,7 +1,6 @@
 using Fusion;
 using Fusion.Sockets;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
@@ -32,14 +31,16 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
 
     public Camera MainCamera { get; private set; }
 
+    [Networked] public Vector3 SpawnPoint { get; set; }
     [Networked] public PlayerData PlayerData { get; set; }
 
     public event UnityAction<Vector2> OnBasicAttack { add { abilityHandler.OnBasicAttack += value; } remove { abilityHandler.OnBasicAttack -= value; } }
     public event UnityAction OnStartMoving { add { movementHandler.OnStartMoving += value; } remove { movementHandler.OnStartMoving -= value; } }
     public event UnityAction OnStopMoving { add { movementHandler.OnStopMoving += value; } remove { movementHandler.OnStopMoving -= value; } }
-
+    public event UnityAction<DeathData> OnDeath { add { healthHandler.OnDeath += value; } remove { healthHandler.OnDeath -= value; } }
     public void NetworkInitialize(PlayerData data)
     {
+        SpawnPoint = Object.transform.position;
         PlayerData = data;
         healthHandler.Health = Settings.MaxHealth;
     }

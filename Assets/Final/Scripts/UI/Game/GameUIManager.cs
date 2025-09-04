@@ -1,3 +1,4 @@
+using Fusion;
 using TMPro;
 using UnityEngine;
 
@@ -30,9 +31,41 @@ public class GameUIManager : MonoBehaviour
         gameCanvas.SetActive(true);
     }
 
-    public void UpdateScoreBoard()
+    public void AddPlayerToScoreboard(string name,Sprite splash,Team team,int playerTeamIndex)
     {
+        if (team == Team.Red)
+            redTeamScoreHandler[playerTeamIndex].InitializeUI(name, splash);
+        if (team == Team.Blue)
+            blueTeamScoreHandler[playerTeamIndex].InitializeUI(name, splash);
+    }
 
+    public void UpdateScoreboard(NetworkDictionary<NetworkString<_8>, ScoreData> playersScoreData)
+    {
+        foreach (var kvp in playersScoreData)
+        {
+            if (kvp.Value.Team == Team.Red)
+            {
+                foreach (var handler in redTeamScoreHandler)
+                {
+                    if(handler.OwnerName == kvp.Key)
+                    {
+                        handler.UpdateUI(kvp.Value.Kills, kvp.Value.Deaths);
+                    }
+                }
+            }
+
+            if (kvp.Value.Team == Team.Blue)
+            {
+                foreach (var handler in blueTeamScoreHandler)
+                {
+                    if (handler.OwnerName == kvp.Key)
+                    {
+                        handler.UpdateUI(kvp.Value.Kills, kvp.Value.Deaths);
+                    }
+                }
+            }
+
+        }
     }
     public void UpdateTime(int minutes,int secodns)
     {

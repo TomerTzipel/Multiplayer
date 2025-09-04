@@ -19,7 +19,7 @@ public struct CombatData
 public class ProjectileHandler : NetworkBehaviour
 {
     private const float DESPAWN_DELAY = 5f;
-
+    private const string PLAYER_TAG = "Player";
     [SerializeField] private Rigidbody rb;
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private Material redTeamMaterial;
@@ -72,7 +72,7 @@ public class ProjectileHandler : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!_canHit) return;
-        if (!other.CompareTag("Player")) return;
+        if (!other.CompareTag(PLAYER_TAG)) return;
 
         CharacterHealthHandler healthHandler = other.GetComponent<CharacterHealthHandler>();
 

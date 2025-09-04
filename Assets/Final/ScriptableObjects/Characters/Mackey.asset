@@ -16,5 +16,9 @@ MonoBehaviour:
   <Splash>k__BackingField: {fileID: 21300000, guid: f36ffc9d46ce0244c8596666b91b90dc, type: 3}
   <MaxHealth>k__BackingField: 100
   <BaseSpeed>k__BackingField: 20
+  <AttackSpeed>k__BackingField: 1
   <Damage>k__BackingField: 10
-  <ProjectilePrefab>k__BackingField: {fileID: 269263715953043432, guid: aa708c96b6c8b6047b230dd895b9b858, type: 3}
+  <ProjectileSpeed>k__BackingField: 5
+  <Range>k__BackingField: 10
+  <CritChance>k__BackingField: 10
+  <ProjectilePrefab>k__BackingField: {fileID: 2615836291132546706, guid: 3f31dcfc2f5861c43b18c0eb836ec750, type: 3}

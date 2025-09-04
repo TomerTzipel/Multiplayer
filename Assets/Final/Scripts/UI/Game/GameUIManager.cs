@@ -1,4 +1,5 @@
 using Fusion;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,6 +20,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text redScoreText;
     [SerializeField] private TMP_Text blueScoreText;
+    [SerializeField] private TMP_Text playerLeftPromptText;
 
     [SerializeField] private PlayerScoreHandler[] redTeamScoreHandlers;
     [SerializeField] private PlayerScoreHandler[] blueTeamScoreHandlers;
@@ -31,6 +33,7 @@ public class GameUIManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         gameCanvas.SetActive(false);
         ScoreboardPanel.SetActive(false);
+        playerLeftPromptText.gameObject.SetActive(false);
         UpdateTime(0,0);
         UpdateScore(Team.Red, 0);
         UpdateScore(Team.Blue, 0);
@@ -129,6 +132,15 @@ public class GameUIManager : MonoBehaviour
             gameResultText.text = "DEFEAT!";
             gameResultText.color = Color.red;
         }
+    }
+
+    public IEnumerator ShowPlayerLeftPrompt(string name)
+    {
+        playerLeftPromptText.gameObject.SetActive(true);
+        playerLeftPromptText.text = $"{name} Left the Game";
+        yield return new WaitForSeconds(5f);
+        playerLeftPromptText.gameObject.SetActive(false);
+
     }
 
     public void LeaveGame()

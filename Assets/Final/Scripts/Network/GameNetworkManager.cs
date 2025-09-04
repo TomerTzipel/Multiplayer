@@ -206,7 +206,31 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     }
 
     #region Network Runner Callbacks
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        if (!Runner.IsSharedModeMasterClient) return;
 
+        if (IsGameRunning)
+        {
+            selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+            StartGame_RPC(player, spectatorSpawn.position, selectionManager.PlayersData[player]);
+            return;
+        }
+
+        selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
+    }
+
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        gameUIManager.ShowPlayerLeftPrompt((string)selectionManager.PlayersData[player].Name);
+
+        if (!Runner.IsSharedModeMasterClient) return;
+
+        if (IsGameRunning) return;
+
+        Debug.Log($"Player {player.PlayerId} left");
+        selectionManager.PlayersData.Remove(player);
+    }
     public void OnConnectedToServer(NetworkRunner runner)
     {
 
@@ -257,29 +281,7 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
         
     }
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        if (!Runner.IsSharedModeMasterClient) return;
-
-        if (IsGameRunning)
-        {
-            selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
-            StartGame_RPC(player, spectatorSpawn.position, selectionManager.PlayersData[player]);
-            return;
-        }
-
-        selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
-    }
-
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-        if (!Runner.IsSharedModeMasterClient) return;
-
-        if (IsGameRunning) return;
-
-        Debug.Log($"Player {player.PlayerId} left");
-        selectionManager.PlayersData.Remove(player);
-    }
+    
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
     {

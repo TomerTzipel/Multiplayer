@@ -32,7 +32,7 @@ public class SelectionUIManager : MonoBehaviour
 
     private void Awake()
     {
-        selectionCanvas.SetActive(true);
+        selectionCanvas.SetActive(true);   
         EnableStartGameButton(false);
         EnableNameSelectionPanel(true);
         EnableNameWarning(false);
@@ -133,6 +133,10 @@ public class SelectionUIManager : MonoBehaviour
 
         joinRedButton.gameObject.SetActive(redPlayersIndex < 2);
         joinBlueButton.gameObject.SetActive(bluePlayersIndex < 2);
+    }
+    public void ShowStartGameButton(bool value)
+    {
+        startGameButton.gameObject.SetActive(value);
     }
     public void EnableStartGameButton(bool value)
     {

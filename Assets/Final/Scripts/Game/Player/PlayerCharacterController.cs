@@ -42,7 +42,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
     {
         SpawnPoint = Object.transform.position;
         PlayerData = data;
-        healthHandler.Health = Settings.MaxHealth;
+        healthHandler.Health = Settings.MaxHealth;      
     }
 
     public override void Spawned()
@@ -105,6 +105,7 @@ public class PlayerCharacterController : NetworkBehaviour , INetworkRunnerCallba
             if(_inputSystemActions == null) return;
 
             _inputSystemActions.Player.MouseMove.Disable();
+            _inputSystemActions.Player.Scoreboard.Disable();
             _inputSystemActions.Player.RangedAttack.Disable();
             _inputSystemActions.Player.Disable();
         }

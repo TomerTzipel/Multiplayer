@@ -454,6 +454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99c22d55cfed88b4b81a5e852518495f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
   uiManager: {fileID: 825881352}
   networkRunnerRef: {fileID: 11400000, guid: 90b6fd25354ac6a4f8c83ea73a02eb09, type: 2}
   _PlayersData:
@@ -470,6 +471,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c332b4c473c136428b9f6cde8f6ced1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  winningScore: 10
   selectionManager: {fileID: 108610801}
   gameUIManager: {fileID: 825881354}
   networkRunnerRef: {fileID: 11400000, guid: 90b6fd25354ac6a4f8c83ea73a02eb09, type: 2}
@@ -483,6 +485,10 @@ MonoBehaviour:
   - {fileID: 407755781}
   - {fileID: 1717828907}
   spectatorSpawn: {fileID: 1807183725}
+  _IsGameRunning:
+    _value: 0
+  _PlayersScoreData:
+    _items: []
 --- !u!224 &152764503 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 178944581683506456, guid: 72781a3b226d6b1499556c7ad0f9321c, type: 3}
@@ -3341,9 +3347,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb36499a7d66f9f40aff2bd75409f7d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 108610802}
   selectionCanvas: {fileID: 1823693017}
   gameCanvas: {fileID: 839935263}
   ScoreboardPanel: {fileID: 551167927}
+  timerText: {fileID: 1266122277}
+  redScoreText: {fileID: 1897040460}
+  blueScoreText: {fileID: 1683387366}
   redTeamScoreHandler:
   - {fileID: 152764504}
   - {fileID: 1232028392}

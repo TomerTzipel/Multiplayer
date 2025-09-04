@@ -1,6 +1,7 @@
 using Fusion;
 using Fusion.Sockets;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -8,6 +9,9 @@ using UnityEngine;
 
 public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 {
+
+    [SerializeField] private int winningScore;
+
     [SerializeField] private SelectionNetworkManager selectionManager;
     [SerializeField] private GameUIManager gameUIManager;
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
@@ -27,16 +31,24 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     [Networked,OnChangedRender(nameof(OnRedTeamScoreUpdate))] private int _redTeamScore { get; set; } = 0;
     [Networked, OnChangedRender(nameof(OnBlueTeamScoreUpdate))] private int _blueTeamScore { get; set; } = 0;
     [Networked, OnChangedRender(nameof(OnTimeUpdate))] private int _gameTimeInSeconds { get; set; } = 0;
+    [Networked] private float _ticker { get; set; } = 1;
 
     public override void Spawned()
     {
-        if (IsGameRunning)
+        Runner.AddCallbacks(this);
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (!IsGameRunning) return;
+        _ticker -= Runner.DeltaTime;
+        if(_ticker <= 0)
         {
-            Reconnect();
-            return;
+            _gameTimeInSeconds++;
+            _ticker = 1;
         }
     }
-    
+
     public void OnGameStart()
     {
         int redSpawncount = 0, blueSpawncount = 0;
@@ -47,12 +59,16 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
             {
                 case Team.Red:
                     StartGame_RPC(kvp.Key, redTeamSpawns[redSpawncount].position, kvp.Value);
+                    PlayersScoreData.Add(kvp.Value.Name, new ScoreData { Kills = 0, Deaths = 0, Team = Team.Red });
+                    Debug.Log("Added Name To Stats - " + kvp.Value.Name);
                     gameUIManager.AddPlayerToScoreboard((string)kvp.Value.Name,charactersRef.GetCharacterSpriteAt(kvp.Value.CharacterIndex), Team.Red, redSpawncount);
                     redSpawncount++;                 
                     break;
 
                 case Team.Blue:
                     StartGame_RPC(kvp.Key, blueTeamSpawns[blueSpawncount].position, kvp.Value);
+                    PlayersScoreData.Add(kvp.Value.Name, new ScoreData { Kills = 0, Deaths = 0, Team = Team.Blue });
+                    Debug.Log("Added Name To Stats - " + kvp.Value.Name);
                     gameUIManager.AddPlayerToScoreboard((string)kvp.Value.Name, charactersRef.GetCharacterSpriteAt(kvp.Value.CharacterIndex), Team.Blue, blueSpawncount);
                     blueSpawncount++;
                     break;
@@ -62,24 +78,24 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
                     break;
             }
         }
-        
-        if (Runner.IsSharedModeMasterClient) IsGameRunning = true;
+
+        if (Runner.IsSharedModeMasterClient)
+        {
+            IsGameRunning = true;
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void StartGame_RPC([RpcTarget] PlayerRef targetPlayer,Vector3 spawnPoint,PlayerData playerData)
     {
-        Runner.RemoveCallbacks(selectionManager);
         Runner.AddCallbacks(this);
 
         if(playerData.Team != Team.Spectator)
         {
-            PlayerPrefs.SetString("Session", Runner.SessionInfo.Name);
+            /*PlayerPrefs.SetString("Session", Runner.SessionInfo.Name);
             PlayerPrefs.SetString("Name", (string)playerData.Name);
-            PlayerPrefs.Save();
-
-            PlayersScoreData.Add(playerData.Name, new ScoreData { Kills = 0, Deaths = 0, Team = playerData.Team });
-
+            PlayerPrefs.Save();*/
+    
             PlayerCharacterController playerController = Runner.Spawn(charactersRef.Characters[playerData.CharacterIndex], spawnPoint,inputAuthority: targetPlayer, onBeforeSpawned: InitializeCharacter);
             playerController.OnDeath += HandlePlayerDeath;
             playerController.InitializeForLocalPlayer(cinemachineCamera);
@@ -94,6 +110,12 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     private void HandlePlayerDeath(DeathData data)
     {
+        PlayerDeath_RPC(data);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void PlayerDeath_RPC(DeathData data)
+    { 
         ScoreData killerScoreData = PlayersScoreData[data.KillerName];
         ScoreData deadScoreData = PlayersScoreData[data.DeadName];
 
@@ -115,11 +137,29 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
     private void OnRedTeamScoreUpdate()
     {
         gameUIManager.UpdateScore(Team.Red, _redTeamScore);
+        CheckGameOver();
     }
     private void OnBlueTeamScoreUpdate()
     {
         gameUIManager.UpdateScore(Team.Blue, _blueTeamScore);
+        CheckGameOver();
     }
+
+    private void CheckGameOver()
+    {
+        if(_blueTeamScore == winningScore)
+        {
+            Debug.Log("Blue Team Won");
+            //Finish Game with blue team as the winners
+        }
+
+        if (_redTeamScore == winningScore)
+        {
+            Debug.Log("Red Team Won");
+            //Finish Game with red team as the winners
+        }
+    }
+
     private void OnTimeUpdate()
     {
         int minutes = _gameTimeInSeconds/60;
@@ -215,12 +255,21 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        
+        if (!Runner.IsSharedModeMasterClient) return;
+
+        if (IsGameRunning) return;
+
+        selectionManager.PlayersData.Add(player, new PlayerData() { CharacterIndex = SelectionNetworkManager.NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        
+        if (!Runner.IsSharedModeMasterClient) return;
+
+        if (IsGameRunning) return;
+
+        Debug.Log($"Player {player.PlayerId} left");
+        selectionManager.PlayersData.Remove(player);
     }
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
@@ -250,9 +299,9 @@ public class GameNetworkManager : NetworkBehaviour , INetworkRunnerCallbacks
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        PlayerPrefs.DeleteKey("Session");
+        /*PlayerPrefs.DeleteKey("Session");
         PlayerPrefs.DeleteKey("Name");
-        PlayerPrefs.Save();
+        PlayerPrefs.Save();*/
     }
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)

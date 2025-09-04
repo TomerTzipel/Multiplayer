@@ -1,12 +1,12 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
-using static Unity.Cinemachine.InputAxisControllerBase<T>;
 
-public struct DeathData: INetworkStruct
+
+public struct DeathData : INetworkStruct
 {
-    public string KillerName;
-    public string DeadName;
+    public NetworkString<_8> KillerName;
+    public NetworkString<_8> DeadName;
     public Team DeadTeam;
 }
 

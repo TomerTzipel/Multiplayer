@@ -1,9 +1,13 @@
 using Fusion;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameUIManager : MonoBehaviour
 {
+    [SerializeField] private GameNetworkManager gameManager;
+
     [SerializeField] private GameObject selectionCanvas;
     [SerializeField] private GameObject gameCanvas;
 
@@ -16,13 +20,30 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private PlayerScoreHandler[] redTeamScoreHandler;
     [SerializeField] private PlayerScoreHandler[] blueTeamScoreHandler;
 
+    private InputSystem_Actions _inputSystemActions;
+
     private void Awake()
     {
+        _inputSystemActions = new InputSystem_Actions();
         gameCanvas.SetActive(false);
         ScoreboardPanel.SetActive(false);
         UpdateTime(0,0);
         UpdateScore(Team.Red, 0);
         UpdateScore(Team.Blue, 0);
+    }
+
+    private void OnEnable()
+    {
+        _inputSystemActions.Player.Scoreboard.Enable();
+        _inputSystemActions.Player.Scoreboard.started += EnableScoreboard;
+        _inputSystemActions.Player.Scoreboard.canceled += DisableScoreboard;
+    }
+
+    private void OnDisable()
+    {
+        _inputSystemActions.Player.Scoreboard.started -= EnableScoreboard;
+        _inputSystemActions.Player.Scoreboard.canceled -= DisableScoreboard;
+        _inputSystemActions.Player.Scoreboard.Disable();
     }
 
     public void SetUpGameUI()
@@ -47,7 +68,7 @@ public class GameUIManager : MonoBehaviour
             {
                 foreach (var handler in redTeamScoreHandler)
                 {
-                    if(handler.OwnerName == kvp.Key)
+                    if(handler.OwnerName == (string)kvp.Key)
                     {
                         handler.UpdateUI(kvp.Value.Kills, kvp.Value.Deaths);
                     }
@@ -58,7 +79,7 @@ public class GameUIManager : MonoBehaviour
             {
                 foreach (var handler in blueTeamScoreHandler)
                 {
-                    if (handler.OwnerName == kvp.Key)
+                    if (handler.OwnerName == (string)kvp.Key)
                     {
                         handler.UpdateUI(kvp.Value.Kills, kvp.Value.Deaths);
                     }
@@ -77,5 +98,13 @@ public class GameUIManager : MonoBehaviour
         if (team == Team.Blue) blueScoreText.text = score.ToString("00");
     }
 
-
+    private void EnableScoreboard(InputAction.CallbackContext _)
+    {
+        if (!gameManager.IsGameRunning) return;
+        ScoreboardPanel.SetActive(true);
+    }
+    private void DisableScoreboard(InputAction.CallbackContext _)
+    {
+        ScoreboardPanel.SetActive(false);
+    }
 }

@@ -22,21 +22,19 @@ public struct PlayerData : INetworkStruct
     public NetworkBool IsReady;   
 }
 
-public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
+public class SelectionNetworkManager : NetworkBehaviour
 {
+    public const int NO_CHARACTER = -1;
     [SerializeField] private GameNetworkManager gameManager;
     [SerializeField] private SelectionUIManager uiManager;
     [SerializeField] private NetworkRunnerRef networkRunnerRef;
-    private const int NO_CHARACTER = -1;
+ 
 
     [Networked, Capacity(8),OnChangedRender(nameof(OnPlayerDataUpdate))]
     public NetworkDictionary<PlayerRef, PlayerData> PlayersData  => default;
 
     public override void Spawned()
     {
-        if (gameManager.IsGameRunning) return;
-
-        Runner.AddCallbacks(this);
         OnPlayerDataUpdate();
     }
     
@@ -139,6 +137,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (!Runner.IsSharedModeMasterClient)
         {
+            uiManager.ShowStartGameButton(false);
             uiManager.EnableStartGameButton(false);
             return;
         }
@@ -160,6 +159,7 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (!redPlayerExist || !bluePlayerExist) EnableStartGameButton = false;
 
+        uiManager.ShowStartGameButton(true);
         uiManager.EnableStartGameButton(EnableStartGameButton);
     }
 
@@ -193,111 +193,4 @@ public class SelectionNetworkManager : NetworkBehaviour, INetworkRunnerCallbacks
             uiManager.EnableNameWarning(true);
         }
     }
-    
-    #region Network Runner Callbacks
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        if (!Runner.IsSharedModeMasterClient) return;
-
-        PlayersData.Add(player, new PlayerData() { CharacterIndex = NO_CHARACTER, IsReady = true, Team = Team.Spectator, Name = $"Player{player.PlayerId}" });
-    }
-    
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
-    {
-        
-    }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-        if (!Runner.IsSharedModeMasterClient) return;
-        
-        Debug.Log($"Player {player.PlayerId} left");
-        PlayersData.Remove(player);
-    }
-    public void OnConnectedToServer(NetworkRunner runner)
-    {
-        
-    }
-
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
-    {
-        
-    }
-
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
-
-    }
-
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
-    {
-        
-    }
-
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-        
-    }
-
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnSceneLoadDone(NetworkRunner runner)
-    {
-        
-    }
-
-    public void OnSceneLoadStart(NetworkRunner runner)
-    {
-        
-    }
-
-    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-    {
-        throw new NotImplementedException();
-    }
-
-
-
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
-    {
-        throw new NotImplementedException();
-    }
-
-
-
-    #endregion
-
-
 }

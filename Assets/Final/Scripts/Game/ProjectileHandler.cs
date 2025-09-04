@@ -75,7 +75,7 @@ public class ProjectileHandler : NetworkBehaviour
         
         if (Runner.IsSharedModeMasterClient)
         {
-            CombatData combatData = new CombatData { Damage = _projectileData.Damage,AttackerName = (string)_projectileData .PlayerData.Name};
+            CombatData combatData = new CombatData { Damage = _projectileData.Damage,AttackerName = (string)_projectileData.PlayerData.Name};
 
             int roll = Random.Range(0, 100);
 
